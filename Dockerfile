@@ -20,17 +20,25 @@ LABEL org.opencontainers.image.source="https://github.com/farukylmz0550/bookshel
 
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /app/package.json /app/package-lock.json ./
+# Non-root user
+RUN groupadd -r nodejs && useradd -r -g nodejs -d /app -s /sbin/nologin nextjs
+
+COPY --from=build --chown=nextjs:nodejs /app/package.json /app/package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/.next/static ./.next/static
-COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/prisma7.config.ts ./
-COPY --from=build /app/public ./public
-COPY --from=build /app/docker-entrypoint.sh ./
+COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=build --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=build --chown=nextjs:nodejs /app/prisma7.config.ts ./
+COPY --from=build --chown=nextjs:nodejs /app/public ./public
+COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
 
 RUN chmod +x docker-entrypoint.sh
+
+# SQLite veri dizini (DATABASE_URL=file:/data/bookshelf.db) non-root'a yazılabilir olmalı
+RUN mkdir -p /data && chown nextjs:nodejs /data
+
+USER nextjs
 
 EXPOSE 3000
 CMD ["./docker-entrypoint.sh"]

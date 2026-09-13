@@ -10,7 +10,7 @@
 
 *Terracotta × Dusty Rose · Ink & Copper · Noto Serif/Sans · 60/40 physical cards · Paper material*
 
-[![Version](https://img.shields.io/badge/version-2.9.1-EAD6D0?style=flat-square&labelColor=2B2727&color=A25F4C)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-2.9.2-EAD6D0?style=flat-square&labelColor=2B2727&color=A25F4C)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -151,6 +151,18 @@ cd bookshelf-web
 cp .env.example .env  # set NEXTAUTH_SECRET=$(openssl rand -base64 32)
 docker compose up -d --build
 ```
+
+### Upgrading to 2.9.2 — non-root container
+
+Since 2.9.2 the container runs as an unprivileged user (`nextjs`) instead of root. Fresh installs work out of the box. On an **existing** installation, the SQLite database inside the `app-data` volume is still owned by root, so the first start after upgrading will fail on migration with a permission error. Fix it once:
+
+```bash
+docker compose down
+docker compose run --rm --user root --entrypoint chown app -R nextjs:nodejs /data
+docker compose up -d
+```
+
+If you use a **bind mount** instead of the named volume, make sure the host data directory is writable by the container user (uid/gid of `nextjs` — run `docker run --rm ghcr.io/farukylmz0550/bookshelf:latest id nextjs` to look it up), e.g. `sudo chown -R <uid>:<gid> /path/to/data` on the host.
 
 ### Local dev
 
