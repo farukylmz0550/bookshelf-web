@@ -22,7 +22,7 @@ Web rewrite of the original PyQt6 desktop app (`legacy` branch).
 |--------|-----------|
 | Framework | Next.js 16 (App Router) + TypeScript |
 | UI | Tailwind CSS 4, shadcn/ui, lucide-react, Recharts, Noto Serif/Sans/Mono |
-| Theme | Terracotta × Dusty Rose (light) / Ink & Copper (dark) — CSS vars `UI_Design_Language.md` |
+| Theme | Fine Porcelain × Burnt Ochre (light) / Ink & Copper (dark) — CSS vars `UI_Design_Language.md` |
 | Database | SQLite via Prisma 7 (`better-sqlite3`) |
 | Auth | NextAuth v5 (Credentials, JWT, bcrypt) |
 | Validation | Zod |
@@ -361,7 +361,7 @@ Both projects continue under GPLv3.
 >
 > ✅ **PROGRESS — 2026-09-11 (session 1):**
 > - **§3 Logo & Branding (mostly complete):** All assets rendered from `Bookshelf — Color Master.svg` (Librsvg render): `icon.svg`, `logo.svg` (identical master copies), `icon-192/512.png`, `icon.png`, `apple-touch-icon.png`, `favicon.ico` (16/32/48). 7 in-code img references switched to `/logo.svg`. `proxy.ts` PUBLIC_PATHS updated. Brand name `Book Shelf` everywhere user-facing (src ×12, i18n ×6 languages, manifest.json, sw.js notifications, offline.html). Technical names kept (`bookshelf` package, `Bookshelf/1.0` User-Agent, cache/tag names). Trademark symbols removed from code (README exempt).
-> - **§1 Paper Material (system + application):** `globals.css` — global grain overlay (`body::after`, fractal-noise 180px tile; light 3.5% multiply / dark 5% soft-light) + warm top-light wash + `.paper-surface` (inset paper-edge highlight + restrained shadow). Applied surfaces: add panel, filter bar, dialog, sheet, cookie modal, book-detail panels, book detail cover frame. Light/dark visual verification done.
+> - **§1 Paper Material (removed in 2.9.3):** the grain overlay, paper wash and `.paper-surface` treatment were removed from `globals.css` and all components; surfaces now use flat tokens + borders only.
 > - **§14 Visual Cleanup (done):** All off-token colors removed (neutral/gray/white/green/amber/blue/orange/red → design tokens). Affected: book-facts, book-lending, book-personal, book detail page, loading.tsx ×4, user-table (amber badge → warning-soft), streak-widget (orange/amber → primary/warning), activity-heatmap (green scale → success alphas), profile-form, share-button.
 > - **§18 i18n (partial):** New keys added in 6 languages (books.cover/rating/detailedAdd/addDetailed/orWithAllFields). Hardcoded Turkish strings translated to English or wired to the dictionary: books-grid list headers, books-add-section ×3, setup-server, cookie-consent fallback, add-book-form offline toast, push.ts streak notification, offline.html, activity-heatmap (Pzt→Mon, Az/Çok→Less/More, locale-independent date — hydration fix), streak-widget (Pzt→M/T/W..., En uzun→Longest, Streak Koruma→Use streak shield).
 > - **§19 Technical QA (done):** tsc ✅ · lint ✅ (1 pre-existing warning: setup-server no-location-assign) · format:check ✅ · unit 97/97 ✅ · e2e 25/25 ✅ · production build ✅ · console errors clean ✅
@@ -373,22 +373,6 @@ Both projects continue under GPLv3.
 > **Symbolic Master** → semantic/monochrome usage.
 > Each item in red = mandatory/important work.
 
-### 1. Paper Material
-- <font color="red">**- [ ] Apply the new paper material system across the GUI**</font>
-- <font color="red">**- [ ] Apply it to the main background**</font>
-- <font color="red">**- [ ] Apply it to the sidebar**</font>
-- <font color="red">**- [ ] Apply it to page surfaces**</font>
-- <font color="red">**- [ ] Apply it to the book-add panel**</font>
-- <font color="red">**- [ ] Apply it to the search and filter areas**</font>
-- <font color="red">**- [ ] Apply it to book cards**</font>
-- <font color="red">**- [ ] Apply it to inputs**</font>
-- <font color="red">**- [ ] Apply it to buttons**</font>
-- <font color="red">**- [ ] Apply it to dialogs and popovers**</font>
-- <font color="red">**- [ ] Make sure the texture feels visible but soft**</font>
-- <font color="red">**- [ ] Make sure the texture does not look harsh, noisy, or dirty**</font>
-- <font color="red">**- [ ] Make sure the texture does not reduce text and icon readability**</font>
-- <font color="red">**- [ ] Check the final result in the Light theme**</font>
-- <font color="red">**- [ ] Create / verify an appropriate material treatment for the Dark theme**</font>
 
 ### 2. Typography
 - <font color="red">**- [ ] Complete Noto Serif usage**</font>
@@ -402,7 +386,6 @@ Both projects continue under GPLv3.
 - <font color="red">**- [ ] Check metadata text**</font>
 - <font color="red">**- [ ] Adjust font weights for readability**</font>
 - <font color="red">**- [ ] Strengthen text that appears too thin**</font>
-- <font color="red">**- [ ] Recheck readability over the paper texture**</font>
 
 ### 3. Logo & Branding
 - <font color="red">**- [ ] Integrate the new BookShelf logo into the application — kaynak: `Bookshelf — Color Master.svg` / `Bookshelf — Symbolic Master.svg`**</font>
@@ -422,7 +405,6 @@ Both projects continue under GPLv3.
 ### 4. Books Page
 - <font color="red">**- [ ] Fully adapt book cards to the design language**</font>
 - <font color="red">**- [ ] Verify that all cards have identical dimensions**</font>
-- <font color="red">**- [ ] Apply the paper material to book cards**</font>
 - <font color="red">**- [ ] Refine the cover / title / metadata hierarchy**</font>
 - <font color="red">**- [ ] Refine the hover state**</font>
 - <font color="red">**- [ ] Refine the selected state**</font>
@@ -436,7 +418,6 @@ Both projects continue under GPLv3.
 
 ### 5. Book Add / Edit
 - <font color="red">**- [ ] Redesign the book-add panel within the design language**</font>
-- <font color="red">**- [ ] Apply the paper material**</font>
 - <font color="red">**- [ ] Refine form headings**</font>
 - <font color="red">**- [ ] Check label and input weights**</font>
 - <font color="red">**- [ ] Check the ISBN field**</font>
@@ -521,7 +502,6 @@ Both projects continue under GPLv3.
 - <font color="red">**- [ ] Check touch target sizes**</font>
 - <font color="red">**- [ ] Verify that color is not the only indicator of state**</font>
 - <font color="red">**- [ ] Check reduced-motion behavior**</font>
-- <font color="red">**- [ ] Verify that paper texture does not reduce accessibility**</font>
 
 ### 14. Visual Cleanup
 - <font color="red">**- [ ] Remove old colors**</font>
@@ -634,7 +614,6 @@ Both projects continue under GPLv3.
 - <font color="red">**- [ ] Verify the new logo is used everywhere — kaynak: `Bookshelf — Color Master.svg` + `Bookshelf — Symbolic Master.svg`, favicon dahil**</font>
 - <font color="red">**- [ ] Verify all user-facing brand references use `BookShelf`**</font>
 - <font color="red">**- [ ] Verify no technical identifier contains trademark symbols**</font>
-- <font color="red">**- [ ] Verify paper texture is balanced**</font>
 - <font color="red">**- [ ] Verify typography is sufficiently strong and readable**</font>
 - <font color="red">**- [ ] Verify book cards are consistent**</font>
 - <font color="red">**- [ ] Verify Light theme**</font>

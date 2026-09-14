@@ -377,7 +377,7 @@ export function GroupsManager({
                       setHexInput(e.target.value);
                       setColor("");
                     }}
-                    placeholder="#a25f4c"
+                    placeholder="#b56f76"
                     aria-label={dict.color}
                     className="w-28 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1 font-[var(--font-mono)] text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
                   />

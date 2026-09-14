@@ -44,7 +44,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
       </Link>
 
       <div className="flex flex-col gap-6 sm:flex-row">
-        <div className="paper-surface flex h-[380px] w-[260px] shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface-elevated)]">
+        <div className="flex h-[380px] w-[260px] shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface-elevated)]">
           {book.coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={book.coverUrl} alt={book.title} className="h-full w-full object-cover" />

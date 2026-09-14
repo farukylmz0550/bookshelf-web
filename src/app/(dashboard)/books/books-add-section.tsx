@@ -28,7 +28,7 @@ export function BooksAddSection({ dict, excel }: { dict: Dict; excel: React.Reac
   const [showDetailed, setShowDetailed] = useState(false);
 
   return (
-    <div className="paper-surface rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
+    <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
       <AddBookForm dict={dict} />
       <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-3">
         <button

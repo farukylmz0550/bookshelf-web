@@ -60,7 +60,7 @@ export function BookGroups({
   }
 
   return (
-    <section className="paper-surface space-y-3 rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
+    <section className="space-y-3 rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
       <h2 className="font-medium">{dict.title}</h2>
 
       <div className="flex flex-wrap items-center gap-2">

@@ -4,7 +4,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const PALETTE = {
-  light: { surface: "#fdf7f3", gridline: "#ccbdb8", axis: "#b29f99", muted: "#968b8a", bar: "#a25f4c", ink: "#2b2727" },
+  light: { surface: "#ffffff", gridline: "#ded8d2", axis: "#c4bdb5", muted: "#8a8584", bar: "#bb4f35", ink: "#2b2727" },
   dark: { surface: "#333735", gridline: "#444845", axis: "#5b605b", muted: "#8f8b84", bar: "#c17a5e", ink: "#f2eee8" },
 };
 

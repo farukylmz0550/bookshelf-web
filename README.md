@@ -8,9 +8,9 @@
 
 **Your warm, calm, timeless personal library.**
 
-*Terracotta × Dusty Rose · Ink & Copper · Noto Serif/Sans · 60/40 physical cards · Paper material*
+*Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-2.9.2-EAD6D0?style=flat-square&labelColor=2B2727&color=A25F4C)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-2.9.3-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -44,11 +44,11 @@
 | 🎯 **Goals** | Yearly / monthly targets |
 | 👤 **Profile** | Name, password, XP, join date |
 | 🌍 **i18n** | 6 languages (EN/TR/ES/FR/RU/ZH) — cookie, `src/i18n/dictionaries` |
-| 🌓 **Theme** | Light ` #E5D9D4 / #A25F4C` · Dark ` #1D2020 / #C17A5E` · Noto · Sun/Moon SVG · Settings-only |
+| 🌓 **Theme** | Light ` #FAF0E1 / #BB4F35` · Dark ` #1D2020 / #C17A5E` · Noto · Sun/Moon SVG · Settings-only |
 | 🍪 **Consent** | GDPR banner — desktop modal + mobile bar (Essential/Preferences/Analytics) |
 | 🖥️ **Shell** | Collapsible sidebar (desktop, `sidebar-collapsed` cookie) + bottom nav (mobile) · `viewport-fit=cover` · safe-area |
 | 📦 **PWA** | `manifest.json` shortcuts · `sw.js` · install prompt |
-| 🔐 **Admin** | Approve/reject, promote/demote, delete users + cover cache (bottom of sidebar) |
+| 🔐 **Admin** | Approve/reject, promote/demote, delete users + cover cache (bottom of sidebar) · admins cannot act on their own account |
 | 🎴 **Brand** | `brand/` set — Color + Symbolic masters, all icons rendered from the Color Master |
 | 🐳 **Docker** | `ghcr.io/farukylmz0550/bookshelf` — one command |
 
@@ -60,8 +60,8 @@
 
 | Books — Card & List | Stats — Level & Goals | Leaderboard |
 |---|---|---|
-| <img src="e2e/screenshots/01-setup-login.png" width="320" style="border-radius:12px; border:1px solid #CCBDB8" /> | <img src="e2e/screenshots/08-stats.png" width="320" style="border-radius:12px; border:1px solid #CCBDB8" /> | <img src="e2e/screenshots/10-leaderboard.png" width="320" style="border-radius:12px; border:1px solid #CCBDB8" /> |
-| *Paper material · 60/40 cards · 2→4 cols* | *Monthly chart · Streak* | *Top ranking* |
+| <img src="e2e/screenshots/01-setup-login.png" width="320" style="border-radius:12px; border:1px solid #DED8D2" /> | <img src="e2e/screenshots/08-stats.png" width="320" style="border-radius:12px; border:1px solid #DED8D2" /> | <img src="e2e/screenshots/10-leaderboard.png" width="320" style="border-radius:12px; border:1px solid #DED8D2" /> |
+| *60/40 cards · 2→4 cols* | *Monthly chart · Streak* | *Top ranking* |
 
 *Full flow: `npx playwright test e2e/manual-gui.spec.ts` → `e2e/screenshots/` (12 images)*
 
@@ -75,11 +75,10 @@
 
 | Theme | Background | Surface | Elevated | Accent | Text |
 |---|---|---|---|---|---|
-| **Light** Terracotta × Dusty Rose | `#E5D9D4` | `#F0E4DF` | `#FDF7F3` | `#A25F4C` | `#2B2727` |
+| **Light** Fine Porcelain × Burnt Ochre | `#FAF0E1` | `#F2EDEC` | `#FFFFFF` | `#BB4F35` | `#2B2727` |
 | **Dark** Ink & Copper | `#1D2020` | `#272A29` | `#333735` | `#C17A5E` | `#F2EEE8` |
 
 - **Typography:** Noto Serif (titles) · Noto Sans (ui) · Noto Mono (technical)
-- **Paper Material:** Global soft grain overlay (fractal-noise, ~3.5% light / 5% dark) + warm top-light wash — every surface shares the same material without hurting readability
 - **Cards:** Identical geometry, `rounded-[12px]`, subtle `border-strong` + `shadow-sm` on hover — no drag-drop
 - **Brand:** `brand/` — Color & Symbolic masters + all generated icons (CC BY-NC-ND)
 - **Sources:** `UI_Design_Language.md` · `Architecture_Principles.md` · `Project_Rules.md`

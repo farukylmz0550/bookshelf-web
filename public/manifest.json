@@ -7,8 +7,8 @@
   "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "background_color": "#E5D9D4",
-  "theme_color": "#A25F4C",
+  "background_color": "#FAF0E1",
+  "theme_color": "#BB4F35",
   "orientation": "any",
   "categories": ["books", "education", "productivity"],
   "icons": [

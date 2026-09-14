@@ -9,7 +9,7 @@ import { UserTable } from "./users/user-table";
 import { ReadingSettingsCard } from "./reading-settings-card";
 
 export default async function AdminPage() {
-  await requireAdminPage();
+  const currentUserId = await requireAdminPage();
   const dict = await getDictionary();
   const users = await getUsers();
   const coverStats = await getCoverStats();
@@ -40,14 +40,14 @@ export default async function AdminPage() {
             <h3 className="text-sm font-medium text-foreground">
               {dict.admin.pendingApproval} ({pending.length})
             </h3>
-            <UserTable users={pending} dict={tableDict} />
+            <UserTable users={pending} dict={tableDict} currentUserId={currentUserId} />
           </div>
         )}
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-foreground">
             {dict.admin.approvedUsers} ({approved.length})
           </h3>
-          <UserTable users={approved} dict={tableDict} />
+          <UserTable users={approved} dict={tableDict} currentUserId={currentUserId} />
         </div>
       </section>
 
@@ -57,7 +57,7 @@ export default async function AdminPage() {
           {dict.admin.coversTitle}
         </h2>
         <p className="font-[var(--font-sans)] text-sm text-muted-foreground">{dict.admin.clearNotice}</p>
-        <div className="paper-surface rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
           <p className="text-sm text-muted-foreground">
             {dict.admin.cachedCovers} {coverStats.count}
           </p>

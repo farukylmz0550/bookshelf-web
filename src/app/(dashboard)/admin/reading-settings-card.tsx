@@ -36,7 +36,7 @@ export function ReadingSettingsCard({ initial, dict }: { initial: AppSettingsVal
   }
 
   return (
-    <div className="paper-surface rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
+    <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {fields.map((field) => (
           <label key={field.key} className="flex flex-col gap-1 text-[11px] text-muted-foreground">

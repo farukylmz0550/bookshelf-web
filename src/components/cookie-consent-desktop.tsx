@@ -21,7 +21,7 @@ export function CookieConsentDesktop({ t, consent }: { t: CookieDict; consent: C
     savePreferences,
     dismiss,
   } = consent;
-  const cardBase = "paper-surface border border-[var(--border)] bg-[var(--surface-elevated)] shadow-lg rounded-[12px]";
+  const cardBase = "border border-[var(--border)] bg-[var(--surface-elevated)] shadow-lg rounded-[12px]";
 
   return (
     <div className="fixed inset-0 z-[100] hidden md:flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">

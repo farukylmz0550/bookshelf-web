@@ -75,7 +75,7 @@ export function BookFacts({ book, dict }: { book: Book; dict: Record<string, str
 
   if (!editing) {
     return (
-      <section className="paper-surface rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
+      <section className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-medium">{dict.facts}</h2>
           <button
@@ -98,7 +98,7 @@ export function BookFacts({ book, dict }: { book: Book; dict: Record<string, str
   }
 
   return (
-    <section className="paper-surface rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
+    <section className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
       <h2 className="mb-3 font-medium">{dict.editFacts}</h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {fields.map(([key, label]) => (

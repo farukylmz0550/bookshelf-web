@@ -19,7 +19,7 @@ export function CookieConsentMobile({ t, consent }: { t: CookieDict; consent: Re
     savePreferences,
     dismiss,
   } = consent;
-  const cardBase = "paper-surface border border-[var(--border)] bg-[var(--surface-elevated)] shadow-lg rounded-[12px]";
+  const cardBase = "border border-[var(--border)] bg-[var(--surface-elevated)] shadow-lg rounded-[12px]";
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-[100] md:hidden p-3 safe-bottom">

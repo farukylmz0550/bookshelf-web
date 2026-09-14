@@ -7,17 +7,17 @@ export const GROUP_NAME_MAX = 60;
 
 // Muted swatches drawn from the design language (works on light & dark).
 export const GROUP_COLORS: string[] = [
-  "#A25F4C", // terracotta
-  "#C17A5E", // copper
-  "#8C6A4A", // leather
-  "#B08D3E", // ochre
+  "#BB4F35", // burnt ochre
+  "#B56F76", // dusty rose
+  "#CC7661", // terra orange
+  "#D6BA9B", // terracotta sand
+  "#CB9D06", // yellow ochre
+  "#93907E", // muted sage
   "#7A8B6F", // sage
-  "#4E6E5D", // forest
-  "#5B7A6E", // teal-green
-  "#5C6E91", // dusty blue
+  "#8093A4", // dusty blue
   "#7D6B91", // plum
-  "#9C5C7A", // rose-magenta
-  "#A25454", // brick
+  "#B9484E", // dusty red
+  "#8C6A4A", // leather
   "#6B7280", // slate
 ];
 

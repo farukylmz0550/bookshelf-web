@@ -13,7 +13,7 @@ const W = 1080;
 const H = 1350;
 
 const PALETTE = {
-  light: { bg: "#E5D9D4", surface: "#FDF7F3", accent: "#A25F4C", ink: "#2B2727", muted: "#8A7A73", line: "#CCBDB8" },
+  light: { bg: "#FAF0E1", surface: "#FFFFFF", accent: "#BB4F35", ink: "#2B2727", muted: "#8A8584", line: "#DED8D2" },
   dark: { bg: "#1D2020", surface: "#272A29", accent: "#C17A5E", ink: "#F2EEE8", muted: "#9B948C", line: "#444845" },
 };
 

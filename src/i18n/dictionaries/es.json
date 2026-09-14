@@ -295,7 +295,9 @@
     "tryAgain": "Intentar de nuevo",
     "admin": "Admin",
     "books": "libros",
-    "users": "usuarios"
+    "users": "usuarios",
+    "you": "tú",
+    "cannotActOnSelf": "No puedes realizar esta acción en tu propia cuenta"
   },
   "admin": {
     "coversTitle": "Caché de Portadas (Admin)",

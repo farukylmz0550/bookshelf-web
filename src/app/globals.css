@@ -48,61 +48,61 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ── Terracotta × Dusty Rose Light — UI_Design_Language 4.1 ── */
+/* ── Fine Porcelain × Burnt Ochre Light — UI_Design_Language 4.1 ── */
 :root {
-  --background: #e5d9d4;
+  --background: #faf0e1;
   --foreground: #2b2727;
-  --card: #f0e4df;
+  --card: #f2edec;
   --card-foreground: #2b2727;
-  --popover: #fdf7f3;
+  --popover: #ffffff;
   --popover-foreground: #2b2727;
-  --primary: #a25f4c;
+  --primary: #bb4f35;
   --primary-foreground: #ffffff;
-  --secondary: #ead6d0;
+  --secondary: #f3e1e3;
   --secondary-foreground: #6f6666;
-  --muted: #e5d9d4;
-  --muted-foreground: #968b8a;
-  --accent: #a25f4c;
+  --muted: #f2edec;
+  --muted-foreground: #8a8584;
+  --accent: #b56f76;
   --accent-foreground: #ffffff;
-  --destructive: #9c5149;
-  --border: #ccbdb8;
-  --input: #ccbdb8;
-  --ring: #a06a62;
-  --chart-1: #a25f4c;
-  --chart-2: #5d7658;
-  --chart-3: #9a743f;
-  --chart-4: #5c7481;
-  --chart-5: #9c5149;
+  --destructive: #b9484e;
+  --border: #ded8d2;
+  --input: #ded8d2;
+  --ring: #bb4f35;
+  --chart-1: #bb4f35;
+  --chart-2: #93907e;
+  --chart-3: #cb9d06;
+  --chart-4: #8093a4;
+  --chart-5: #b56f76;
   --radius: 0.875rem;
-  --sidebar: #f0e4df;
+  --sidebar: #f2edec;
   --sidebar-foreground: #2b2727;
-  --sidebar-primary: #a25f4c;
+  --sidebar-primary: #bb4f35;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ead6d0;
+  --sidebar-accent: #f3e1e3;
   --sidebar-accent-foreground: #2b2727;
-  --sidebar-border: #ccbdb8;
-  --sidebar-ring: #a06a62;
+  --sidebar-border: #ded8d2;
+  --sidebar-ring: #bb4f35;
   /* Design Language extensions — §5 Visual Surfaces: tonal contrast */
-  --surface: #f0e4df;
-  --surface-elevated: #fdf7f3;
-  --border-strong: #b29f99;
-  --accent-hover: #874c3b;
-  --accent-active: #733f32;
-  --accent-soft: #ead6d0;
-  --error-soft: #f0d6d2;
-  --error-text: #7c3d38;
-  --success: #5d7658;
-  --success-soft: #dde7da;
-  --success-text: #466040;
-  --warning: #9a743f;
-  --warning-soft: #f0e2ca;
-  --warning-text: #76572d;
-  --info: #5c7481;
-  --info-soft: #dae5ea;
-  --info-text: #45606b;
-  --selection: #e3c9c2;
+  --surface: #f2edec;
+  --surface-elevated: #ffffff;
+  --border-strong: #c4bdb5;
+  --accent-hover: #a5442d;
+  --accent-active: #8f3a26;
+  --accent-soft: #f3e1e3;
+  --error-soft: #f3d9da;
+  --error-text: #8c363b;
+  --success: #93907e;
+  --success-soft: #e7e5da;
+  --success-text: #5f5d4e;
+  --warning: #cb9d06;
+  --warning-soft: #f2e8c8;
+  --warning-text: #6e5403;
+  --info: #8093a4;
+  --info-soft: #e2e8ed;
+  --info-text: #4d6072;
+  --selection: #e9c9cc;
   --selection-text: #3a2927;
-  --disabled-surface: #d9d1ce;
+  --disabled-surface: #e3ddd6;
   --disabled-text: #968e8b;
   --font-sans: var(--font-noto-sans);
   --font-serif: var(--font-noto-serif);
@@ -192,54 +192,4 @@
   .safe-right {
     padding-right: env(safe-area-inset-right);
   }
-}
-
-/* ── Paper Material System ── */
-/* §5 Visual Surfaces: tonal contrast + subtle border + restrained shadow */
-/* §11 Book Cards: "physical through geometry, spacing, surface treatment" */
-/* Light: warm, airy, paper-like. Dark: deep, quiet, sophisticated. */
-.paper-surface {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    0 1px 3px 0 rgba(160, 140, 125, 0.08),
-    0 1px 2px -1px rgba(160, 140, 125, 0.06);
-}
-.dark .paper-surface {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 1px 3px 0 rgba(0, 0, 0, 0.2),
-    0 1px 2px -1px rgba(0, 0, 0, 0.14);
-}
-
-/* ── Paper Grain — MEMORY.md §13.1: soft, visible-but-never-harsh texture ── */
-/* Single fractal-noise layer at ~3.5% (light) / 5% (dark) opacity, applied
-   globally via body::after so every surface (background, sidebar, cards,
-   inputs, buttons, dialogs) shares the same material without component churn. */
-:root {
-  --paper-grain-opacity: 0.035;
-  --paper-grain-blend: multiply;
-  /* Warm top-light wash — paper held up to window light */
-  --paper-wash: radial-gradient(120% 90% at 50% 0%, rgba(253, 247, 243, 0.5) 0%, rgba(253, 247, 243, 0) 60%);
-}
-.dark {
-  --paper-grain-opacity: 0.05;
-  --paper-grain-blend: soft-light;
-  --paper-wash: radial-gradient(120% 90% at 50% 0%, rgba(51, 55, 53, 0.55) 0%, rgba(51, 55, 53, 0) 60%);
-}
-
-body {
-  background-image: var(--paper-wash);
-  background-attachment: fixed;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 2147483647;
-  pointer-events: none;
-  opacity: var(--paper-grain-opacity);
-  mix-blend-mode: var(--paper-grain-blend);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23p)'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
 }

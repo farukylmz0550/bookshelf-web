@@ -22,19 +22,22 @@ export async function getUsers() {
 }
 
 export async function approveUser(userId: string) {
-  await requireAdmin();
+  const adminId = await requireAdmin();
+  if (userId === adminId) throw new Error("Cannot change the approval status of your own account");
   await db.user.update({ where: { id: userId }, data: { approved: true } });
   return { ok: true };
 }
 
 export async function rejectUser(userId: string) {
-  await requireAdmin();
+  const adminId = await requireAdmin();
+  if (userId === adminId) throw new Error("Cannot change the approval status of your own account");
   await db.user.update({ where: { id: userId }, data: { approved: false } });
   return { ok: true };
 }
 
 export async function toggleAdmin(userId: string) {
-  await requireAdmin();
+  const adminId = await requireAdmin();
+  if (userId === adminId) throw new Error("Cannot change your own admin role");
   // Atomic guard: the count check and the update run in one transaction so
   // two concurrent requests cannot both pass the last-admin check.
   await db.$transaction(async (tx) => {
@@ -49,7 +52,8 @@ export async function toggleAdmin(userId: string) {
 }
 
 export async function deleteUser(userId: string) {
-  await requireAdmin();
+  const adminId = await requireAdmin();
+  if (userId === adminId) throw new Error("Cannot delete your own account");
   await db.$transaction(async (tx) => {
     const user = await tx.user.findUniqueOrThrow({ where: { id: userId }, select: { isAdmin: true } });
     if (user.isAdmin) {

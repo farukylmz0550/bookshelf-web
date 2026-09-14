@@ -32,7 +32,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#A25F4C" },
+    { media: "(prefers-color-scheme: light)", color: "#BB4F35" },
     { media: "(prefers-color-scheme: dark)", color: "#C17A5E" },
   ],
 };
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     template: "%s | Book Shelf",
   },
   description:
-    "Personal digital library experience — Track your books, lending history, reading goals and stats in a warm, calm, timeless interface. Noto Serif/Sans typography, Terracotta/Dusty Rose & Ink & Copper palette, equal-sized physical book cards and responsive shell.",
+    "Personal digital library experience — Track your books, lending history, reading goals and stats in a warm, calm, timeless interface. Noto Serif/Sans typography, Fine Porcelain/Burnt Ochre & Ink & Copper palette, equal-sized physical book cards and responsive shell.",
   metadataBase: new URL(process.env.NEXTAUTH_URL ?? "http://localhost:3000"),
   manifest: "/manifest.json",
   appleWebApp: {
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Book Shelf",
     description:
-      "Personal digital library — warm, calm, timeless. Noto typography and Terracotta/Ink-Copper palette with book cards.",
+      "Personal digital library — warm, calm, timeless. Noto typography and Fine Porcelain/Ink-Copper palette with book cards.",
     type: "website",
     locale: "en_US",
     siteName: "Book Shelf",

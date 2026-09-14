@@ -295,7 +295,9 @@
     "tryAgain": "Try again",
     "admin": "Admin",
     "books": "books",
-    "users": "users"
+    "users": "users",
+    "you": "you",
+    "cannotActOnSelf": "You cannot perform this action on your own account"
   },
   "admin": {
     "coversTitle": "Cover Cache (Admin)",

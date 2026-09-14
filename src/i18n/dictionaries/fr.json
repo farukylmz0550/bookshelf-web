@@ -295,7 +295,9 @@
     "tryAgain": "Réessayer",
     "admin": "Admin",
     "books": "livres",
-    "users": "utilisateurs"
+    "users": "utilisateurs",
+    "you": "vous",
+    "cannotActOnSelf": "Vous ne pouvez pas effectuer cette action sur votre propre compte"
   },
   "admin": {
     "coversTitle": "Cache des Couvertures (Admin)",

@@ -89,39 +89,39 @@ Serif is intentional. It is part of Bookshelf’s character and should not be re
 
 Bookshelf has two themes that belong to the same visual family.
 
-## 4.1 Light Theme: Terracotta × Dusty Rose
+## 4.1 Light Theme: Fine Porcelain × Burnt Ochre
 
 | Variable | Hex |
 |---|---|
-| Background | `#E5D9D4` |
-| Surface | `#F0E4DF` |
-| Surface Elevated | `#FDF7F3` |
+| Background | `#FAF0E1` |
+| Surface | `#F2EDEC` |
+| Surface Elevated | `#FFFFFF` |
 | Primary Text | `#2B2727` |
 | Secondary Text | `#6F6666` |
-| Muted Text | `#968B8A` |
+| Muted Text | `#8A8584` |
 | Text On Accent | `#FFFFFF` |
-| Border | `#CCBDB8` |
-| Border Strong | `#B29F99` |
-| Focus Ring | `#A06A62` |
-| Accent | `#A25F4C` |
-| Accent Hover | `#874C3B` |
-| Accent Active | `#733F32` |
-| Accent Soft | `#EAD6D0` |
-| Success | `#5D7658` |
-| Success Soft | `#DDE7DA` |
-| Success Text | `#466040` |
-| Warning | `#9A743F` |
-| Warning Soft | `#F0E2CA` |
-| Warning Text | `#76572D` |
-| Error | `#9C5149` |
-| Error Soft | `#F0D6D2` |
-| Error Text | `#7C3D38` |
-| Info | `#5C7481` |
-| Info Soft | `#DAE5EA` |
-| Info Text | `#45606B` |
-| Selection | `#E3C9C2` |
+| Border | `#DED8D2` |
+| Border Strong | `#C4BDB5` |
+| Focus Ring | `#BB4F35` |
+| Accent | `#BB4F35` |
+| Accent Hover | `#A5442D` |
+| Accent Active | `#8F3A26` |
+| Accent Soft | `#F3E1E3` |
+| Success | `#93907E` |
+| Success Soft | `#E7E5DA` |
+| Success Text | `#5F5D4E` |
+| Warning | `#CB9D06` |
+| Warning Soft | `#F2E8C8` |
+| Warning Text | `#6E5403` |
+| Error | `#B9484E` |
+| Error Soft | `#F3D9DA` |
+| Error Text | `#8C363B` |
+| Info | `#8093A4` |
+| Info Soft | `#E2E8ED` |
+| Info Text | `#4D6072` |
+| Selection | `#E9C9CC` |
 | Selection Text | `#3A2927` |
-| Disabled Surface | `#D9D1CE` |
+| Disabled Surface | `#E3DDD6` |
 | Disabled Text | `#968E8B` |
 
 ### Light theme character

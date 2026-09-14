@@ -52,7 +52,7 @@ export function BookPersonal({ book, dict }: { book: Book; dict: Record<string, 
       : null;
 
   return (
-    <section className="paper-surface space-y-4 rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
+    <section className="space-y-4 rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
       <h2 className="font-medium">{dict.personal}</h2>
 
       <div className="flex items-center gap-2">

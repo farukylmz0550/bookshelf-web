@@ -295,7 +295,9 @@
     "tryAgain": "Tekrar dene",
     "admin": "Admin",
     "books": "kitap",
-    "users": "kullanıcı"
+    "users": "kullanıcı",
+    "you": "siz",
+    "cannotActOnSelf": "Kendi hesabınızda bu işlemi yapamazsınız"
   },
   "admin": {
     "coversTitle": "Kapak Önbelleği (Admin)",

@@ -4,6 +4,33 @@ All notable changes to **Book Shelf** are documented here.
 From **2.9.0 onward the project is in feature-freeze**: every future release is a
 PATCH (bugfix / security / performance only — no behavior, schema or feature changes).
 
+## 2.9.3 — 2026-09-13
+
+### Security
+
+- **Admin self-guard** — admins could previously approve/reject, promote/demote
+  or delete **their own** account (self-lockout / self-deletion). All four
+  admin actions (`approveUser`, `rejectUser`, `toggleAdmin`, `deleteUser`) now
+  reject the caller's own id with an explicit error, and the user table
+  disables the action buttons on the admin's own row (marked with a "you"
+  label). Last-admin transactional guards unchanged. Regression tests added
+  (`src/app/actions/admin.test.ts`).
+
+### Changed
+
+- **Light theme re-tinted — "Fine Porcelain × Burnt Ochre"** — light-theme CSS
+  tokens replaced (`:root` in `globals.css`); dark theme (Ink & Copper) is
+  unchanged. Follow-up hardcoded palettes updated: viewport `themeColor`,
+  stats share-card + monthly chart (light variants), group color presets,
+  hex-picker placeholder, `manifest.json` colors, `offline.html`. Brand SVG
+  masters/icons intentionally untouched (CC BY-NC-ND).
+- **Paper texture removed** — the global fractal-noise grain overlay
+  (`body::after`), warm top-light wash and the `.paper-surface` box-shadow
+  treatment were removed from `globals.css` and all 13 consuming components.
+  Surfaces now rely on flat tokens + borders; README/UI docs updated.
+- Docs updated: README (palette, badge → 2.9.3), `UI_Design_Language.md`
+  §4.1 light-theme table, `MEMORY.md`.
+
 ## 2.9.1 — 2026-09-12
 
 - **License metadata** — machine-readable `SPDX-License-Identifier` headers added
