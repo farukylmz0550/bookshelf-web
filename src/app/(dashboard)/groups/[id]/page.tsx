@@ -63,7 +63,16 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
       <BooksGrid
         books={books as never}
         lentMap={lentMap}
-        dict={{ ...dict.books, filter: dict.filter, empty: dict.groups.emptyShelf } as never}
+        dict={
+          {
+            ...dict.books,
+            toRead: dict.books.status.TO_READ,
+            reading: dict.books.status.READING,
+            finished: dict.books.status.FINISHED,
+            filter: dict.filter,
+            empty: dict.groups.emptyShelf,
+          } as never
+        }
         pagesPerReadEvent={settings.pagesPerReadEvent}
         cardDict={{
           logPagesButton: dict.books.logPagesButton,

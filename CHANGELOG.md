@@ -4,6 +4,22 @@ All notable changes to **Book Shelf** are documented here.
 From **2.9.0 onward the project is in feature-freeze**: every future release is a
 PATCH (bugfix / security / performance only — no behavior, schema or feature changes).
 
+## 2.9.4 — 2026-09-14
+
+### Fixed
+
+- **React error #31 on the books list view** — the list-view header rendered
+  `dict.status`, which in the `books` dictionary is a nested object
+  (`{ TO_READ, READING, FINISHED }`), crashing the page with minified React
+  error #31 ("Objects are not valid as a React child") whenever the list view
+  was shown (`/books` and `/groups/[id]`). Pre-existing since 2.4.0. The
+  header now uses the `filter` dictionary's `status` string, and the grid
+  receives localized `toRead`/`reading`/`finished` labels derived from
+  `books.status` (card status badges previously fell back to raw keys).
+  List-view status cells now show localized labels instead of the raw
+  `TO_READ`/`READING`/`FINISHED` keys. Dictionary parity test added for
+  `books.status` across all 6 languages.
+
 ## 2.9.3 — 2026-09-13
 
 ### Security

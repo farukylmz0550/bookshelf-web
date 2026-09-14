@@ -43,4 +43,16 @@ describe("dictionary parity", () => {
     expect(dictionaries.tr.notify.goalProgressMid).toContain("%{percent}");
     expect(dictionaries.en.notify.goalProgressMid).toContain("{percent}%");
   });
+
+  it("books.status provides all three status labels in every language (v2.9.4 — React #31 regression)", () => {
+    for (const locale of LOCALES) {
+      const status = dictionaries[locale].books.status;
+      expect(typeof status.TO_READ).toBe("string");
+      expect(typeof status.READING).toBe("string");
+      expect(typeof status.FINISHED).toBe("string");
+      expect(status.TO_READ.length).toBeGreaterThan(0);
+      expect(status.READING.length).toBeGreaterThan(0);
+      expect(status.FINISHED.length).toBeGreaterThan(0);
+    }
+  });
 });

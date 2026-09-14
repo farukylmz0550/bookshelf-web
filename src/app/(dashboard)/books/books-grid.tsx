@@ -9,6 +9,7 @@ import { BookCard, type GroupInfo } from "./book-card";
 import { FilterBar } from "./filter-bar";
 import { Filters, defaultFilters, arrange } from "@/lib/books/filters";
 import { getInitialView, setViewCookie, type ViewMode } from "@/lib/books/view-mode";
+import { statusLabel, type StatusLabels } from "@/lib/books/status-cycle";
 import { setBookStatus } from "@/app/actions/books";
 
 type Book = {
@@ -52,7 +53,7 @@ export function BooksGrid({
 }: {
   books: Book[];
   lentMap: Record<string, boolean>;
-  dict: { empty: string; noResults?: string } & Record<string, string>;
+  dict: { empty: string; noResults?: string; filter?: { status?: string } } & Record<string, string>;
   cardDict: CardDict;
   pagesPerReadEvent: number;
   groups?: GroupInfo[];
@@ -61,6 +62,11 @@ export function BooksGrid({
   // v2.7.0 — "start a new book" flow after finishing one
   const [nextBookOpen, setNextBookOpen] = useState(false);
   const toReadBooks = useMemo(() => books.filter((b) => (b.status ?? "TO_READ") === "TO_READ"), [books]);
+  const statusLabels: StatusLabels = {
+    toRead: dict.toRead ?? "To read",
+    reading: dict.reading ?? "Reading",
+    finished: dict.finished ?? "Finished",
+  };
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [view, setView] = useState<ViewMode>("card");
   const tagsInUse = useMemo(() => {
@@ -146,13 +152,13 @@ export function BooksGrid({
               key={book.id}
               book={book as Book}
               lentOut={!!lentMap[book.id]}
-              statusLabels={{ toRead: dict.toRead, reading: dict.reading, finished: dict.finished }}
+              statusLabels={statusLabels}
               pagesPerReadEvent={pagesPerReadEvent}
               groups={groups}
               dict={{
-                toRead: dict.toRead,
-                reading: dict.reading,
-                finished: dict.finished,
+                toRead: statusLabels.toRead,
+                reading: statusLabels.reading,
+                finished: statusLabels.finished,
                 ...cardDict,
               }}
               onFinished={() => setNextBookOpen(true)}
@@ -172,7 +178,7 @@ export function BooksGrid({
               {dict.author}
             </span>
             <span className="font-[var(--font-sans)] text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-              {dict.status}
+              {dict.filter?.status ?? "Status"}
             </span>
             <span className="font-[var(--font-sans)] text-center text-[10px] uppercase tracking-widest text-muted-foreground">
               {dict.rating ?? "Rating"}
@@ -213,7 +219,7 @@ export function BooksGrid({
               </p>
               <span className="hidden justify-center sm:flex">
                 <span className="rounded-[4px] border border-[var(--border)] bg-[var(--surface-elevated)] px-1.5 py-0.5 font-[var(--font-sans)] text-xs text-muted-foreground">
-                  {book.status ?? "TO_READ"}
+                  {statusLabel(book.status ?? "TO_READ", statusLabels)}
                 </span>
               </span>
               <span className="hidden justify-center sm:flex font-[var(--font-sans)] text-xs text-[var(--warning)]">

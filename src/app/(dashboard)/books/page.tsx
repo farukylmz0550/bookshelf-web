@@ -57,7 +57,15 @@ export default async function BooksPage() {
       <BooksGrid
         books={booksWithGroups as never}
         lentMap={lentMap}
-        dict={{ ...dict.books, filter: dict.filter } as never}
+        dict={
+          {
+            ...dict.books,
+            toRead: dict.books.status.TO_READ,
+            reading: dict.books.status.READING,
+            finished: dict.books.status.FINISHED,
+            filter: dict.filter,
+          } as never
+        }
         pagesPerReadEvent={settings.pagesPerReadEvent}
         groups={groups}
         cardDict={{
