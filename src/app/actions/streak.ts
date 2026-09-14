@@ -9,8 +9,9 @@ import { calculateFinishXp, shieldCost as calcShieldCost } from "@/lib/gamificat
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppSettings } from "@/lib/settings";
 
-/** Record a reading activity for today. Called when a book is finished or page progress is made. */
-export async function recordActivity(pagesRead?: number) {
+/** Record a reading activity for today. Called when a book is finished or page progress is made.
+ * v2.9.6 — returns the recalculated streak so callers can surface it in toasts. */
+export async function recordActivity(pagesRead?: number): Promise<{ current: number; longest: number }> {
   const userId = await requireUserId();
 
   const today = startOfUtcDay();
@@ -59,6 +60,7 @@ export async function recordActivity(pagesRead?: number) {
 
   revalidatePath("/stats");
   revalidatePath("/books");
+  return { current, longest };
 }
 
 // v2.9.0 — defense-in-depth against duplicate finish invocations: after a

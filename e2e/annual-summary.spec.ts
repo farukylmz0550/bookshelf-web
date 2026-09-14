@@ -87,9 +87,13 @@ test.describe("Reading flow (v2.7.0)", () => {
     await page.locator('select:has(option[value="FINISHED"])').first().selectOption("READING");
     await readPost.catch(() => {});
     await page.goto("/books");
-    const button = page.locator('button:has-text("Log 20 pages read")');
+    const button = page.locator('button:has-text("Read 20 pages")');
     await expect(button).toBeVisible();
+    // v2.9.6 — page-less books ask for the page count first; the count is
+    // saved and the reading is logged in the same step.
     await button.click();
+    await page.getByPlaceholder(/e\.g\. 352/i).fill("100");
+    await page.getByRole("button", { name: /^save$/i }).click();
     await expect(page.getByText(/20 pages logged/i)).toBeVisible();
   });
 });

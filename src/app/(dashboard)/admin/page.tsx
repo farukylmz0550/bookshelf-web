@@ -7,6 +7,7 @@ import { readAppSettings } from "@/app/actions/settings-admin";
 import { defaultAppSettings } from "@/lib/settings";
 import { UserTable } from "./users/user-table";
 import { ReadingSettingsCard } from "./reading-settings-card";
+import { PageBackfillCard } from "./page-backfill-card";
 
 export default async function AdminPage() {
   const currentUserId = await requireAdminPage();
@@ -96,6 +97,20 @@ export default async function AdminPage() {
             xpPerLevelBase: dict.admin.xpPerLevelBase,
             save: dict.admin.save,
             saved: dict.admin.settingsSaved,
+          }}
+        />
+      </section>
+      {/* §4 — Page-count backfill (v2.9.6) */}
+      <section className="space-y-3">
+        <h2 className="font-[var(--font-serif)] text-lg font-semibold tracking-tight text-foreground">
+          {dict.admin.pageBackfillTitle}
+        </h2>
+        <PageBackfillCard
+          dict={{
+            desc: dict.admin.pageBackfillDesc,
+            run: dict.admin.pageBackfillRun,
+            running: dict.admin.pageBackfillRunning,
+            done: dict.admin.pageBackfillDone,
           }}
         />
       </section>

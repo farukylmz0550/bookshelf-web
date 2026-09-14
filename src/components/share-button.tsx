@@ -32,7 +32,7 @@ export function ShareButton({ title, author }: ShareButtonProps) {
     <button
       type="button"
       onClick={handleShare}
-      className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground md:hidden"
+      className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground md:hidden"
       title="Share"
     >
       {copied ? <Check size={16} className="text-[var(--success)]" /> : <Share2 size={16} />}

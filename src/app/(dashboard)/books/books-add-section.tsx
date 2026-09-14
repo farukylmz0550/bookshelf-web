@@ -34,7 +34,7 @@ export function BooksAddSection({ dict, excel }: { dict: Dict; excel: React.Reac
         <button
           type="button"
           onClick={() => setShowDetailed((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1.5 font-[var(--font-sans)] text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          className="inline-flex items-center gap-1.5 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 font-[var(--font-sans)] text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
         >
           {showDetailed ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           {dict.detailedAdd ?? "Detailed add"}

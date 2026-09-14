@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
-> Last updated: 2026-09-12
-> Version: 2.9.1
+> Last updated: 2026-09-14
+> Version: 2.9.6
 > Branch: main
 
 ---
@@ -294,6 +294,17 @@ Both projects continue under GPLv3.
 
 ## 13. Tomorrow's TODO — BookShelf UI/Branding Overhaul
 
+> ✅ **PROGRESS — 2026-09-14 (v2.9.6 — page-log UX, streak feedback, page-count backfill):**
+> - **Diagnosis (live prod DB):** the page-log button always worked (33 presses recorded, XP + activity rows written). "Streak not increasing" was day-based-streak semantics + no visible feedback; ALL 188 books had `numberOfPages = null` (Goodreads import enriched pages only when OL had them; 3-consecutive-failure abort killed enrichment mid-run).
+> - **Button:** imperative label "Read {count} pages"/"{count} sayfa oku"; logs exactly the label's count — `min(pagesPerReadEvent, pagesLeft)` via `logPagesRead(book.id, pagesToLog)` (server param already existed).
+> - **Streak in toast:** `recordActivity` returns `{current, longest}`; `logPagesRead` returns `streak` (finish path reads `user.currentStreak`); toast "{count} pages logged · 🔥 {streak}-day streak" (6 langs).
+> - **Page-less prompt:** no `numberOfPages` → animated modal (save=updateBook + immediate logPagesRead of min(step, remaining)). Keys `books.pagesPromptTitle/Placeholder/Invalid` + cardDict `save/cancel` (from `dict.facts`) ×6 langs.
+> - **Long-press feel:** `useLongPress` gained `onPressStart/onPressEnd`; card scales `scale-[0.97]` while held; menu + modal animate in (`animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200`).
+> - **Flat buttons framed:** "Detailed add" toggle (books-add-section) + mobile Share icon-button → standard boxed style.
+> - **Page-count backfill:** `backfillPageCounts()` (actions/books.ts) — user's `numberOfPages=null`+`isbn≠null` books via throttled `lookupIsbns`, chunked (≤20/chunk, ≤40/run), fills ONLY numberOfPages, returns {filled, notFound, remaining}; `/admin` §4 PageBackfillCard + `admin.pageBackfill*` ×6 langs.
+> - **e2e updated:** annual-summary page-log test now goes through the modal (fill 100 → save → "20 pages logged").
+> - **QA:** tsc ✅ lint ✅ (1 pre-existing warning) format ✅ unit 193/193 ✅
+>
 > ✅ **PROGRESS — 2026-09-11 (session 9 — v2.7.0 Annual Reading Summary + reading system):**
 > - **Annual Summary (no "Wrapped" branding anywhere):** `/stats` bottom section, visible ONLY Jan 1 00:00 → Jan 7 end on the **server-local clock** (`isAnnualSummaryWindow`, dev/e2e always open); default year = just-completed year in production (current year in dev). Metrics from **read events**; Recharts + sr-only text fallback; PNG share-card (deterministic canvas, no user data beyond stats).
 > - **Reading rules (user-defined):** "Log N pages read" card button on `/books` → `currentPage` +N (default 20, `AppSettings.pagesPerReadEvent`) + streak (`recordActivity`) + page-based XP (`floor(pages/10) × xpPagesPer10`, NO streak multiplier) — does NOT finish the book. Book finishes ONLY when ALL pages are read → automatic FINISHED (+1 `BookReadEvent`, finish XP w/ streak bonus). Early manual finish blocked (`RemainingPages`); page-less books keep manual finishing. "Read again" on FINISHED cards → currentPage=0 + READING; re-completion adds +1.

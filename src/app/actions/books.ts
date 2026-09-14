@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
-import { lookupIsbn } from "@/lib/isbn";
+import { lookupIsbn, lookupIsbns, type IsbnLookupResult } from "@/lib/isbn";
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppSettings } from "@/lib/settings";
 
@@ -251,7 +251,7 @@ export async function setBookStatus(
 export async function logPagesRead(
   bookId: string,
   pages?: number,
-): Promise<{ ok: boolean; logged?: number; finished?: boolean; error?: string }> {
+): Promise<{ ok: boolean; logged?: number; finished?: boolean; streak?: number; error?: string }> {
   const userId = await requireUserId();
   const book = await db.book.findFirst({ where: { id: bookId, userId } });
   if (!book) return { ok: false, error: "Not found" };
@@ -286,9 +286,10 @@ export async function logPagesRead(
     } catch {}
     const { finishBookWithXp } = await import("./streak");
     await finishBookWithXp(bookId, totalPages);
+    const user = await db.user.findUnique({ where: { id: userId }, select: { currentStreak: true } });
     revalidatePath("/books");
     revalidatePath("/stats");
-    return { ok: true, logged: pagesLogged, finished: true };
+    return { ok: true, logged: pagesLogged, finished: true, streak: user?.currentStreak ?? 0 };
   }
 
   // v2.9.0 — optimistic lock: the write only applies when currentPage still
@@ -308,9 +309,10 @@ export async function logPagesRead(
   if (updated.count === 0) return { ok: false, error: "Conflict, please retry" };
 
   // Streak-only path: no read event, no finish bonus XP. XP/activity are
-  // awarded only after the write is confirmed.
+  // awarded only after the write is confirmed. v2.9.6 — the recalculated
+  // streak is returned so the UI can acknowledge the press.
   const { recordActivity } = await import("./streak");
-  await recordActivity(pagesLogged);
+  const { current: streakNow } = await recordActivity(pagesLogged);
   const xp = Math.floor(pagesLogged / 10) * settings.xpPagesPer10;
   if (xp > 0) {
     try {
@@ -321,7 +323,7 @@ export async function logPagesRead(
 
   revalidatePath("/books");
   revalidatePath("/stats");
-  return { ok: true, logged: pagesLogged };
+  return { ok: true, logged: pagesLogged, streak: streakNow };
 }
 
 /**
@@ -388,4 +390,72 @@ export async function updateBook(
   await db.book.update({ where: { id: bookId }, data: update });
   revalidatePath("/books");
   revalidatePath(`/books/${bookId}`);
+}
+
+/**
+ * v2.9.6 — backfill missing page counts: for the caller's books that have no
+ * numberOfPages but do carry an ISBN, look them up on Open Library (throttled)
+ * and fill ONLY numberOfPages — user-entered metadata is never overwritten.
+ * Chunked (MAX_BACKFILL_BATCH per call) so one request cannot run for minutes
+ * or get killed by the "3 consecutive failures" abort of the bulk fetcher;
+ * the button can simply be pressed again while books remain.
+ */
+const BACKFILL_CHUNK = 20;
+const MAX_BACKFILL_BATCH = 40;
+
+export async function backfillPageCounts(): Promise<{
+  ok: boolean;
+  filled?: number;
+  notFound?: number;
+  remaining?: number;
+  error?: string;
+}> {
+  const userId = await requireUserId();
+  try {
+    const missing = await db.book.findMany({
+      where: { userId, numberOfPages: null, isbn: { not: null } },
+      select: { isbn: true },
+      orderBy: { addedAt: "asc" },
+    });
+    const remaining = missing.length;
+    const batchIsbns = [
+      ...new Set(missing.map((b) => (b.isbn as string).replace(/[^0-9Xx]/g, "")).filter((v) => v.length > 0)),
+    ].slice(0, MAX_BACKFILL_BATCH);
+    if (batchIsbns.length === 0) return { ok: true, filled: 0, notFound: 0, remaining: 0 };
+
+    const pagesByIsbn = new Map<string, string>();
+    let failed = 0;
+    for (let i = 0; i < batchIsbns.length; i += BACKFILL_CHUNK) {
+      const chunk = batchIsbns.slice(i, i + BACKFILL_CHUNK);
+      const found = await lookupIsbns(chunk).catch(() => [] as IsbnLookupResult[]);
+      let chunkFailures = 0;
+      for (const isbn of chunk) {
+        const hit = found.find((f) => f.isbn === isbn);
+        if (hit?.numberOfPages) pagesByIsbn.set(isbn, hit.numberOfPages);
+        else chunkFailures++;
+      }
+      failed += chunkFailures;
+      // If the network died, stop rather than hammering the API pointlessly.
+      if (chunkFailures === chunk.length && chunk.length > 5) break;
+    }
+
+    const rows = await db.book.findMany({
+      where: { userId, numberOfPages: null, isbn: { not: null } },
+      select: { id: true, isbn: true },
+    });
+    let filled = 0;
+    for (const row of rows) {
+      const pages = pagesByIsbn.get((row.isbn as string).replace(/[^0-9Xx]/g, ""));
+      if (!pages) continue;
+      const n = parseInt(pages, 10);
+      if (isNaN(n) || n <= 0) continue;
+      await db.book.update({ where: { id: row.id }, data: { numberOfPages: String(n) } });
+      filled++;
+    }
+    revalidatePath("/books");
+    const remainingAfter = remaining - filled;
+    return { ok: true, filled, notFound: failed, remaining: Math.max(0, remainingAfter) };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Backfill failed" };
+  }
 }

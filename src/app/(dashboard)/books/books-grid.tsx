@@ -37,6 +37,11 @@ type CardDict = {
   reReadButton: string;
   bookFinishedToast: string;
   earlyFinishBlocked: string;
+  pagesPromptTitle: string;
+  pagesPromptPlaceholder: string;
+  pagesPromptInvalid: string;
+  save: string;
+  cancel: string;
   nextBookCta: string;
   nextBookDialogTitle: string;
   nextBookEmpty: string;

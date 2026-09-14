@@ -4,6 +4,45 @@ All notable changes to **Book Shelf** are documented here.
 From **2.9.0 onward the project is in feature-freeze**: every future release is a
 PATCH (bugfix / security / performance only — no behavior, schema or feature changes).
 
+## 2.9.6 — 2026-09-14
+
+### Fixed
+
+- **Page-log button label & honest logging** — the button is now imperative
+  ("Read 20 pages" / "{count} sayfa oku") and logs exactly what its label says:
+  when fewer than a full step remains it logs the remaining pages ("18 sayfa
+  oku" → 18 pages), instead of clamping silently while the toast claimed 20.
+- **Streak feedback on every press** — `logPagesRead` now returns the
+  recalculated streak (also on the auto-finish path) and the success toast
+  shows it: "{count} pages logged · 🔥 {streak}-day streak". The day-based
+  streak semantics are unchanged; the press now visibly acknowledges it.
+- **Page-less books prompt for the page count first** — clicking the button on
+  a book without `numberOfPages` opens a small animated modal; confirming saves
+  the page count (`updateBook`) and immediately logs the reading for that book
+  (up to 20 pages / the remainder). New i18n keys (`pagesPromptTitle`,
+  `pagesPromptPlaceholder`, `pagesPromptInvalid`) in all 6 dictionaries.
+- **Long-press menu no longer pops abruptly** — the card scales down
+  (`scale-[0.97]`) while the hold is active (new `onPressStart`/`onPressEnd`
+  callbacks in `useLongPress`, haptic kept) and both the long-press menu and
+  the page-count modal animate in (`fade-in zoom-in-95 slide-in-from-bottom-2`).
+- **Flat text-only buttons framed** — "Detailed add" toggle on the books page
+  and the mobile Share icon-button now use the standard boxed style
+  (border + surface + padding) instead of bare text.
+
+### Added
+
+- **Page-count backfill (admin)** — new `/admin` card: looks up the caller's
+  books that have no `numberOfPages` but do carry an ISBN on Open Library
+  (throttled, chunked ≤ 40 lookups per run) and fills ONLY `numberOfPages` —
+  never overwrites user-entered metadata. Returns `{filled, notFound,
+  remaining}`; the button can be pressed again while books remain. i18n in all
+  6 dictionaries (`admin.pageBackfill*`).
+
+### QA
+
+- tsc ✅ · lint ✅ (1 pre-existing warning) · format ✅ · unit 193/193 ✅ ·
+  e2e updated to the new button/modal flow ✅
+
 ## 2.9.5 — 2026-09-14
 
 ### Fixed

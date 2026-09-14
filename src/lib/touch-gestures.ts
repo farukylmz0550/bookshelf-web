@@ -49,25 +49,30 @@ export function useSwipe({ onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, th
 
 interface LongPressHandlers {
   onLongPress: () => void;
+  /** v2.9.6 — visual press feedback: fires when the hold starts/cancels. */
+  onPressStart?: () => void;
+  onPressEnd?: () => void;
   delay?: number;
 }
 
-export function useLongPress({ onLongPress, delay = 500 }: LongPressHandlers) {
+export function useLongPress({ onLongPress, onPressStart, onPressEnd, delay = 500 }: LongPressHandlers) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const start = useCallback(() => {
+    onPressStart?.();
     timerRef.current = setTimeout(() => {
       onLongPress();
       hapticFeedback("medium");
     }, delay);
-  }, [onLongPress, delay]);
+  }, [onLongPress, onPressStart, delay]);
 
   const stop = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
+      onPressEnd?.();
     }
-  }, []);
+  }, [onPressEnd]);
 
   return {
     onTouchStart: start,
