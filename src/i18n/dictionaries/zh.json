@@ -237,7 +237,11 @@
     "goalLockedDesc": "目标每年设置一次，1 月 1 日重新开放。",
     "goalSaveError": "保存目标失败。",
     "goalConfirm": "确认目标",
-    "goalLocked": "这些目标今年内保持锁定，1 月 1 日重新开放。"
+    "goalLocked": "这些目标今年内保持锁定，1 月 1 日重新开放。",
+    "yearlyActivity": "年度活动",
+    "activities": "次活动",
+    "less": "少",
+    "more": "多"
   },
   "achievements": {
     "title": "成就",

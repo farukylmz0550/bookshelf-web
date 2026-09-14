@@ -389,9 +389,3 @@ export async function updateBook(
   revalidatePath("/books");
   revalidatePath(`/books/${bookId}`);
 }
-
-export async function deleteBook(bookId: string) {
-  const userId = await requireUserId();
-  await db.book.deleteMany({ where: { id: bookId, userId } });
-  revalidatePath("/books");
-}

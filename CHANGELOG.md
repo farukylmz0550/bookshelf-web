@@ -4,6 +4,41 @@ All notable changes to **Book Shelf** are documented here.
 From **2.9.0 onward the project is in feature-freeze**: every future release is a
 PATCH (bugfix / security / performance only — no behavior, schema or feature changes).
 
+## 2.9.5 — 2026-09-14
+
+### Fixed
+
+- **Yearly Activity heatmap forced page-level horizontal scroll on mobile** —
+  the fixed-width grid (53 weeks × 10px ≈ 694px) overflowed narrow screens;
+  the whole page became horizontally scrollable. Month labels + week grid now
+  live in one `overflow-x-auto` area (scrolls inside the card only; legend
+  stays put). Heatmap strings ("Yearly Activity", "activities", "Less",
+  "More") were hardcoded English — now i18n'd in all 6 dictionaries
+  (`stats.yearlyActivity/activities/less/more`).
+
+### Removed (dead code)
+
+- **Dead classes:** `gnome-card` (activity-heatmap, streak-widget, login,
+  register) and `gnome-boxed-list(-item)` (more page) had no CSS definition
+  anywhere — surfaces rendered unstyled. Replaced with the project's token
+  utilities (`rounded-[12px] border border-[var(--border)] bg-[var(--surface)]`
+  and the settings-form row pattern).
+- **Dead files:** `src/lib/books/reading.ts` + test (legacy port, 0 imports),
+  `src/components/theme-dropdown.tsx` (superseded by appearance-settings),
+  `public/audio/annual/tchaikovsky-swan-lake-theme.mp3` (not in the track
+  selection list) + its README row.
+- **Dead exports:** `setConsentCookie` (server variant, unused), dead
+  re-export block in `cookies.ts`, `isHapticSupported`, `isStreakBroken`,
+  `TEMPLATE_DEFAULT_NAME`/`EXPORT_DEFAULT_NAME`, `deleteBook`,
+  `getPeopleWithStats`, `AppSettingsInput`, `getStreakStatus`, `THEMES`
+  (made module-private), plus the test-only cluster in `books/model.ts`
+  (`newLocalKey`, `isLocalKey`, `displayIsbn`, `parseCopies`, `MAX_COPIES`,
+  `checkIsbn`, `IsbnCheck`, `LOCAL_KEY_PREFIX`) and `books/tags.ts`
+  (`STARTER_TAGS`, `suggestions`, `fromSubjects`, `contains`, `store`,
+  `MAX_SUBJECT_TAGS`) with their now-invalid test blocks. Live exports
+  (`parseRating`, `normalizeIsbn`, `isValidIsbn10/13`, `canonical`,
+  `display`, `splitTags`, `show`) kept and still tested.
+
 ## 2.9.4 — 2026-09-14
 
 ### Fixed

@@ -154,10 +154,3 @@ export async function useStreakShield() {
   revalidatePath("/stats");
   return { shieldUsed: true, cost };
 }
-
-/** Get streak info for the current user. */
-export async function getStreakStatus() {
-  const userId = await requireUserId();
-  const { getStreakInfo } = await import("@/lib/streak");
-  return getStreakInfo(userId);
-}

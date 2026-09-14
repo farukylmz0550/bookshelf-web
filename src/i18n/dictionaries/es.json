@@ -237,7 +237,11 @@
     "goalLockedDesc": "Los objetivos se fijan una vez al año. Se reabren el 1 de enero.",
     "goalSaveError": "No se pudieron guardar los objetivos.",
     "goalConfirm": "Confirmar objetivos",
-    "goalLocked": "Estos objetivos permanecen bloqueados el resto del año y se reabren el 1 de enero."
+    "goalLocked": "Estos objetivos permanecen bloqueados el resto del año y se reabren el 1 de enero.",
+    "yearlyActivity": "Actividad anual",
+    "activities": "actividades",
+    "less": "Menos",
+    "more": "Más"
   },
   "achievements": {
     "title": "Logros",

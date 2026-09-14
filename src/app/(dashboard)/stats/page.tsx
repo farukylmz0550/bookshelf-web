@@ -163,6 +163,12 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
       </div>
 
       <ActivityHeatmap
+        dict={{
+          yearlyActivity: dict.stats.yearlyActivity,
+          activities: dict.stats.activities,
+          less: dict.stats.less,
+          more: dict.stats.more,
+        }}
         activities={dailyActivities.map((a) => ({
           date: a.date.toISOString().split("T")[0],
           count: a.count,

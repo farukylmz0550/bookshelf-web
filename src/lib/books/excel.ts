@@ -5,8 +5,6 @@
 import ExcelJS from "exceljs";
 import { normalizeIsbn, isValidIsbn10, isValidIsbn13 } from "./model";
 
-export const TEMPLATE_DEFAULT_NAME = "isbn_list.xlsx";
-export const EXPORT_DEFAULT_NAME = "my_library.xlsx";
 export const MAX_IMPORT_BYTES = 20 * 1024 * 1024; // 20 MiB
 
 const EXPORTED_FIELDS = [

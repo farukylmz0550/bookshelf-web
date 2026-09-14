@@ -40,18 +40,3 @@ export async function removePerson(personId: string) {
   revalidatePath("/lending");
   return { ok: true };
 }
-
-export async function getPeopleWithStats() {
-  const userId = await requireUserId();
-  const persons = await db.person.findMany({ where: { userId }, orderBy: { name: "asc" } });
-  const stats = await Promise.all(
-    persons.map(async (p) => {
-      const [out, returned] = await Promise.all([
-        db.lendingRecord.count({ where: { personId: p.id, returnedAt: null } }),
-        db.lendingRecord.count({ where: { personId: p.id, returnedAt: { not: null } } }),
-      ]);
-      return { ...p, out, returned, trust: returned - out };
-    }),
-  );
-  return stats;
-}

@@ -97,15 +97,6 @@ export function isTodayActive(activities: { date: Date }[]): boolean {
   return activities.some((a) => startOfUtcDay(a.date).getTime() === today.getTime());
 }
 
-/** Check if streak is broken (no activity yesterday or today). */
-export function isStreakBroken(lastActiveDate: Date | null): boolean {
-  if (!lastActiveDate) return true;
-  const today = startOfUtcDay();
-  const last = startOfUtcDay(lastActiveDate);
-  const diffDays = (today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24);
-  return diffDays > 1;
-}
-
 /** Get streak info for a user. */
 export async function getStreakInfo(userId: string) {
   const user = await db.user.findUnique({

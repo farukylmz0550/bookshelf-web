@@ -36,7 +36,7 @@ export function StreakWidget({
   const todayIndex = today === 0 ? 6 : today - 1;
 
   return (
-    <div className="gnome-card p-4">
+    <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div

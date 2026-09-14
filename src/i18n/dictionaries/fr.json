@@ -237,7 +237,11 @@
     "goalLockedDesc": "Les objectifs se fixent une fois par an. Ils se rouvrent le 1er janvier.",
     "goalSaveError": "Impossible d'enregistrer les objectifs.",
     "goalConfirm": "Confirmer les objectifs",
-    "goalLocked": "Ces objectifs restent verrouillés le reste de l'année et se rouvrent le 1er janvier."
+    "goalLocked": "Ces objectifs restent verrouillés le reste de l'année et se rouvrent le 1er janvier.",
+    "yearlyActivity": "Activité annuelle",
+    "activities": "activités",
+    "less": "Moins",
+    "more": "Plus"
   },
   "achievements": {
     "title": "Succès",

@@ -15,11 +15,3 @@ export function hapticFeedback(style: HapticStyle = "light"): void {
   if (typeof navigator === "undefined" || !navigator.vibrate) return;
   navigator.vibrate(PATTERNS[style]);
 }
-
-/**
- * Check if haptic feedback is supported.
- */
-export function isHapticSupported(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return "vibrate" in navigator;
-}

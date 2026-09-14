@@ -2,30 +2,6 @@
 // Book model helpers — legacy src/books/model.py port.
 // Single responsibility: Book identity & field parsing.
 
-export const LOCAL_KEY_PREFIX = "local_";
-export const MAX_COPIES = 999;
-
-export function newLocalKey(): string {
-  return `${LOCAL_KEY_PREFIX}${Math.random().toString(16).slice(2, 14)}`;
-}
-
-export function isLocalKey(key: string): boolean {
-  return key.startsWith(LOCAL_KEY_PREFIX);
-}
-
-export function displayIsbn(key: string): string {
-  return isLocalKey(key) ? "" : key;
-}
-
-export function parseCopies(value: string): number {
-  const t = value.trim();
-  if (t === "") return 1;
-  const n = parseInt(t, 10);
-  if (Number.isNaN(n) || n < 1) return 1;
-  if (n > MAX_COPIES) return MAX_COPIES;
-  return n;
-}
-
 export function parseRating(value: string): number {
   const t = value.trim();
   if (t === "") return 0;
@@ -36,16 +12,6 @@ export function parseRating(value: string): number {
 
 export function normalizeIsbn(isbn: string): string {
   return isbn.replace(/[^0-9Xx]/g, "");
-}
-
-export type IsbnCheck = "OK" | "EMPTY" | "LENGTH" | "CHECKSUM10" | "CHECKSUM13";
-
-export function checkIsbn(isbn: string): IsbnCheck {
-  const c = normalizeIsbn(isbn);
-  if (c.length === 0) return "EMPTY";
-  if (c.length === 10) return isValidIsbn10(c) ? "OK" : "CHECKSUM10";
-  if (c.length === 13) return isValidIsbn13(c) ? "OK" : "CHECKSUM13";
-  return "LENGTH";
 }
 
 export function isValidIsbn10(s: string): boolean {

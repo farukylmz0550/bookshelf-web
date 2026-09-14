@@ -16,8 +16,6 @@ const settingsSchema = z.object({
   xpPerLevelBase: z.number().int().min(1).max(100000),
 });
 
-export type AppSettingsInput = z.infer<typeof settingsSchema>;
-
 /** System-admin only: persist the singleton reading/gamification settings. */
 export async function updateAppSettings(
   input: AppSettingsValues,

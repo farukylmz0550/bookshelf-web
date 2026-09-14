@@ -237,7 +237,11 @@
     "goalLockedDesc": "Hedefler yılda bir kez ayarlanır. 1 Ocak'ta yeniden açılır.",
     "goalSaveError": "Hedefler kaydedilemedi. Lütfen tekrar dene.",
     "goalConfirm": "Hedefleri onayla",
-    "goalLocked": "Bu hedefler yıl boyunca kilitli kalır ve 1 Ocak'ta yeniden açılır."
+    "goalLocked": "Bu hedefler yıl boyunca kilitli kalır ve 1 Ocak'ta yeniden açılır.",
+    "yearlyActivity": "Yıllık Etkinlik",
+    "activities": "etkinlik",
+    "less": "Az",
+    "more": "Çok"
   },
   "achievements": {
     "title": "Başarımlar",

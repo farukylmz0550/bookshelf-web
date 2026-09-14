@@ -18,7 +18,7 @@ embedded in each file's ID3 metadata:
 
 ## Tracks
 
-All nine compositions are **public domain** (the composers died more than
+All eight compositions are **public domain** (the composers died more than
 70 years ago). The note transcriptions used for rendering were made by the
 BookShelf author from public-domain scores, and the audio was rendered once
 at development time by `scripts/render-annual-audio.mjs` (offline synth →
@@ -33,11 +33,7 @@ ffmpeg/libmp3lame, 96 kbps mono). The runtime never synthesizes audio.
 | mozart-eine-kleine-nachtmusik.mp3 | W. A. Mozart (1791) | happy |
 | mozart-rondo-alla-turca.mp3 | W. A. Mozart (1791) | happy |
 | vivaldi-spring-allegro.mp3 | Antonio Vivaldi (1741) | happy |
-| tchaikovsky-swan-lake-theme.mp3 | Pyotr I. Tchaikovsky (1893) | sad |
 | beethoven-ode-to-joy.mp3 | Ludwig van Beethoven (1827) | celebration |
-
-**Tchaikovsky (d. 1893) is public domain** in jurisdictions with a
-life+70 term; in the United States his works were published pre-1929.
 
 ## Piece selection
 

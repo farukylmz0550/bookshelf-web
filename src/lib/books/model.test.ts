@@ -1,17 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { describe, expect, it } from "vitest";
-import {
-  normalizeIsbn,
-  checkIsbn,
-  isValidIsbn10,
-  isValidIsbn13,
-  parseCopies,
-  parseRating,
-  isLocalKey,
-  newLocalKey,
-  displayIsbn,
-  MAX_COPIES,
-} from "@/lib/books/model";
+import { normalizeIsbn, isValidIsbn10, isValidIsbn13, parseRating } from "@/lib/books/model";
 
 describe("normalizeIsbn", () => {
   it("strips non-digit characters", () => {
@@ -19,24 +8,6 @@ describe("normalizeIsbn", () => {
   });
   it("preserves X for ISBN-10", () => {
     expect(normalizeIsbn("0-804-42957-X")).toBe("080442957X");
-  });
-});
-
-describe("checkIsbn", () => {
-  it("returns EMPTY for empty string", () => {
-    expect(checkIsbn("")).toBe("EMPTY");
-  });
-  it("returns LENGTH for invalid length", () => {
-    expect(checkIsbn("12345")).toBe("LENGTH");
-  });
-  it("returns OK for valid ISBN-13", () => {
-    expect(checkIsbn("9780134685991")).toBe("OK");
-  });
-  it("returns OK for valid ISBN-10", () => {
-    expect(checkIsbn("080442957X")).toBe("OK");
-  });
-  it("returns CHECKSUM13 for invalid checksum", () => {
-    expect(checkIsbn("9780134685990")).toBe("CHECKSUM13");
   });
 });
 
@@ -58,21 +29,6 @@ describe("isValidIsbn10", () => {
   });
 });
 
-describe("parseCopies", () => {
-  it("returns 1 for empty string", () => {
-    expect(parseCopies("")).toBe(1);
-  });
-  it("returns parsed value", () => {
-    expect(parseCopies("3")).toBe(3);
-  });
-  it("caps at MAX_COPIES", () => {
-    expect(parseCopies("9999")).toBe(MAX_COPIES);
-  });
-  it("floors to 1 for invalid input", () => {
-    expect(parseCopies("abc")).toBe(1);
-  });
-});
-
 describe("parseRating", () => {
   it("returns 0 for empty string", () => {
     expect(parseRating("")).toBe(0);
@@ -83,19 +39,5 @@ describe("parseRating", () => {
   });
   it("floors to integer", () => {
     expect(parseRating("3.7")).toBe(3);
-  });
-});
-
-describe("isLocalKey / newLocalKey / displayIsbn", () => {
-  it("newLocalKey starts with local_", () => {
-    const key = newLocalKey();
-    expect(key.startsWith("local_")).toBe(true);
-    expect(isLocalKey(key)).toBe(true);
-  });
-  it("displayIsbn returns empty for local key", () => {
-    expect(displayIsbn("local_abc")).toBe("");
-  });
-  it("displayIsbn returns key for ISBN", () => {
-    expect(displayIsbn("9780134685991")).toBe("9780134685991");
   });
 });

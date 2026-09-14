@@ -46,11 +46,15 @@ export default async function MorePage() {
         </p>
       </header>
       {sections.map((section, si) => (
-        <div key={si} className="gnome-boxed-list">
+        <div key={si} className="overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)]">
           {section.items.map((item) => {
             const Icon = item.icon;
             return (
-              <Link key={item.href} href={item.href} className="gnome-boxed-list-item group">
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group flex w-full items-center justify-between border-b border-[var(--border)] px-4 py-3 last:border-b-0 transition-colors hover:bg-[var(--surface-elevated)]"
+              >
                 <div className="flex items-center gap-3">
                   <Icon size={18} className="text-muted-foreground" />
                   <span className="text-sm text-foreground">{item.label}</span>

@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 export type Theme = "light" | "dark";
 
-export const THEMES: Theme[] = ["light", "dark"];
+const THEMES: Theme[] = ["light", "dark"];
 
 export async function getTheme(): Promise<Theme> {
   const cookieTheme = (await cookies()).get("theme")?.value;

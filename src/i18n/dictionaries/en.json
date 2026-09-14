@@ -237,7 +237,11 @@
     "goalLockedDesc": "Goals are set once per year. They reopen on January 1.",
     "goalSaveError": "Could not save goals. Please try again.",
     "goalConfirm": "Confirm goals",
-    "goalLocked": "These goals stay locked for the rest of the year and reopen on January 1."
+    "goalLocked": "These goals stay locked for the rest of the year and reopen on January 1.",
+    "yearlyActivity": "Yearly Activity",
+    "activities": "activities",
+    "less": "Less",
+    "more": "More"
   },
   "achievements": {
     "title": "Achievements",

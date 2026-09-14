@@ -46,7 +46,11 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
           <h1 className="text-xl font-semibold text-foreground">Book Shelf</h1>
           <p className="mt-1 text-xs text-muted-foreground">Your library manager</p>
         </div>
-        <form method="POST" onSubmit={handleSubmit} className="gnome-card p-6">
+        <form
+          method="POST"
+          onSubmit={handleSubmit}
+          className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-6"
+        >
           <div className="space-y-4">
             <div>
               <label className="mb-1.5 block text-[13px] font-medium text-foreground">{dict.email}</label>
