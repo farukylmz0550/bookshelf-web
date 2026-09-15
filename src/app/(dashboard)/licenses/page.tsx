@@ -173,6 +173,52 @@ export default async function LicensesPage() {
         </h1>
         <p className="font-[var(--font-sans)] text-sm text-muted-foreground">{dict.licenses.description}</p>
       </header>
+
+      {/* Project licensing — code, trademark, brand and audio (v2.10.0) */}
+      <section className="rounded-xl border border-border bg-card p-4">
+        <h2 className="mb-3 font-[var(--font-sans)] text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {dict.licenses.projectTitle}
+        </h2>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-[var(--font-sans)] text-sm text-foreground">{dict.licenses.sourceCode}</span>
+            <a
+              href="https://www.gnu.org/licenses/gpl-3.0.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:bg-accent"
+            >
+              GPLv3
+            </a>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-[var(--font-sans)] text-sm text-foreground">{dict.licenses.logo}</span>
+            <a
+              href="https://creativecommons.org/licenses/by-nc-nd/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:bg-accent"
+            >
+              CC-BY-NC-ND-4.0
+            </a>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-[var(--font-sans)] text-sm text-foreground">{dict.licenses.music}</span>
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:bg-accent"
+            >
+              CC0-1.0
+            </a>
+          </div>
+          <p className="pt-1 font-[var(--font-sans)] text-xs leading-relaxed text-muted-foreground">
+            {dict.licenses.trademark}
+          </p>
+        </div>
+      </section>
+
       <div className="grid gap-2 sm:grid-cols-2">
         {LICENSES.map((lib) => (
           <div

@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowDown, ArrowUp, FolderPlus, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, FolderPlus, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { GROUP_COLORS, GROUP_NAME_MAX } from "@/lib/groups";
 import { createGroup, deleteGroup, renameGroup, reorderGroups } from "@/app/actions/groups";
+import { ShelfBookPicker } from "@/app/(dashboard)/groups/shelf-book-picker";
 
 export type GroupRow = {
   id: string;
@@ -54,10 +55,19 @@ export type GroupsDict = {
   deletedToast: string;
   errorDuplicateName: string;
   errorGeneric: string;
+  // v2.10.0 — bulk shelf picker
+  pickBooks: string;
+  pickHint: string;
+  onShelf: string;
+  addCount: string;
+  pickEmpty: string;
+  addedManyToast: string;
+  addToGroup: string;
   // Supplied by the server page from other dictionary sections.
   booksLabel: string;
   cancelLabel: string;
   saveLabel: string;
+  searchLabel: string;
 };
 
 const HEX_INPUT_RE = /^#[0-9a-fA-F]{6}$/;
@@ -240,6 +250,28 @@ export function GroupsManager({
                   <span className="shrink-0 font-[var(--font-sans)] text-xs text-muted-foreground">
                     {counts[group.id] ?? 0} {dict.booksLabel}
                   </span>
+                  <ShelfBookPicker
+                    groupId={group.id}
+                    dict={{
+                      title: dict.pickBooks,
+                      hint: dict.pickHint,
+                      onShelf: dict.onShelf,
+                      addCount: dict.addCount,
+                      empty: dict.pickEmpty,
+                      search: dict.searchLabel,
+                      addedManyToast: dict.addedManyToast,
+                      error: dict.errorGeneric,
+                    }}
+                    trigger={
+                      <button
+                        type="button"
+                        aria-label={`${dict.addToGroup}: ${group.name}`}
+                        className="flex h-7 w-7 items-center justify-center rounded-[8px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                      >
+                        <Plus size={13} />
+                      </button>
+                    }
+                  />
                 </div>
                 <div className="flex shrink-0 items-center gap-0.5">
                   <button

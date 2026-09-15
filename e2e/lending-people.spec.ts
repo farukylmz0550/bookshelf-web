@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { test, expect } from "@playwright/test";
+import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
 
@@ -21,7 +22,7 @@ test.describe("lending + people", () => {
 
   test("create lending (person auto-create, XP+5) and return", async ({ page }) => {
     await page.goto("/lending");
-    await page.locator("select").first().selectOption({ index: 0 });
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Book" }), { index: 0 });
     await page.getByPlaceholder("Name").fill("Ayse Yilmaz");
     await page.getByRole("button", { name: /^lend$/i }).click();
     await expect(page.getByText("Ayse Yilmaz")).toBeVisible();
@@ -34,7 +35,7 @@ test.describe("lending + people", () => {
 
   test("copies guard: All copies are out", async ({ page }) => {
     await page.goto("/lending");
-    await page.locator("select").first().selectOption({ index: 0 });
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Book" }), { index: 0 });
     await page.getByPlaceholder("Name").fill("Person A");
     await page.getByRole("button", { name: /^lend$/i }).click();
     await expect(page.getByText("Person A")).toBeVisible();

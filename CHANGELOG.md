@@ -1,8 +1,59 @@
 # Changelog
 
 All notable changes to **Book Shelf** are documented here.
-From **2.9.0 onward the project is in feature-freeze**: every future release is a
-PATCH (bugfix / security / performance only — no behavior, schema or feature changes).
+The 2.9.x feature-freeze was lifted with 2.10.0.
+
+## 2.10.0 — 2026-09-15
+
+The 2.9.x feature freeze is lifted — this is the first feature release since
+2.9.0.
+
+### Added
+
+- **Shelves (formerly Groups)** — user-facing "Groups" copy is now "Shelves"
+  ("Raflar" / "Estanterías" / …) in all 6 dictionaries. Routes, data model and
+  code identifiers are unchanged.
+- **Bulk shelf picker** — every shelf row (and the empty shelf page) has a "+"
+  button opening a large (~80% viewport) centered dialog: searchable book grid,
+  tap-to-select, books already on the shelf marked, single "Add (n)" action.
+  New actions `listBooksForShelfPicker` / `addBooksToGroup` (ownership-scoped,
+  duplicate-safe). i18n (`groups.pick*`, `groups.onShelf`, `groups.addCount`,
+  `groups.addedManyToast`) in all 6 dictionaries.
+- **TOTP two-factor authentication** — optional per user (Settings → Security):
+  QR enrollment (`otplib` + `qrcode`), ±30 s verification tolerance, per-account
+  attempt throttling. Mandatory for admin accounts: production deployments
+  block the dashboard behind a non-closable setup gate until 2FA is on and
+  admins cannot disable it. Login flow: `authorize()` answers `TOTP_REQUIRED`,
+  the login form reveals a 6-digit field and resubmits. New User fields
+  `totpSecret`, `totpEnabled`, `mustChangePassword` (migration
+  `20260915153612_add_totp_and_must_change_password`).
+- **Admin danger zone** — `/admin` card deletes every non-admin account (and,
+  through cascades, their books/shelves/lending/goals/achievements) after the
+  caller enters a fresh TOTP code; admin accounts, the achievement catalog and
+  app settings survive.
+- **Admin-assigned password resets** — no email channel, so an admin generates
+  a random 12-character password per user (shown once, copyable) and the user
+  is forced to set a new password through a large blocking dialog at next
+  login (`mustChangePassword`). Login page gains a "contact your
+  administrator" hint.
+- **Project licensing section** — the in-app Licenses page now documents the
+  trademark status of the Book Shelf name, the CC-BY-NC-ND-4.0 logo/brand
+  license and the CC0-1.0 rendered music, next to the GPLv3 source-code
+  notice. README license section gains the music CC0 paragraph.
+
+### Fixed
+
+- **Native select dropdowns** — all remaining native `<select>` elements (book
+  detail status, books filter bar ×8, lending form, annual summary year) now
+  use the styled Base UI `Select` component: themeable portal popups instead
+  of the browser's unstyled white dropdown that overlapped page content.
+- **Stale-session guard** — the dashboard layout signs a user out when the
+  session id no longer exists in the database (e.g. after a wipe).
+
+### QA
+
+- tsc ✅ · lint ✅ (1 pre-existing warning) · unit 193/193 ✅ · e2e updated
+  (Base UI select helper `e2e/helpers/ui-select.ts`, shelf copy) and green ✅
 
 ## 2.9.6 — 2026-09-14
 

@@ -37,6 +37,7 @@ export default async function GroupsPage() {
           booksLabel: dict.common.books,
           cancelLabel: dict.facts.cancel,
           saveLabel: dict.facts.save,
+          searchLabel: dict.filter.search,
         }}
       />
     </div>

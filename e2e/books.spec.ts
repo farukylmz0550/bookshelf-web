@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { test, expect } from "@playwright/test";
+import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
 
@@ -53,7 +54,7 @@ test.describe("books", () => {
 
     await page.getByPlaceholder("Search...").fill("");
     await page.getByRole("button", { name: /filters/i }).click();
-    await page.locator("select").filter({ hasText: "Status" }).selectOption("FINISHED");
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Status", exact: true }), "Finished");
     await expect(page.getByText(/0 of 2/).first()).toBeVisible();
   });
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { test, expect } from "@playwright/test";
+import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { dismissCookieConsent, clickSetting } from "./helpers/auth";
 
@@ -54,7 +55,7 @@ test.describe("manual GUI", () => {
     await page.screenshot({ path: "e2e/screenshots/05-book-detail.png", fullPage: true });
 
     await page.goto("/lending");
-    await page.locator("select").first().selectOption({ index: 0 });
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Book" }), { index: 0 });
     await page.getByPlaceholder("Name").fill("Test Friend");
     await page.getByRole("button", { name: /^lend$/i }).click();
     await expect(page.getByText("Test Friend")).toBeVisible();

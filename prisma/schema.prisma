@@ -32,6 +32,11 @@ model User {
   streakShieldCount  Int       @default(0)
   createdAt          DateTime  @default(now())
 
+  // v2.10.0 — TOTP two-factor auth + forced password change
+  totpSecret         String?
+  totpEnabled        Boolean   @default(false)
+  mustChangePassword Boolean   @default(false)
+
   books           Book[]
   persons         Person[]
   goal            Goal?

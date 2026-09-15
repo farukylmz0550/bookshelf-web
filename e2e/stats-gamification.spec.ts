@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { test, expect } from "@playwright/test";
+import { setBookStatusUI } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login, dismissCookieConsent, clickSetting } from "./helpers/auth";
 
@@ -29,7 +30,7 @@ test.describe("stats / gamification / achievements / leaderboard / excel / i18n 
 
     await page.goto("/books");
     await page.locator("a[href^='/books/']").first().click();
-    await page.locator("select").selectOption("FINISHED");
+    await setBookStatusUI(page, "Finished");
     await page.goto("/stats");
     await expect(page.getByText("Finished", { exact: true })).toBeVisible();
   });
@@ -47,7 +48,7 @@ test.describe("stats / gamification / achievements / leaderboard / excel / i18n 
 
     await page.goto("/books");
     await page.locator("a[href^='/books/']").first().click();
-    await page.locator("select").selectOption("FINISHED");
+    await setBookStatusUI(page, "Finished");
     await page.goto("/achievements");
     await expect(page.getByText("Bookworm Beginnings")).toBeVisible();
 

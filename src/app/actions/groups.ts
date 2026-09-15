@@ -147,6 +147,82 @@ export async function addBookToGroup(bookId: string, groupId: string): Promise<A
   return { ok: true };
 }
 
+// v2.10.0 — bulk picker: books the caller may add to one of their shelves.
+export async function listBooksForShelfPicker(
+  groupId: string,
+): Promise<
+  | {
+      ok: true;
+      books: { id: string; title: string; author: string | null; coverUrl: string | null; onShelf: boolean }[];
+    }
+  | { ok: false; error: string }
+> {
+  const userId = await requireUserId();
+  const group = await db.bookGroup.findFirst({ where: { id: groupId, userId }, select: { id: true } });
+  if (!group) return { ok: false, error: "NOT_FOUND" };
+  const [books, memberships] = await Promise.all([
+    db.book.findMany({
+      where: { userId },
+      orderBy: { addedAt: "desc" },
+      select: { id: true, title: true, author: true, coverUrl: true },
+    }),
+    db.bookGroupMembership.findMany({ where: { groupId }, select: { bookId: true } }),
+  ]);
+  const onShelf = new Set(memberships.map((m) => m.bookId));
+  return {
+    ok: true,
+    books: books.map((b) => ({ ...b, onShelf: onShelf.has(b.id) })),
+  };
+}
+
+export async function addBooksToGroup(
+  groupId: string,
+  bookIds: string[],
+): Promise<{ ok: true; added: number } | { ok: false; error: string }> {
+  const userId = await requireUserId();
+  if (!Array.isArray(bookIds) || bookIds.length === 0) return { ok: false, error: "INVALID_INPUT" };
+  if (bookIds.length > 500) return { ok: false, error: "INVALID_INPUT" };
+
+  // Group and every book must belong to the caller — filter client-supplied
+  // ids against a scoped lookup instead of trusting the list.
+  const [group, ownedBooks] = await Promise.all([
+    db.bookGroup.findFirst({ where: { id: groupId, userId }, select: { id: true } }),
+    db.book.findMany({
+      where: { userId, id: { in: bookIds.slice(0, 500) } },
+      select: { id: true },
+    }),
+  ]);
+  if (!group) return { ok: false, error: "NOT_FOUND" };
+  const existing = await db.bookGroupMembership.findMany({
+    where: { groupId, bookId: { in: ownedBooks.map((b) => b.id) } },
+    select: { bookId: true },
+  });
+  const memberIds = new Set(existing.map((m) => m.bookId));
+  const toAdd = ownedBooks.filter((b) => !memberIds.has(b.id)).map((b) => ({ bookId: b.id, groupId }));
+  if (toAdd.length === 0) return { ok: true, added: 0 };
+
+  try {
+    // SQLite: no createMany skipDuplicates — the (bookId, groupId) unique
+    // constraint plus per-row upserts keep concurrent duplicates safe.
+    await db.$transaction((tx) =>
+      Promise.all(
+        toAdd.map((item) =>
+          tx.bookGroupMembership.upsert({
+            where: { bookId_groupId: { bookId: item.bookId, groupId } },
+            update: {},
+            create: item,
+          }),
+        ),
+      ),
+    );
+    revalidateGroups();
+    for (const item of toAdd) revalidatePath(`/books/${item.bookId}`);
+    return { ok: true, added: toAdd.length };
+  } catch (e) {
+    return { ok: false, error: dbErrorMessage(e) };
+  }
+}
+
 export async function removeBookFromGroup(bookId: string, groupId: string): Promise<ActionResult> {
   const userId = await requireUserId();
   // Membership is removable only when the owning group belongs to the caller.

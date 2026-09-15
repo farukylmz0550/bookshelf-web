@@ -48,7 +48,8 @@ export async function changePassword(input: { currentPassword: string; newPasswo
   const passwordHash = await bcrypt.hash(parsed.data.newPassword, 12);
   await db.user.update({
     where: { id: userId },
-    data: { passwordHash },
+    // v2.10.0 — a normal change also clears the forced-change flag.
+    data: { passwordHash, mustChangePassword: false },
   });
 
   return { ok: true };

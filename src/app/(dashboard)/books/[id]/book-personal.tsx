@@ -5,6 +5,7 @@ import { updateBook, setBookStatus } from "@/app/actions/books";
 import { show } from "@/lib/books/tags";
 import { hapticFeedback } from "@/lib/haptic";
 import { useEditableField, useSaver } from "@/lib/use-editable-field";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Book = {
   id: string;
@@ -80,15 +81,22 @@ export function BookPersonal({ book, dict }: { book: Book; dict: Record<string, 
 
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted-foreground">{dict.status}</span>
-        <select
+        <Select
           value={book.status}
-          onChange={(e) => onStatusChange(e.target.value as never)}
-          className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          onValueChange={(v) => onStatusChange((v ?? "TO_READ") as "TO_READ" | "READING" | "FINISHED")}
         >
-          <option value="TO_READ">{dict.toRead}</option>
-          <option value="READING">{dict.reading}</option>
-          <option value="FINISHED">{dict.finished}</option>
-        </select>
+          <SelectTrigger
+            className="rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)]"
+            aria-label={dict.status}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="TO_READ">{dict.toRead}</SelectItem>
+            <SelectItem value="READING">{dict.reading}</SelectItem>
+            <SelectItem value="FINISHED">{dict.finished}</SelectItem>
+          </SelectContent>
+        </Select>
         {book.startedAt && (
           <span className="text-xs text-muted-foreground">
             {dict.started} {new Date(book.startedAt).toLocaleDateString()}

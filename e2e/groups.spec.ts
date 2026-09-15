@@ -2,6 +2,7 @@
 import { test, expect } from "@playwright/test";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login, register, logout } from "./helpers/auth";
+import { pickSelectOption } from "./helpers/ui-select";
 
 test.describe("groups / shelves (v2.8.0)", () => {
   const admin = { name: "Admin", email: "admin@bookshelf.test", password: "password123" };
@@ -16,10 +17,10 @@ test.describe("groups / shelves (v2.8.0)", () => {
   async function createGroup(page: import("@playwright/test").Page, name: string, color?: string) {
     await page.goto("/groups");
     await page
-      .getByRole("button", { name: /create group/i })
+      .getByRole("button", { name: /create shelf/i })
       .first()
       .click();
-    await page.getByLabel("Group name").fill(name);
+    await page.getByLabel("Shelf name").fill(name);
     if (color) {
       await page.getByRole("button", { name: new RegExp(color, "i") }).click();
     }
@@ -31,15 +32,15 @@ test.describe("groups / shelves (v2.8.0)", () => {
   }
 
   async function addCurrentBookToGroup(page: import("@playwright/test").Page, groupName: string) {
-    await page.getByRole("button", { name: /add to group/i }).click();
+    await page.getByRole("button", { name: /add to shelf/i }).click();
     await page.getByRole("checkbox", { name: groupName }).click();
-    await expect(page.getByText(/added to group/i)).toBeVisible();
-    await expect(page.locator("section", { hasText: "Groups" }).getByText(groupName)).toBeVisible();
+    await expect(page.getByText(/added to shelf/i)).toBeVisible();
+    await expect(page.locator("section", { hasText: "Shelves" }).getByText(groupName)).toBeVisible();
   }
 
   test("create, rename, reorder, delete groups", async ({ page }) => {
     await page.goto("/groups");
-    await expect(page.getByText("No groups yet")).toBeVisible();
+    await expect(page.getByText("No shelves yet")).toBeVisible();
 
     await createGroup(page, "Favorites");
     await createGroup(page, "To Read");
@@ -50,17 +51,17 @@ test.describe("groups / shelves (v2.8.0)", () => {
     await expect(page.locator("a[href^='/groups/']").first()).toHaveText("To Read");
 
     // Rename
-    await page.getByRole("button", { name: /rename group: to read/i }).click();
-    await page.getByLabel("Group name").fill("Reading Pile");
+    await page.getByRole("button", { name: /rename shelf: to read/i }).click();
+    await page.getByLabel("Shelf name").fill("Reading Pile");
     await page.getByRole("button", { name: /^save$/i }).click();
     await expect(page.getByRole("link", { name: "Reading Pile" })).toBeVisible();
 
     // Duplicate name is rejected with a localized error
     await page
-      .getByRole("button", { name: /create group/i })
+      .getByRole("button", { name: /create shelf/i })
       .first()
       .click();
-    await page.getByLabel("Group name").fill("Favorites");
+    await page.getByLabel("Shelf name").fill("Favorites");
     await page
       .getByRole("button", { name: /^create$/i })
       .last()
@@ -69,14 +70,14 @@ test.describe("groups / shelves (v2.8.0)", () => {
 
     // Delete (books untouched is covered in the detail tests)
     await page.getByRole("button", { name: /cancel/i }).click();
-    await page.getByRole("button", { name: /delete group: reading pile/i }).click();
-    await expect(page.getByText("Delete this group? Your books stay in the library.")).toBeVisible();
+    await page.getByRole("button", { name: /delete shelf: reading pile/i }).click();
+    await expect(page.getByText("Delete this shelf? Your books stay in the library.")).toBeVisible();
     await page
       .getByRole("dialog")
-      .getByRole("button", { name: /delete group/i })
+      .getByRole("button", { name: /delete shelf/i })
       .last()
       .click();
-    await expect(page.getByText(/group deleted/i)).toBeVisible();
+    await expect(page.getByText(/shelf deleted/i)).toBeVisible();
     await expect(page.getByRole("link", { name: "Reading Pile" })).toHaveCount(0);
   });
 
@@ -90,9 +91,13 @@ test.describe("groups / shelves (v2.8.0)", () => {
     await expect(page.locator("header").getByText("0 books")).toBeVisible();
     await expect(page.getByText("Nothing on this shelf yet.")).toBeVisible();
 
+    // The empty-state "Add books" button opens the bulk picker (empty library)
+    await page.getByRole("button", { name: /add books/i }).click();
+    await expect(page.getByText("No books in your library yet.")).toBeVisible();
+    await page.keyboard.press("Escape");
+
     // Add a book, then add it to the group from the book detail page
-    await page.getByRole("link", { name: /add books/i }).click();
-    await expect(page).toHaveURL(/\/books/);
+    await page.goto("/books");
     await page.getByPlaceholder("Title").first().fill("Dune");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Dune", { exact: true }).first()).toBeVisible();
@@ -146,16 +151,16 @@ test.describe("groups / shelves (v2.8.0)", () => {
     // Group filter on the main books page: only the member book shows
     await page.goto("/books");
     await page.getByRole("button", { name: /filters/i }).click();
-    await page.getByRole("combobox", { name: "Group" }).selectOption({ label: "Favorites" });
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Shelf", exact: true }), { label: "Favorites" });
     await expect(page.getByText("Grouped Sci-Fi", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Poetry Book", { exact: true })).toBeHidden();
 
     // Group AND tag: member book is tagged sci-fi, filter demands poetry → empty
-    await page.locator("select").filter({ hasText: "Tag" }).selectOption("poetry");
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Tag", exact: true }), "poetry");
     await expect(page.getByText(/0 of/).first()).toBeVisible();
 
     // Matching tag → passes both conditions
-    await page.locator("select").filter({ hasText: "Tag" }).selectOption("sci-fi");
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Tag", exact: true }), "sci-fi");
     await expect(page.getByText("Grouped Sci-Fi", { exact: true }).first()).toBeVisible();
   });
 
@@ -179,7 +184,7 @@ test.describe("groups / shelves (v2.8.0)", () => {
 
     // User B's own groups page is empty — no data leaks from User A
     await page.goto("/groups");
-    await expect(page.getByText("No groups yet")).toBeVisible();
+    await expect(page.getByText("No shelves yet")).toBeVisible();
     await expect(page.getByText("Admin Private Shelf")).toHaveCount(0);
 
     // Direct URL access to User A's group → 404

@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "2.9.6",
+  "version": "2.10.0",
   "license": "GPL-3.0-only",
   "private": true,
   "overrides": {
@@ -32,7 +32,9 @@
     "next": "16.3.4",
     "next-auth": "5.0.0-beta.32",
     "next-themes": "^0.4.6",
+    "otplib": "^13.5.0",
     "prisma": "7.10.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "recharts": "^3.10.1",
@@ -48,6 +50,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/web-push": "^3.6.4",

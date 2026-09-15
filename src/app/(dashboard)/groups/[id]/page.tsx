@@ -6,6 +6,7 @@ import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { getAppSettings } from "@/lib/settings";
 import { BooksGrid } from "@/app/(dashboard)/books/books-grid";
+import { ShelfBookPicker } from "../shelf-book-picker";
 
 export default async function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -96,12 +97,27 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
 
       {books.length === 0 && (
         <div className="flex justify-center">
-          <Link
-            href="/books"
-            className="rounded-[8px] bg-[var(--primary)] px-4 py-2 font-[var(--font-sans)] text-sm text-[var(--primary-foreground)] transition-colors hover:bg-[var(--accent-hover)]"
-          >
-            {dict.groups.addBooks}
-          </Link>
+          <ShelfBookPicker
+            groupId={group.id}
+            dict={{
+              title: dict.groups.pickBooks,
+              hint: dict.groups.pickHint,
+              onShelf: dict.groups.onShelf,
+              addCount: dict.groups.addCount,
+              empty: dict.groups.pickEmpty,
+              search: dict.filter.search,
+              addedManyToast: dict.groups.addedManyToast,
+              error: dict.groups.errorGeneric,
+            }}
+            trigger={
+              <button
+                type="button"
+                className="rounded-[8px] bg-[var(--primary)] px-4 py-2 font-[var(--font-sans)] text-sm text-[var(--primary-foreground)] transition-colors hover:bg-[var(--accent-hover)]"
+              >
+                {dict.groups.addBooks}
+              </button>
+            }
+          />
         </div>
       )}
     </div>

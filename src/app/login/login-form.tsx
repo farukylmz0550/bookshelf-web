@@ -1,35 +1,59 @@
 // SPDX-License-Identifier: GPL-3.0-only
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginForm({ dict }: { dict: Record<string, string> }) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  // v2.10.0 — TOTP: the form stays on one screen; authorize() answers with
+  // TOTP_REQUIRED, the code field appears, and the same submit re-sends the
+  // stored email/password together with the six-digit code.
+  const [needsTotp, setNeedsTotp] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setPending(true);
     setError(null);
     const form = new FormData(e.currentTarget);
+    const email = form.get("email");
+    const password = form.get("password");
+    const totp = form.get("totp");
 
     const result = await signIn("credentials", {
-      email: form.get("email"),
-      password: form.get("password"),
+      email,
+      password,
+      totp: needsTotp ? totp : undefined,
       redirect: false,
     });
 
     setPending(false);
     if (result?.error) {
+      if (result.error === "TOTP_REQUIRED") {
+        setNeedsTotp(true);
+        setError(dict.totpRequired);
+        return;
+      }
+      if (result.error === "INVALID_TOTP") {
+        setError(dict.invalidTotp);
+        return;
+      }
       if (result.error === "APPROVAL_PENDING") {
         setError(dict.approvalPending);
-      } else {
-        setError(dict.invalidCredentials);
+        return;
       }
+      // Wrong TOTP code invalidates the whole credentials attempt — go back
+      // to the password step with a fresh state.
+      if (needsTotp && (result.error === "CredentialsSignin" || result.error === "AccessDeniedError")) {
+        setNeedsTotp(false);
+        formRef.current?.reset();
+      }
+      setError(dict.invalidCredentials);
       return;
     }
     router.push("/books");
@@ -47,6 +71,7 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
           <p className="mt-1 text-xs text-muted-foreground">Your library manager</p>
         </div>
         <form
+          ref={formRef}
           method="POST"
           onSubmit={handleSubmit}
           className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-6"
@@ -72,6 +97,23 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
                 className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
+            {needsTotp && (
+              <div>
+                <label className="mb-1.5 block text-[13px] font-medium text-foreground">{dict.totpCode}</label>
+                <input
+                  name="totp"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  placeholder="123456"
+                  maxLength={6}
+                  pattern="[0-9]*"
+                  required
+                  autoFocus
+                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-center font-mono text-lg tracking-[0.3em] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+            )}
             {error && <div className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</div>}
             <button
               type="submit"
@@ -88,6 +130,7 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
             {dict.createOne}
           </Link>
         </p>
+        <p className="mt-2 text-center text-xs text-muted-foreground">{dict.forgotPassword}</p>
       </div>
     </div>
   );

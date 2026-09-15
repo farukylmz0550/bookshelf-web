@@ -3,6 +3,7 @@
 
 import { useState, useTransition } from "react";
 import { createLending } from "@/app/actions/lending";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Book = { id: string; title: string };
 
@@ -55,13 +56,21 @@ export function LendingForm({
         <label className="mb-1 block font-[var(--font-sans)] text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
           {dict.book}
         </label>
-        <select value={bookId} onChange={(e) => setBookId(e.target.value)} className={inputCls}>
-          {books.map((book) => (
-            <option key={book.id} value={book.id}>
-              {book.title}
-            </option>
-          ))}
-        </select>
+        <Select value={bookId} onValueChange={(v) => setBookId(v ?? "")}>
+          <SelectTrigger
+            className="w-full rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)]"
+            aria-label={dict.book}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {books.map((book) => (
+              <SelectItem key={book.id} value={book.id}>
+                {book.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="min-w-[160px]">
         <label className="mb-1 block font-[var(--font-sans)] text-[11px] font-medium uppercase tracking-widest text-muted-foreground">

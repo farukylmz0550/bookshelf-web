@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { test, expect } from "@playwright/test";
+import { pickSelectOption, setBookStatusUI } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
 
@@ -36,7 +37,7 @@ test.describe("Annual Summary (v2.7.0)", () => {
     const finishPost = page.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/books/"), {
       timeout: 15000,
     });
-    await page.locator('select:has(option[value="FINISHED"])').first().selectOption("FINISHED");
+    await setBookStatusUI(page, "Finished");
     await finishPost.catch(() => {});
     await page.goto("/stats");
     await expect(page.getByRole("heading", { name: /annual summary/i })).toBeVisible();
@@ -48,7 +49,7 @@ test.describe("Annual Summary (v2.7.0)", () => {
     await expect(page.getByText(/no reading data for 2020/i)).toBeVisible();
     const select = page.getByRole("combobox");
     await expect(select).toBeVisible();
-    await select.selectOption({ label: String(new Date().getFullYear()) });
+    await pickSelectOption(page, select, { label: String(new Date().getFullYear()) });
     await expect(page).toHaveURL(/year=\d+/);
   });
 });
@@ -84,7 +85,7 @@ test.describe("Reading flow (v2.7.0)", () => {
     const readPost = page.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/books/"), {
       timeout: 15000,
     });
-    await page.locator('select:has(option[value="FINISHED"])').first().selectOption("READING");
+    await setBookStatusUI(page, "Reading");
     await readPost.catch(() => {});
     await page.goto("/books");
     const button = page.locator('button:has-text("Read 20 pages")');

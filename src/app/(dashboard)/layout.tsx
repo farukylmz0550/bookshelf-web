@@ -8,6 +8,7 @@ import { needsSetup } from "@/lib/setup";
 import { Sidebar } from "@/components/sidebar";
 import { BottomNav } from "@/components/bottom-nav";
 import { InstallPrompt } from "@/components/install-prompt";
+import { AccountGates, type GateDict } from "@/components/account-gates";
 import { NotificationPerm } from "./notification-perm";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -16,10 +17,26 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const dict = await getDictionary();
 
   let isAdmin = false;
+  let totpEnabled = false;
+  let mustChangePassword = false;
+  let sessionValid = false;
   if (session?.user?.id) {
     const { db } = await import("@/lib/db");
-    const u = await db.user.findUnique({ where: { id: session.user.id }, select: { isAdmin: true } });
-    isAdmin = !!u?.isAdmin;
+    const u = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { isAdmin: true, totpEnabled: true, mustChangePassword: true },
+    });
+    if (u) {
+      // Stale JWT sessions (e.g. after a wipe) must not grant a ghost session.
+      sessionValid = true;
+      isAdmin = !!u.isAdmin;
+      totpEnabled = !!u.totpEnabled;
+      mustChangePassword = u.mustChangePassword;
+    }
+  }
+  if (session?.user && !sessionValid) {
+    const { signOut } = await import("@/auth");
+    await signOut({ redirectTo: "/login" });
   }
 
   const sidebarCollapsed = (await cookies()).get("sidebar-collapsed")?.value === "1";
@@ -93,6 +110,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
         dict={{ books: dict.nav.books, lending: dict.nav.lending, stats: dict.nav.stats, more: dict.nav.more }}
       />
       <InstallPrompt />
+      <AccountGates
+        mustChangePassword={mustChangePassword}
+        // Dev/e2e skip the admin gate — mandatory TOTP applies to real
+        // (production) self-hosted deployments only.
+        requireTotp={process.env.NODE_ENV === "production" && isAdmin && !totpEnabled}
+        dict={dict.security as unknown as GateDict}
+      />
     </div>
   );
 }

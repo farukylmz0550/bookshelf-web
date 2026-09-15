@@ -8,6 +8,7 @@ import { defaultAppSettings } from "@/lib/settings";
 import { UserTable } from "./users/user-table";
 import { ReadingSettingsCard } from "./reading-settings-card";
 import { PageBackfillCard } from "./page-backfill-card";
+import { DangerZoneCard } from "./danger-zone-card";
 
 export default async function AdminPage() {
   const currentUserId = await requireAdminPage();
@@ -114,6 +115,8 @@ export default async function AdminPage() {
           }}
         />
       </section>
+      {/* §5 — Danger zone (v2.10.0) */}
+      <DangerZoneCard dict={{ ...dict.common, ...dict.admin, ...dict.security, cancel: dict.facts.cancel }} />
     </div>
   );
 }

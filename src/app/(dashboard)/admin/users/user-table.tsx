@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { approveUser, rejectUser, toggleAdmin, deleteUser } from "@/app/actions/admin";
+import { toast } from "sonner";
+import { KeyRound } from "lucide-react";
+import { approveUser, rejectUser, toggleAdmin, deleteUser, adminResetPassword } from "@/app/actions/admin";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type User = {
   id: string;
@@ -27,6 +31,8 @@ export function UserTable({
 }) {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+  // v2.10.0 — admin-assigned random password, shown exactly once.
+  const [resetPassword, setResetPassword] = useState<string | null>(null);
 
   function handleApprove(id: string) {
     startTransition(async () => {
@@ -55,6 +61,16 @@ export function UserTable({
       await deleteUser(id);
       router.refresh();
     });
+  }
+
+  async function handleResetPassword(id: string) {
+    const res = await adminResetPassword(id);
+    if (res.ok) {
+      setResetPassword(res.password);
+      router.refresh();
+    } else {
+      toast.error(dict.resetPasswordDesc);
+    }
   }
 
   return (
@@ -126,6 +142,14 @@ export function UserTable({
                 </button>
               )}
               <button
+                onClick={() => handleResetPassword(user.id)}
+                disabled={pending || isSelf || user.isAdmin}
+                title={user.isAdmin ? undefined : dict.resetPasswordDesc}
+                className="rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <KeyRound size={10} className="inline" />
+              </button>
+              <button
                 onClick={() => handleDelete(user.id)}
                 disabled={pending || isSelf}
                 title={isSelf ? dict.cannotActOnSelf : undefined}
@@ -137,6 +161,32 @@ export function UserTable({
           </div>
         );
       })}
+
+      {resetPassword && (
+        <Dialog open onOpenChange={(open) => !open && setResetPassword(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{dict.resetPasswordTitle}</DialogTitle>
+              <DialogDescription>{dict.resetPasswordDone}</DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 font-mono text-sm text-foreground">
+                {resetPassword}
+              </code>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(resetPassword);
+                  toast.success(dict.copiedToast);
+                }}
+              >
+                {dict.copyLabel}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

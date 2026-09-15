@@ -9,6 +9,7 @@ import { shareCardData } from "@/lib/share-card";
 import { pieceForYear } from "@/lib/annual-music";
 import { drawShareCard, exportShareCard } from "./share-image";
 import { MonthlyChart } from "./monthly-chart";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export type AnnualSummaryDict = {
   title: string;
@@ -207,20 +208,27 @@ export function AnnualSummary({
               {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
           )}
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>{dict.selectYear}</span>
-            <select
-              value={selectedYear}
-              onChange={(e) => router.push(`/stats?year=${e.target.value}`, { scroll: false })}
-              className="rounded-[8px] border border-border bg-[var(--surface-elevated)] px-2 py-1.5 font-[var(--font-sans)] text-sm text-foreground"
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span id="annual-year-label">{dict.selectYear}</span>
+            <Select
+              value={String(selectedYear)}
+              onValueChange={(v) => router.push(`/stats?year=${v}`, { scroll: false })}
             >
-              {availableYears.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </label>
+              <SelectTrigger
+                className="rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)]"
+                aria-labelledby="annual-year-label"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableYears.map((year) => (
+                  <SelectItem key={year} value={String(year)}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

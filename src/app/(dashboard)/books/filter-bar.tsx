@@ -3,6 +3,10 @@
 
 import { useState } from "react";
 import { Filters, defaultFilters, SORT_TITLE, SORT_RATING, SORT_YEAR } from "@/lib/books/filters";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const TRIGGER_CLS =
+  "rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)] text-xs";
 
 export function FilterBar({
   onChange,
@@ -51,91 +55,101 @@ export function FilterBar({
       </div>
       {expanded && (
         <div className="mt-3 flex flex-wrap gap-2 border-t border-[var(--border)] pt-3">
-          <select
-            value={filters.searchField}
-            onChange={(e) => update({ searchField: e.target.value })}
-            className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 font-[var(--font-sans)] text-xs font-[var(--font-sans)] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-          >
-            <option value="all">{dict.allFields}</option>
-            <option value="title">{dict.title}</option>
-            <option value="authors">{dict.authors}</option>
-            <option value="isbn">{dict.isbn}</option>
-            <option value="publishers">{dict.publishers}</option>
-          </select>
-          <select
+          <Select value={filters.searchField} onValueChange={(v) => update({ searchField: v ?? "all" })}>
+            <SelectTrigger className={TRIGGER_CLS} aria-label={dict.search}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{dict.allFields}</SelectItem>
+              <SelectItem value="title">{dict.title}</SelectItem>
+              <SelectItem value="authors">{dict.authors}</SelectItem>
+              <SelectItem value="isbn">{dict.isbn}</SelectItem>
+              <SelectItem value="publishers">{dict.publishers}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
             value={String(filters.minRating)}
-            onChange={(e) => update({ minRating: parseInt(e.target.value, 10) })}
-            className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-xs font-[var(--font-sans)] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+            onValueChange={(v) => update({ minRating: parseInt(v ?? "0", 10) })}
           >
-            <option value="0">{dict.anyRating}</option>
-            <option value="5">★★★★★</option>
-            <option value="4">★★★★☆ & up</option>
-            <option value="3">★★★☆☆ & up</option>
-          </select>
-          <select
-            value={filters.status}
-            onChange={(e) => update({ status: e.target.value })}
-            className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-xs font-[var(--font-sans)] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-          >
-            <option value="any">{dict.status}</option>
-            <option value="TO_READ">{dict.toRead ?? "To read"}</option>
-            <option value="READING">{dict.reading ?? "Reading"}</option>
-            <option value="FINISHED">{dict.finished ?? "Finished"}</option>
-          </select>
-          <select
-            value={filters.signed}
-            onChange={(e) => update({ signed: e.target.value })}
-            className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-xs font-[var(--font-sans)] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-          >
-            <option value="any">{dict.signed}</option>
-            <option value="yes">{dict.yes}</option>
-            <option value="no">{dict.no}</option>
-          </select>
-          <select
-            value={filters.lent}
-            onChange={(e) => update({ lent: e.target.value })}
-            className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-xs font-[var(--font-sans)] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-          >
-            <option value="any">{dict.lending}</option>
-            <option value="home">{dict.atHome}</option>
-            <option value="out">{dict.onLoan}</option>
-          </select>
-          <select
-            value={filters.tag}
-            onChange={(e) => update({ tag: e.target.value })}
-            className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-xs font-[var(--font-sans)] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-          >
-            <option value="any">{dict.tag}</option>
-            {tagsInUse.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-          {groups && groups.length > 0 && (
-            <select
-              value={filters.groupId}
-              onChange={(e) => update({ groupId: e.target.value })}
-              className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-xs font-[var(--font-sans)] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-              aria-label={dict.group}
-            >
-              <option value="any">{dict.allGroups}</option>
-              {groups.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.name}
-                </option>
+            <SelectTrigger className={TRIGGER_CLS} aria-label={dict.anyRating}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">{dict.anyRating}</SelectItem>
+              <SelectItem value="5">★★★★★</SelectItem>
+              <SelectItem value="4">★★★★☆ & up</SelectItem>
+              <SelectItem value="3">★★★☆☆ & up</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filters.status} onValueChange={(v) => update({ status: v ?? "any" })}>
+            <SelectTrigger className={TRIGGER_CLS} aria-label={dict.status}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">{dict.status}</SelectItem>
+              <SelectItem value="TO_READ">{dict.toRead ?? "To read"}</SelectItem>
+              <SelectItem value="READING">{dict.reading ?? "Reading"}</SelectItem>
+              <SelectItem value="FINISHED">{dict.finished ?? "Finished"}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filters.signed} onValueChange={(v) => update({ signed: v ?? "any" })}>
+            <SelectTrigger className={TRIGGER_CLS} aria-label={dict.signed}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">{dict.signed}</SelectItem>
+              <SelectItem value="yes">{dict.yes}</SelectItem>
+              <SelectItem value="no">{dict.no}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filters.lent} onValueChange={(v) => update({ lent: v ?? "any" })}>
+            <SelectTrigger className={TRIGGER_CLS} aria-label={dict.lending}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">{dict.lending}</SelectItem>
+              <SelectItem value="home">{dict.atHome}</SelectItem>
+              <SelectItem value="out">{dict.onLoan}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filters.tag} onValueChange={(v) => update({ tag: v ?? "any" })}>
+            <SelectTrigger className={TRIGGER_CLS} aria-label={dict.tag}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">{dict.tag}</SelectItem>
+              {tagsInUse.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
               ))}
-            </select>
+            </SelectContent>
+          </Select>
+          {groups && groups.length > 0 && (
+            <Select value={filters.groupId} onValueChange={(v) => update({ groupId: v ?? "any" })}>
+              <SelectTrigger className={TRIGGER_CLS} aria-label={dict.group}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">{dict.allGroups}</SelectItem>
+                {groups.map((g) => (
+                  <SelectItem key={g.id} value={g.id}>
+                    {g.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
-          <select
-            value={filters.sort}
-            onChange={(e) => update({ sort: e.target.value })}
-            className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-xs font-[var(--font-sans)] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-          >
-            <option value={SORT_TITLE}>{dict.sortByTitle}</option>
-            <option value={SORT_RATING}>{dict.sortByRating}</option>
-            <option value={SORT_YEAR}>{dict.sortByYear}</option>
-          </select>
+          <Select value={filters.sort} onValueChange={(v) => update({ sort: v ?? SORT_TITLE })}>
+            <SelectTrigger className={TRIGGER_CLS} aria-label={dict.sortByTitle}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={SORT_TITLE}>{dict.sortByTitle}</SelectItem>
+              <SelectItem value={SORT_RATING}>{dict.sortByRating}</SelectItem>
+              <SelectItem value={SORT_YEAR}>{dict.sortByYear}</SelectItem>
+            </SelectContent>
+          </Select>
           <button
             onClick={() => update({ asc: !filters.asc })}
             className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-xs font-[var(--font-sans)] text-foreground"

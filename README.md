@@ -10,12 +10,12 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-2.9.6-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-2.10.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-> **Feature-freeze:** 2.9.0 and onward are patch releases only (bugfix / security / performance — no behavior, schema or feature changes). See [`CHANGELOG.md`](CHANGELOG.md).
+> **2.10.0** lifts the 2.9.x feature freeze: Shelves rename, bulk shelf picker, optional TOTP 2FA (mandatory for admins), admin danger zone with TOTP confirmation and admin-assigned password resets. See [`CHANGELOG.md`](CHANGELOG.md).
 
 *Self-hosted · Private · No tracking · Your books, your data.*
 
@@ -35,7 +35,7 @@
 |---|---|
 | 📚 **Library** | One-click ISBN (Open Library, full metadata: publishers, dates, languages, subjects, ISBN10/13) + detailed manual form (arrow → 14 fields) · Card/List toggle · Excel import/export |
 | 🎴 **Cards** | Equal `h-[380px]` **60% cover / 40% meta** · `object-contain` · 12px radius · `2→3→4` responsive grid |
-| 🗂️ **Groups** | Personal shelves — create/rename/delete/reorder, optional color · many-to-many books · dedicated `/groups/[id]` grid view · main-page group filter (AND with tags/status/search) |
+| 🗂️ **Shelves** | Create/rename/delete/reorder, optional color · bulk picker dialog (+ button per shelf — select books, one "Add" click) · many-to-many books · dedicated `/groups/[id]` grid view · main-page shelf filter (AND with tags/status/search) |
 | 🤝 **Lending** | Lend / return, copy-aware, auto Person creation |
 | 👥 **People** | Trust scores + lending history |
 | 📊 **Stats** | Total/finished/reading, avg days, monthly chart, streak widget, heatmap |
@@ -43,12 +43,13 @@
 | 🏆 **Leaderboard** | Top ranking, opt-out |
 | 🎯 **Goals** | Yearly / monthly targets |
 | 👤 **Profile** | Name, password, XP, join date |
+| 🔢 **TOTP 2FA** | Optional TOTP (QR enrollment in Settings → Security) · mandatory for admin accounts · throttled per-account login attempts |
 | 🌍 **i18n** | 6 languages (EN/TR/ES/FR/RU/ZH) — cookie, `src/i18n/dictionaries` |
 | 🌓 **Theme** | Light ` #FAF0E1 / #BB4F35` · Dark ` #1D2020 / #C17A5E` · Noto · Sun/Moon SVG · Settings-only |
 | 🍪 **Consent** | GDPR banner — desktop modal + mobile bar (Essential/Preferences/Analytics) |
 | 🖥️ **Shell** | Collapsible sidebar (desktop, `sidebar-collapsed` cookie) + bottom nav (mobile) · `viewport-fit=cover` · safe-area |
 | 📦 **PWA** | `manifest.json` shortcuts · `sw.js` · install prompt |
-| 🔐 **Admin** | Approve/reject, promote/demote, delete users + cover cache (bottom of sidebar) · admins cannot act on their own account |
+| 🔐 **Admin** | Approve/reject, promote/demote, delete users · cover cache · admin-assigned password resets (forced change at next login) · TOTP-confirmed danger zone that deletes all non-admin accounts · admins cannot act on their own account |
 | 🎴 **Brand** | `brand/` set — Color + Symbolic masters, all icons rendered from the Color Master |
 | 🐳 **Docker** | `ghcr.io/farukylmz0550/bookshelf` — one command |
 
@@ -316,6 +317,8 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) — TypeScript strict, Prettier 120 wid
 **GPLv3** — Only source code is licensed under the GPLV3 license
 
 **CC-BY-NC-ND** — The Book Shelf logo, brand assets, and all materials contained within the brand set directory are licensed under the CC BY-NC-ND 4.0 license.
+
+**CC0** — The rendered music files in `public/audio/annual/` are licensed under the CC0 1.0 Universal license (dedicated to the public domain) — see [`LICENSE-CC0`](LICENSE-CC0).
 
 **Book Shelf** — is an unregistered trademark that identifies the Book Shelf project and the brand associated with the project.
 

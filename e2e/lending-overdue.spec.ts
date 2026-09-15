@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { test, expect } from "@playwright/test";
+import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
 
@@ -22,7 +23,7 @@ test.describe("lending due dates + overdue reminders", () => {
     await page.goto("/lending");
     const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const iso = future.toISOString().slice(0, 10);
-    await page.locator("select").first().selectOption({ label: "Due Date Book" });
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Book" }), { label: "Due Date Book" });
     await page.getByPlaceholder("Name").fill("Friend One");
     await page.locator('input[type="date"]').fill(iso);
     await page.getByRole("button", { name: /^lend$/i }).click();
