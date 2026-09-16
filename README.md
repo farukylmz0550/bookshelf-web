@@ -53,6 +53,19 @@
 | 🎴 **Brand** | `brand/` set — Color + Symbolic masters, all icons rendered from the Color Master |
 | 🐳 **Docker** | `ghcr.io/farukylmz0550/bookshelf` — one command |
 
+### 📚 Documentation
+
+| Document | Contents |
+|---|---|
+| [`CHANGELOG.md`](CHANGELOG.md) | Notable changes in every release |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Symptom → cause → fix guides for self-hosting and daily use |
+| [`SECURITY.md`](SECURITY.md) | How to report vulnerabilities, supported versions, scope |
+| [`NOTICE.md`](NOTICE.md) | License table per directory (code, brand, audio) |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Dev workflow, code style, testing before push |
+| [`brand/README.md`](brand/README.md) | Brand set: masters, rendered icons, regeneration, usage rules |
+| [`public/audio/annual/README.md`](public/audio/annual/README.md) | CC0 annual-summary music track list & metadata |
+| [`LICENSE-GPLV3`](LICENSE-GPLV3) / [`LICENSE-CC-BY-NC-ND`](LICENSE-CC-BY-NC-ND) / [`LICENSE-CC0`](LICENSE-CC0) | Full license texts |
+
 ---
 
 ## 📸 Screenshots
