@@ -3,17 +3,16 @@
 ## Reporting a Vulnerability
 
 GitHub issues are **public** — do not post sensitive details (exploit steps,
-secrets, user data) there. Three reporting paths, by sensitivity:
+secrets, user data) there. Two reporting paths, by sensitivity:
 
-1. **Public bug reports (no security impact)** — ordinary GitHub issues.
-2. **Security-sensitive vulnerability reports** — GitHub issue tracker with
-   the `security` label, describing impact at a high level and omitting
-   exploit details that would put self-hosted instances at risk (the reporter
-   can share full reproduction steps privately on request).
-3. **Highly sensitive reports** (an exploit that would endanger running
-   deployments, or anything that should not be visible until fixed) — open an
-   issue containing no sensitive details and the maintainer will provide a
-   private channel.
+1. **Public / low-sensitivity reports** — ordinary GitHub issues (normal bug
+   reports, and security reports whose details would not put running
+   deployments at risk; describe impact at a high level and omit exploit
+   steps).
+2. **Highly sensitive reports** (an exploit that would endanger running
+   deployments, secrets, or anything that should not be visible until fixed)
+   — **contact the maintainer directly by email**:
+   [farukylmz0550@gmail.com](mailto:farukylmz0550@gmail.com)
 
 When reporting, please include:
 
