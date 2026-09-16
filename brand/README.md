@@ -15,7 +15,7 @@ All icons and logos are rendered from the masters. Never edit generated files di
 | `Bookshelf — Color Master.svg` | Full-color logo — **primary master**, source of every colored asset |
 | `Bookshelf — Symbolic Master.svg` | Monochrome/symbolic usage (masks, monochrome UI contexts) |
 
-Masters are kept in both the repository root and this directory.
+Masters live in this directory only — single source of truth.
 
 ## Generated Icons (`icons/`)
 
@@ -35,18 +35,18 @@ Rendered from `Bookshelf — Color Master.svg` with librsvg (`rsvg-convert` / Im
 
 ```bash
 # SVG copies
-cp "Bookshelf — Color Master.svg" public/icon.svg
-cp "Bookshelf — Color Master.svg" public/logo.svg
+cp "brand/Bookshelf — Color Master.svg" public/icon.svg
+cp "brand/Bookshelf — Color Master.svg" public/logo.svg
 
 # Rasters (librsvg delegate required: magick -list format | grep SVG)
-magick -background none "Bookshelf — Color Master.svg" -resize 192x192 icon-192.png
-magick -background none "Bookshelf — Color Master.svg" -resize 512x512 icon-512.png
-magick -background none "Bookshelf — Color Master.svg" -resize 512x512 icon.png
-magick -background none "Bookshelf — Color Master.svg" -resize 180x180 apple-touch-icon.png
-magick -background none "Bookshelf — Color Master.svg" -define icon:auto-resize=16,32,48 favicon.ico
+magick -background none "brand/Bookshelf — Color Master.svg" -resize 192x192 icon-192.png
+magick -background none "brand/Bookshelf — Color Master.svg" -resize 512x512 icon-512.png
+magick -background none "brand/Bookshelf — Color Master.svg" -resize 512x512 icon.png
+magick -background none "brand/Bookshelf — Color Master.svg" -resize 180x180 apple-touch-icon.png
+magick -background none "brand/Bookshelf — Color Master.svg" -define icon:auto-resize=16,32,48 favicon.ico
 
 # Maskable icon — artwork scaled to ~74% and centered on the app background
-magick -background none -density 144 "Bookshelf — Color Master.svg" -resize 378x378 content.png
+magick -background none -density 144 "brand/Bookshelf — Color Master.svg" -resize 378x378 content.png
 magick -background "#E5D9D4" content.png -gravity center -background "#E5D9D4" -extent 512x512 icon-512-maskable.png
 ```
 

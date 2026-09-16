@@ -378,7 +378,7 @@ Both projects continue under GPLv3.
 > - **§19 Technical QA (done):** tsc ✅ · lint ✅ (1 pre-existing warning: setup-server no-location-assign) · format:check ✅ · unit 97/97 ✅ · e2e 25/25 ✅ · production build ✅ · console errors clean ✅
 > - **Remaining:** Brand Set folder + README (§3), README screenshots/release notes (§20), final user testing (§21), per-page fine-tuning (§4–10 hover/selected/state visuals), responsive + a11y detail sweep (§12–13).
 >
-> ⚠️ **LOGO SOURCES:** `Bookshelf — Color Master.svg` and `Bookshelf — Symbolic Master.svg` (repository root).
+> ⚠️ **LOGO SOURCES:** `brand/Bookshelf — Color Master.svg` and `brand/Bookshelf — Symbolic Master.svg` (single source of truth — root copies removed in 2.10.x).
 > **ALL** assets, including the favicon, will be generated from these two master SVGs:
 > **Color Master** → colored icons (`icon.svg`, `logo.svg`, `icon-192/512.png`, `apple-touch-icon.png`, `favicon.ico`)
 > **Symbolic Master** → semantic/monochrome usage.

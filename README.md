@@ -330,7 +330,7 @@ Forked and modified versions of the software may be used and distributed under t
 
 The Book Shelf name or logo must not be used in a way that creates the impression that a project is approved, supported, endorsed, or officially associated with Book Shelf.
 
-**Master files:** [`Bookshelf — Color Master.svg`](https://github.com/farukylmz0550/bookshelf-web/blob/main/Bookshelf%20%E2%80%94%20Color%20Master.svg) · [`Bookshelf — Symbolic Master.svg`](https://github.com/farukylmz0550/bookshelf-web/blob/main/Bookshelf%20%E2%80%94%20Symbolic%20Master.svg)
+**Master files:** [`brand/Bookshelf — Color Master.svg`](https://github.com/farukylmz0550/bookshelf-web/blob/main/brand/Bookshelf%20%E2%80%94%20Color%20Master.svg) · [`brand/Bookshelf — Symbolic Master.svg`](https://github.com/farukylmz0550/bookshelf-web/blob/main/brand/Bookshelf%20%E2%80%94%20Symbolic%20Master.svg)
 
 <div align="center">
 
