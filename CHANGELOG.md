@@ -3,6 +3,23 @@
 All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0.
 
+## 2.10.1 — 2026-09-15
+
+### Added
+
+- **Troubleshooting guide** — new root [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md):
+  symptom → cause → fix documentation for self-hosting and daily use, covering
+  Docker startup failures (readonly data volume, crash-loop, UntrustedHost,
+  relative DATABASE_URL), backups, the full rate-limit table, lost-authenticator
+  recovery commands for TOTP, manual admin password reset, admin guards,
+  ISBN/lookup failures, lending and import errors, cookie-gated theme
+  persistence, notifications/cron, PWA offline behavior and dev-environment
+  recipes. Linked from the README Quick Start.
+
+### QA
+
+- `format:check` ✅ · `lint` ✅ (1 pre-existing warning)
+
 ## 2.10.0 — 2026-09-15
 
 The 2.9.x feature freeze is lifted — this is the first feature release since
