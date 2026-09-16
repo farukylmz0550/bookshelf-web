@@ -88,6 +88,8 @@
 
 ## 🚀 Quick Start
 
+> **Problems?** See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — startup, login/TOTP recovery, lending, import, PWA and dev-environment fixes.
+
 ### Docker — pre-built (easiest)
 
 ```bash
