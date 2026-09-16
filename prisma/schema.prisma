@@ -159,12 +159,20 @@ model Goal {
 }
 
 // Static catalog of achievements; titleKey/descriptionKey reference i18n message keys.
+// v2.11.0 — recurrence: NONE = permanent (unlock once), MONTHLY = re-earnable
+// every calendar month (period-scoped unlock records).
+enum AchievementRecurrence {
+  NONE
+  MONTHLY
+}
+
 model Achievement {
-  id             String @id @default(cuid())
-  key            String @unique
+  id             String                @id @default(cuid())
+  key            String                @unique
   titleKey       String
   descriptionKey String
   iconKey        String
+  recurrence     AchievementRecurrence @default(NONE)
 
   unlockedBy UserAchievement[]
 }
@@ -175,9 +183,15 @@ model UserAchievement {
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   achievementId String
   achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  // v2.11.0 — unlock period: "" = permanent (no period), "YYYY-MM" = monthly
+  // period. SQLite treats NULLs as distinct in unique indexes, so a non-null
+  // sentinel ("" for permanent) is what actually makes the constraint below
+  // enforce one-unlock-per-user-per-achievement-per-period.
+  periodKey     String      @default("")
   unlockedAt    DateTime    @default(now())
 
-  @@unique([userId, achievementId])
+  @@unique([userId, achievementId, periodKey])
+  @@index([userId])
 }
 
 model DailyActivity {

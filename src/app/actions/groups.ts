@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
+import { syncAchievements } from "@/lib/gamification";
 import { applyReorder, validateGroupColor, validateGroupName } from "@/lib/groups";
 
 type ActionResult = { ok: true } | { ok: false; error: string };
@@ -65,6 +66,10 @@ export async function createGroup(name: unknown, color?: unknown): Promise<Actio
       });
     });
     revalidateGroups();
+    // v2.11.0 — shelf-based achievements (first_shelf)
+    try {
+      await syncAchievements(userId);
+    } catch {}
     return { ok: true, groupId: group.id };
   } catch (e) {
     return fail(dbErrorMessage(e) === "DUPLICATE" ? "DUPLICATE_NAME" : dbErrorMessage(e));
@@ -215,6 +220,10 @@ export async function addBooksToGroup(
     );
     revalidateGroups();
     for (const item of toAdd) revalidatePath(`/books/${item.bookId}`);
+    // v2.11.0 — hook point for future shelf-based achievements
+    try {
+      await syncAchievements(userId);
+    } catch {}
     return { ok: true, added: toAdd.length };
   } catch (e) {
     return { ok: false, error: dbErrorMessage(e) };

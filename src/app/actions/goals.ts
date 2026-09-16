@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { isGoalUnlocked } from "@/lib/goals";
+import { syncAchievements } from "@/lib/gamification";
 
 /**
  * v2.7.0 — targets are confirmed once per calendar year and stay locked until
@@ -28,5 +29,10 @@ export async function confirmGoals(yearly: number, monthly: number): Promise<{ o
     create: { userId, yearly: y, monthly: m, targetYear: currentYear, confirmedAt: new Date() },
   });
   revalidatePath("/stats");
+  // v2.11.0 — goal achievements (first_goal / monthly_goal); evaluation is
+  // cheap and also runs from every reading action, so failures stay silent.
+  try {
+    await syncAchievements(userId);
+  } catch {}
   return { ok: true };
 }

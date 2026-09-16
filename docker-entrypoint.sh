@@ -4,23 +4,8 @@ set -e
 echo "Running database migrations..."
 DATABASE_URL="${DATABASE_URL:-file:./prisma/dev.db}" npx prisma migrate deploy
 
-echo "Checking if seed is needed..."
-SEED_NEEDED=$(node -e "
-const Database = require('better-sqlite3');
-const path = require('path');
-const dbPath = (process.env.DATABASE_URL || 'file:./prisma/dev.db').replace(/^file:/, '').replace(/^\"|\"$/g, '');
-const db = new Database(dbPath);
-const count = db.prepare('SELECT COUNT(*) as c FROM Achievement').get();
-console.log(count.c === 0 ? 'yes' : 'no');
-db.close();
-" 2>/dev/null || echo "yes")
-
-if [ "$SEED_NEEDED" = "yes" ]; then
-  echo "Seeding achievements..."
-  node prisma/seed.cjs
-else
-  echo "Achievements already seeded, skipping."
-fi
+echo "Seeding achievements (idempotent — creates missing catalog rows only)..."
+node prisma/seed.cjs
 
 echo "Starting server..."
 exec node server.js

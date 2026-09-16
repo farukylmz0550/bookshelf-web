@@ -18,6 +18,7 @@ async function main() {
         titleKey: `${rule.key}_title`,
         descriptionKey: `${rule.key}_desc`,
         iconKey: rule.key,
+        recurrence: rule.recurrence === "MONTHLY" ? "MONTHLY" : "NONE",
       },
     });
   }

@@ -40,15 +40,26 @@ export default async function AchievementsPage() {
                 <p className="font-[var(--font-serif)] text-[13px] font-medium text-foreground">
                   {labels[`${achievement.key}_title`]}
                 </p>
-                {isUnlocked && (
+                {isUnlocked ? (
                   <span className="rounded-full bg-[var(--accent)] px-2 py-0.5 font-[var(--font-sans)] text-[10px] font-medium text-white">
                     {dict.achievements.unlocked}
                   </span>
+                ) : (
+                  achievement.recurrence === "MONTHLY" && (
+                    <span className="rounded-full border border-[var(--border)] bg-[var(--info-soft)] px-2 py-0.5 font-[var(--font-sans)] text-[10px] font-medium text-[var(--info-text)]">
+                      {dict.achievements.monthlyBadge}
+                    </span>
+                  )
                 )}
               </div>
               <p className="mt-1 font-[var(--font-sans)] text-xs text-muted-foreground">
                 {labels[`${achievement.key}_desc`]}
               </p>
+              {achievement.recurrence === "MONTHLY" && (
+                <p className="mt-1 font-[var(--font-sans)] text-[10px] text-muted-foreground/80">
+                  {dict.achievements.earnsMonthly}
+                </p>
+              )}
             </div>
           );
         })}

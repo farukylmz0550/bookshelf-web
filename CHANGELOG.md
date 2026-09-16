@@ -3,6 +3,47 @@
 All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0.
 
+## 2.11.0 — 2026-09-16
+
+### Added
+
+- **Permanent + monthly achievements** — `Achievement.recurrence` (NONE /
+  MONTHLY) and period-based unlock records (`UserAchievement.periodKey`:
+  `""` = permanent, `"YYYY-MM"` = monthly UTC period; unique per
+  user+achievement+period). Catalog grows 8 → 21: finishing milestones
+  (10/25/50/100 books), lifetime page totals (1k/5k/10k), first shelf, first
+  yearly-goal completion, and five re-earnable monthly achievements
+  (3 or 5 books finished, 500 pages, 7 distinct reading days, monthly goal
+  completion). Every achievement has an explicit XP value (single
+  `ACHIEVEMENT_XP` map); monthly XP re-awards each period automatically — no
+  cron, period keys roll over with the calendar.
+- **Exactly-once unlock engine** — `syncAchievements()` evaluates permanent
+  and monthly rules from one pure evaluator (lifetime + UTC-period stats:
+  finishedAt-based finishes, DailyActivity pages/days, goal read events) and
+  creates unlock rows + XP in a single transaction, so repeated
+  synchronization never duplicates achievements or XP. New sync hooks:
+  createGroup, addBooksToGroup, confirmGoals.
+- **Achievements UI** — monthly achievements carry a localized "Monthly"
+  badge and an earns-again-next-month hint; previous months remain as
+  historical records.
+- **Books page reading CTA** — a header "Read N pages" button, visible as
+  soon as the page opens while a READING book exists; one tap logs the
+  configured step for a single reading book, multiple books get a picker, and
+  page-less books reuse the page-count prompt.
+
+### Fixed
+
+- **Seed drift** — the Docker seed (`seed.cjs`) referenced a stale
+  `streak_shield` achievement instead of `century_streak`; the catalog is now
+  generated from the shared rule set and the entrypoint seeds idempotently on
+  every boot, so new achievements reach existing deployments.
+
+### QA
+
+- tsc ✅ · lint ✅ (1 pre-existing warning) · format ✅ · unit 212/212 ✅ ·
+  e2e 42/42 ✅ · migration `20260916150239_achievement_recurrence_and_periods`
+  preserves existing achievement history ✅
+
 ## 2.10.1 — 2026-09-15
 
 ### Added

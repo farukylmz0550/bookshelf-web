@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
-> Last updated: 2026-09-15
-> Version: 2.10.1
+> Last updated: 2026-09-16
+> Version: 2.11.0
 > Branch: main
 
 ---
@@ -51,7 +51,7 @@ bookshelf/
 │   │   │   ├── groups/           # Shelves manager + [id] detail + bulk shelf picker (v2.10.0)
 │   │   │   ├── people/           # People directory and history
 │   │   │   ├── stats/            # Statistics, goals, charts, streak, heatmap
-│   │   │   ├── achievements/     # Achievement badges (grid)
+│   │   │   ├── achievements/     # Achievement badges (grid, monthly badge pill)
 │   │   │   ├── leaderboard/      # XP ranking
 │   │   │   ├── profile/          # Edit name, change password
 │   │   │   ├── settings/         # Notifications + appearance + language + security (TOTP) + licenses link
@@ -74,7 +74,8 @@ bookshelf/
 │   │   ├── books/                # Book domain logic + filters + openlibrary
 │   │   ├── cookies.ts / cookies-client.ts / cookies-shared.ts # Consent helpers
 │   │   ├── db.ts                 # Prisma client singleton
-│   │   ├── gamification.ts       # XP, levels, achievements (DB)
+│   │   ├── gamification.ts       # XP, levels, achievements (DB; syncAchievements = permanent + monthly periods)
+│   ├── gamification-pure.ts  # Pure functions (Fibonacci, streak, ACHIEVEMENT_RULES + ACHIEVEMENT_XP)
 │   │   ├── gamification-pure.ts  # Pure functions (Fibonacci, streak)
 │   │   ├── goals.ts              # Goal math
 │   │   ├── isbn.ts               # ISBN lookup (full metadata)
@@ -120,8 +121,8 @@ User ──────┬── Book ──────── LendingRecord
 | **Person** | name (unique per user), auto-created on lending |
 | **LendingRecord** | book, borrower, lentAt, returnedAt, denormalized bookTitle, personId |
 | **Goal** | yearly, monthly targets per user |
-| **Achievement** | key, titleKey, descriptionKey, iconKey (i18n) — 8 achievements (week/month/century streak incl.) |
-| **UserAchievement** | user + achievement link with unlock date |
+| **Achievement** | key, titleKey/descriptionKey/iconKey (i18n), recurrence (NONE = permanent / MONTHLY, v2.11.0) — 21 achievements |
+| **UserAchievement** | user + achievement link with unlock date + periodKey ("" = permanent, "YYYY-MM" = monthly period; unique per user+achievement+period) |
 | **DailyActivity / StreakShield / UserSettings / PushSubscription** | streak & notification tracking |
 
 ---
@@ -298,6 +299,14 @@ Both projects continue under GPLv3.
 ---
 
 ## 13. Tomorrow's TODO — BookShelf UI/Branding Overhaul
+
+> ✅ **PROGRESS — 2026-09-16 (v2.11.0 — permanent + monthly achievements, books page-log CTA):**
+> - **Recurrence model:** `Achievement.recurrence` (NONE/MONTHLY) + `UserAchievement.periodKey` ("" = permanent, "YYYY-MM" = monthly **UTC** period); `@@unique([userId, achievementId, periodKey])` — "" sentinel because SQLite treats NULLs as distinct in unique indexes. Migration `20260916150239_achievement_recurrence_and_periods` preserves existing rows.
+> - **Catalog 8 → 21:** permanent adds books_25/50/100, pages_1000/5000/10000, first_shelf, first_goal; monthly adds monthly_reader (3 finished), monthly_bookworm (5), monthly_page_turner (500 pages), monthly_regular_reader (7 distinct days), monthly_goal (monthly target). XP centralized in `ACHIEVEMENT_XP`.
+> - **Engine:** `syncAchievements(userId, now?)` — UTC period (`currentPeriodKey`/`periodBounds`); lifetime pages = DailyActivity sum; monthly finished = `Book.finishedAt`; goal checks = read events (goal-UI convention). Unlock rows + XP in one `$transaction` → exactly-once per period; P2002 race → silent no-op. New hooks: createGroup / addBooksToGroup / confirmGoals.
+> - **Seed:** seed.ts derives recurrence from rules; seed.cjs rebuilt (fixes the stale streak_shield vs century_streak divergence); entrypoint seeds idempotently on every boot (new keys reach existing deployments too).
+> - **UI:** "Monthly" badge + earns-monthly hint on /achievements; /books header page-log CTA (`page-log-cta.tsx`, picker for multiple READING books, page-count prompt for page-less ones).
+> - **QA:** tsc ✅ lint ✅ format ✅ unit 212/212 ✅ e2e 42/42 ✅ (annual-summary strict-mode selector updated for the two "Read 20 pages" buttons).
 
 > ✅ **PROGRESS — 2026-09-14 (v2.9.6 — page-log UX, streak feedback, page-count backfill):**
 > - **Diagnosis (live prod DB):** the page-log button always worked (33 presses recorded, XP + activity rows written). "Streak not increasing" was day-based-streak semantics + no visible feedback; ALL 188 books had `numberOfPages = null` (Goodreads import enriched pages only when OL had them; 3-consecutive-failure abort killed enrichment mid-run).

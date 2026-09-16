@@ -10,12 +10,12 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-2.10.1-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-2.11.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-> **2.10.0** lifts the 2.9.x feature freeze: Shelves rename, bulk shelf picker, optional TOTP 2FA (mandatory for admins), admin danger zone with TOTP confirmation and admin-assigned password resets. See [`CHANGELOG.md`](CHANGELOG.md).
+> **2.11.0** adds permanent + monthly (re-earnable, period-based) achievements and a page-log CTA on the books page. The 2.10.0 release lifted the 2.9.x freeze: Shelves rename, bulk shelf picker, optional TOTP 2FA (mandatory for admins), admin danger zone with TOTP confirmation and admin-assigned password resets. See [`CHANGELOG.md`](CHANGELOG.md).
 
 *Self-hosted · Private · No tracking · Your books, your data.*
 
@@ -33,13 +33,13 @@
 
 | | Capability |
 |---|---|
-| 📚 **Library** | One-click ISBN (Open Library, full metadata: publishers, dates, languages, subjects, ISBN10/13) + detailed manual form (arrow → 14 fields) · Card/List toggle · Excel import/export |
+| 📚 **Library** | One-click ISBN (Open Library, full metadata: publishers, dates, languages, subjects, ISBN10/13) + detailed manual form (arrow → 14 fields) · header "Read N pages" CTA on first open · Card/List toggle · Excel import/export |
 | 🎴 **Cards** | Equal `h-[380px]` **60% cover / 40% meta** · `object-contain` · 12px radius · `2→3→4` responsive grid |
 | 🗂️ **Shelves** | Create/rename/delete/reorder, optional color · bulk picker dialog (+ button per shelf — select books, one "Add" click) · many-to-many books · dedicated `/groups/[id]` grid view · main-page shelf filter (AND with tags/status/search) |
 | 🤝 **Lending** | Lend / return, copy-aware, auto Person creation |
 | 👥 **People** | Trust scores + lending history |
 | 📊 **Stats** | Total/finished/reading, avg days, monthly chart, streak widget, heatmap |
-| 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level · 8 achievements |
+| 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge |
 | 🏆 **Leaderboard** | Top ranking, opt-out |
 | 🎯 **Goals** | Yearly / monthly targets |
 | 👤 **Profile** | Name, password, XP, join date |

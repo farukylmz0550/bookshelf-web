@@ -271,6 +271,17 @@ describe("levelForXp", () => {
 
 ---
 
+## Releases (maintainer)
+
+1. Bump the version in `package.json` and add a `CHANGELOG.md` entry
+2. Commit + push `main`, then tag: `git tag vX.Y.Z && git push origin vX.Y.Z`
+3. **Every tag gets a matching GitHub Release** — create it right after the tag
+   lands: `gh release create vX.Y.Z --title "X.Y.Z" --notes "<changelog excerpt>"`
+4. Pushing the tag automatically triggers the **Docker Publish** workflow
+   (`ghcr.io/<owner>/bookshelf:latest` + `:X.Y.Z`)
+
+---
+
 ## Adding a New Feature
 
 1. Add domain logic in `src/lib/` as pure functions
