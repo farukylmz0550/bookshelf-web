@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
-> Last updated: 2026-09-14
-> Version: 2.9.6
+> Last updated: 2026-09-15
+> Version: 2.10.1
 > Branch: main
 
 ---
@@ -24,7 +24,7 @@ Web rewrite of the original PyQt6 desktop app (`legacy` branch).
 | UI | Tailwind CSS 4, shadcn/ui, lucide-react, Recharts, Noto Serif/Sans/Mono |
 | Theme | Fine Porcelain × Burnt Ochre (light) / Ink & Copper (dark) — CSS vars `UI_Design_Language.md` |
 | Database | SQLite via Prisma 7 (`better-sqlite3`) |
-| Auth | NextAuth v5 (Credentials, JWT, bcrypt) |
+| Auth | NextAuth v5 (Credentials, JWT, bcrypt, TOTP 2FA) |
 | Validation | Zod |
 | Formatting | Prettier + ESLint |
 | Test | Vitest (unit), Playwright (e2e) |
@@ -48,15 +48,16 @@ bookshelf/
 │   │   │   │   ├── books-grid.tsx         # 2→3→4 cols + view-mode cookie
 │   │   │   │   └── [id]/                  # Book detail, edit, lending, personal
 │   │   │   ├── lending/          # Lending list and form
+│   │   │   ├── groups/           # Shelves manager + [id] detail + bulk shelf picker (v2.10.0)
 │   │   │   ├── people/           # People directory and history
 │   │   │   ├── stats/            # Statistics, goals, charts, streak, heatmap
 │   │   │   ├── achievements/     # Achievement badges (grid)
 │   │   │   ├── leaderboard/      # XP ranking
 │   │   │   ├── profile/          # Edit name, change password
-│   │   │   ├── settings/         # Notifications + theme (Sun/Moon SVG) + language + licenses link
+│   │   │   ├── settings/         # Notifications + appearance + language + security (TOTP) + licenses link
 │   │   │   ├── more/             # Bottom-nav overflow
-│   │   │   └── admin/            # Admin (users, covers) — bottom of sidebar
-│   │   ├── actions/              # Server actions (books, lending, people, goals, excel, profile, covers, admin, locale, theme, logout, settings)
+│   │   │   └── admin/            # Admin (users, covers, reading settings, page backfill, danger zone) — bottom of sidebar
+│   │   ├── actions/              # Server actions (books, lending, people, goals, excel, profile, covers, admin, groups, security, locale, theme, logout, settings)
 │   │   ├── api/                  # API routes (auth, test reset, streak, well-known)
 │   │   ├── login/                # Login page
 │   │   ├── register/             # Registration page
@@ -66,7 +67,8 @@ bookshelf/
 │   │   ├── sidebar.tsx           # Collapsible sidebar (desktop, cookie sidebar-collapsed)
 │   │   ├── bottom-nav.tsx        # Bottom nav (mobile, safe-area)
 │   │   ├── cookie-consent.tsx    # GDPR banner (desktop modal / mobile bar)
-│   │   ├── theme-dropdown.tsx    # Sun/Moon SVG (Lucide ISC)
+│   │   ├── account-gates.tsx     # Blocking gates: forced password change + mandatory admin TOTP (v2.10.0)
+│   │   ├── settings/security-settings.tsx  # TOTP enroll/disable (QR, v2.10.0)
 │   │   └── install-prompt.tsx    # PWA install
 │   ├── lib/
 │   │   ├── books/                # Book domain logic + filters + openlibrary
@@ -79,7 +81,8 @@ bookshelf/
 │   │   ├── person.ts             # Person normalization, trust
 │   │   ├── stats.ts              # Monthly finish counts
 │   │   ├── streak.ts             # Streak calculation
-│   │   └── theme.ts              # Cookie theme (light/dark, Sun/Moon)
+│   │   ├── totp.ts               # TOTP helpers (enroll payload, verify — v2.10.0)
+│   │   └── theme.ts              # Cookie theme (light/dark)
 │   ├── i18n/                     # Dictionaries (en, tr, es, fr, ru, zh)
 │   ├── auth.ts                   # NextAuth config + approval check
 │   ├── proxy.ts                  # Proxy (auth + rate limiting)
@@ -128,7 +131,7 @@ User ──────┬── Book ──────── LendingRecord
 | File | Mutations |
 |-------|------------|
 | `auth.ts` | register (approved=false) |
-| `books.ts` | add (full metadata, one-click ISBN), update, delete, set status, lookupIsbn |
+| `books.ts` | add (full metadata, one-click ISBN), update, set status, log pages, re-read, lookupIsbn, admin page-count backfill |
 | `lending.ts` | create, return |
 | `people.ts` | create, remove |
 | `goals.ts` | set yearly/monthly |
@@ -180,8 +183,8 @@ docker compose up -d --build
 ## 8. Testing
 
 ```bash
-npm test              # 190 unit tests (vitest)
-npx playwright test   # 38 e2e tests (playwright)
+npm test              # vitest unit tests
+npx playwright test   # playwright e2e tests
 npm run lint          # eslint
 npm run format:check  # prettier
 ```
@@ -192,6 +195,8 @@ npm run format:check  # prettier
 
 | Date | Commit | Description |
 |-------|--------|----------|
+| 2026-09-15 | `a26fd16` | `2.10.1`/docs — TROUBLESHOOTING.md + SECURITY.md, README disclaimer + third-party license table, brand set consolidated under `brand/` (root master copies removed) |
+| 2026-09-15 | `bf1f39c` | `2.10.0` — feature-freeze lifted: Groups → Shelves copy (6 dicts, routes/model unchanged), bulk shelf picker dialog (`listBooksForShelfPicker`/`addBooksToGroup`, `shelf-book-picker.tsx`), TOTP 2FA (`otplib`+`qrcode`, migration `20260915153612_add_totp_and_must_change_password`: `totpSecret`/`totpEnabled`/`mustChangePassword`, admin-mandatory gate `account-gates.tsx`, login `TOTP_REQUIRED`/`INVALID_TOTP`), admin danger zone (`wipeNonAdminData`, TOTP-confirmed), admin-assigned forced password resets, native `<select>` → Base UI Select (book-personal, filter-bar ×8, lending-form, annual-summary), licenses page project-licensing block, 193 unit + 42 e2e green |
 | 2026-09-12 | `a1ae69b` | `2.9.1` — SPDX license headers on 206 files (GPL-3.0-only: src/179, root configs, e2e specs, prisma schema+seed, scripts w/ shebang exception; CC-BY-NC-ND-4.0: brand masters + icon/logo svgs) + root NOTICE.md license table; metadata only, prepend-only diff; 218 unit + 42 e2e green |
 | 2026-09-12 | `ddeed16` | `2.9.0` — **feature-freeze begins (patches only from here on)**: AppSettings fixed singleton id `singleton` (atomic upsert; migration `20260912130000_appsettings_singleton_id` dedupes+pins), logPagesRead optimistic lock (currentPage unchanged incl. NULL, conflict on race, XP only after confirmed write, auto-finish +status guard), finishBookWithXp idempotency (fresh check + 10s TTL claim), createGroup order race transaction; dependency overrides (mysql2 ^3.24.4, deepmerge-ts ^8.0.2, uuid ^11.1.1) → npm audit 0; CHANGELOG.md created; 218 unit (incl. race-safety.test.ts ×8) + 42 e2e green |
 | 2026-09-12 | `119fba0` | `2.8.0` — Groups/Shelves: `BookGroup` + `BookGroupMembership` (many-to-many, cascade rules), migration `20260912000000_add_groups`, `src/lib/groups.ts` (pure validation: name ≤60, palette/hex colors `#RRGGBB`, `applyReorder` permutation check), `src/app/actions/groups.ts` (6 ownership-scoped actions: create/rename/delete/reorder/addBookToGroup/removeBookFromGroup, stable error codes), `/groups` manager (dialogs, up/down reorder, palette+hex picker) + `/groups/[id]` detail (existing BooksGrid reuse, empty state), books-page Group filter (AND with tags/status/search), book-card color dots (max 3 + "+n"), book-detail membership chips, sidebar+More nav, 6-lang i18n (31 keys), 210 unit + 42 e2e green |

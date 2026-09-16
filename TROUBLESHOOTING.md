@@ -1,8 +1,8 @@
 # Troubleshooting — Book Shelf
 
 Symptom → cause → fix guides for self-hosted deployments and daily use.
-Everything here is grounded in the actual behavior of the code (branch `main`,
-v2.10.0). Paths in parentheses point at the source file that implements the
+This guide describes the current behavior of `main` as of **v2.10.1**.
+Paths in parentheses point at the source file that implements the
 behavior, so you can verify or patch locally.
 
 > Quick links: [Docker & startup](#1-docker--startup) ·

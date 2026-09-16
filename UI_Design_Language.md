@@ -445,7 +445,7 @@ Primary interaction.
 Contextual action shortcut for touch devices, such as:
 
 - Edit
-- Delete
+- Delete (a generic example — only where a feature actually supports deletion, e.g. shelves; books have no delete action)
 - Lend
 - Other context-specific actions
 

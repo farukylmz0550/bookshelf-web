@@ -200,10 +200,10 @@ npm run dev  # → http://localhost:3000
 | Framework | Next.js 16 (App Router) + TypeScript `strict` |
 | UI | Tailwind 4 · shadcn/ui · lucide-react (Sun/Moon ISC) · Recharts · Noto |
 | DB | SQLite · Prisma 7 (`better-sqlite3`) |
-| Auth | NextAuth v5 (Credentials/JWT/bcrypt, approval guard) |
+| Auth | NextAuth v5 (Credentials/JWT/bcrypt, TOTP 2FA, approval guard) |
 | Validation | Zod (trim, max, url) |
 | Format | Prettier + ESLint (`flat` + `prettier`) |
-| Test | Vitest 97 unit · Playwright 25 e2e |
+| Test | Vitest (unit) · Playwright (e2e) |
 | i18n | Cookie locale, 6 dicts |
 | Theme | Cookie `light/dark` (consent-gated) |
 | PWA | `sw.js` + `manifest.json` + `sw-register.tsx` |
@@ -262,7 +262,7 @@ User ──────┬── Book ──────── LendingRecord
 
 | Model | Key fields |
 |---|---|
-| **User** | email, passwordHash, name, isAdmin, approved, xp, streak |
+| **User** | email, passwordHash, name, isAdmin, approved, xp, streak, totpSecret/totpEnabled/mustChangePassword |
 | **Book** | isbn/title/author/coverUrl/status/rating/tags/copies + subtitle/publishers/publishDate/publishPlaces/edition/series/pages/languages/isbn10/13/subjects (full Open Library) |
 | **Person** | name (unique per user) |
 | **LendingRecord** | book, borrower, lentAt, returnedAt, bookTitle, personId |
@@ -276,7 +276,7 @@ All mutations via `src/app/actions/` — `awardXp()` + `syncAchievements()` afte
 
 | File | Mutations |
 |---|---|
-| `books` | `add` (full meta) · `update` · `delete` · `setStatus` · `lookupIsbn` (one-click) |
+| `books` | `add` (full meta) · `update` · `setStatus` · `logPages` · `reRead` · `lookupIsbn` (one-click) · `backfillPageCounts` (admin) |
 | `lending` | `create` · `return` |
 | `people` | `create` · `remove` |
 | `goals` | `set yearly/monthly` |

@@ -197,9 +197,11 @@ docs/contributing-guide
    npm run lint && npm run format:check && npm test
    ```
 4. Commit with conventional message
-5. Push: `git push origin main`
-6. Repeat for each logical step
-7. Create release (if applicable)
+5. Push: `git push origin <branch-name>`
+6. Repeat for each logical step, then open a PR (see [PR Process](#pr-process))
+
+> **Note:** pushing directly to `main` is reserved for the maintainer's own
+> releases; external contributors go through the branch/PR workflow below.
 
 ---
 

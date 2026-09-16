@@ -2,11 +2,18 @@
 
 ## Reporting a Vulnerability
 
-Please do not disclose security vulnerabilities through public GitHub issues
-when sensitive details are involved (exploit steps, secrets, user data).
-Report vulnerabilities privately through the **GitHub issue tracker** with the
-`security` label and minimal reproduction details, or contact the maintainer
-directly if the issue is highly sensitive.
+GitHub issues are **public** — do not post sensitive details (exploit steps,
+secrets, user data) there. Three reporting paths, by sensitivity:
+
+1. **Public bug reports (no security impact)** — ordinary GitHub issues.
+2. **Security-sensitive vulnerability reports** — GitHub issue tracker with
+   the `security` label, describing impact at a high level and omitting
+   exploit details that would put self-hosted instances at risk (the reporter
+   can share full reproduction steps privately on request).
+3. **Highly sensitive reports** (an exploit that would endanger running
+   deployments, or anything that should not be visible until fixed) — open an
+   issue containing no sensitive details and the maintainer will provide a
+   private channel.
 
 When reporting, please include:
 
