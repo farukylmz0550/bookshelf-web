@@ -148,9 +148,7 @@ export async function addBookToGroup(bookId: string, groupId: string): Promise<A
 }
 
 // v2.10.0 — bulk picker: books the caller may add to one of their shelves.
-export async function listBooksForShelfPicker(
-  groupId: string,
-): Promise<
+export async function listBooksForShelfPicker(groupId: string): Promise<
   | {
       ok: true;
       books: { id: string; title: string; author: string | null; coverUrl: string | null; onShelf: boolean }[];
