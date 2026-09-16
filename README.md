@@ -314,6 +314,20 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) — TypeScript strict, Prettier 120 wid
 
 ---
 
+## ⚠️ Disclaimer
+
+**General Disclaimer**
+
+Book Shelf is provided for organizing, viewing and managing books and book-related information. Information displayed in the app may be provided by third-party sources (e.g. Open Library) and its accuracy, timeliness or completeness is not guaranteed.
+
+Book Shelf is only an auxiliary tool. Information provided by the app does not substitute professional, academic, legal, financial or any other expert advice.
+
+To the extent permitted by applicable law, the developer cannot be held liable for any consequences arising from the use of the app or of the information contained in the app.
+
+Third-party content and services remain subject to their own licenses, terms of use and liability provisions.
+
+---
+
 ## 📄 License
 
 **GPLv3** — Only source code is licensed under the GPLV3 license
@@ -331,6 +345,42 @@ Forked and modified versions of the software may be used and distributed under t
 The Book Shelf name or logo must not be used in a way that creates the impression that a project is approved, supported, endorsed, or officially associated with Book Shelf.
 
 **Master files:** [`brand/Bookshelf — Color Master.svg`](https://github.com/farukylmz0550/bookshelf-web/blob/main/brand/Bookshelf%20%E2%80%94%20Color%20Master.svg) · [`brand/Bookshelf — Symbolic Master.svg`](https://github.com/farukylmz0550/bookshelf-web/blob/main/brand/Bookshelf%20%E2%80%94%20Symbolic%20Master.svg)
+
+### Third-party licenses
+
+Every technology Book Shelf is built on, linked together with its original license text:
+
+| Technology | License |
+|---|---|
+| [Next.js](https://nextjs.org) | [MIT](https://github.com/vercel/next.js/blob/canary/license) |
+| [React](https://react.dev) | [MIT](https://github.com/facebook/react/blob/main/LICENSE) |
+| [NextAuth.js](https://nextjs.authjs.dev) | [ISC](https://github.com/nextauthjs/next-auth/blob/main/license) |
+| [Prisma](https://www.prisma.io) | [Apache-2.0](https://github.com/prisma/prisma/blob/main/LICENSE) |
+| [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) | [MIT](https://github.com/WiseLibs/better-sqlite3/blob/master/LICENSE) |
+| [Tailwind CSS](https://tailwindcss.com) | [MIT](https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE) |
+| [shadcn/ui](https://ui.shadcn.com) | [MIT](https://github.com/shadcn-ui/ui/blob/main/LICENSE.md) |
+| [Lucide](https://lucide.dev) | [ISC](https://github.com/lucide-icons/lucide/blob/main/LICENSE) |
+| [Recharts](https://recharts.org) | [MIT](https://github.com/recharts/recharts/blob/master/LICENSE) |
+| [Zod](https://zod.dev) | [MIT](https://github.com/colinhacks/zod/blob/main/LICENSE.md) |
+| [bcryptjs](https://github.com/dcodeIO/bcrypt.js) | [BSD-3-Clause](https://github.com/dcodeIO/bcrypt.js/blob/master/LICENSE) |
+| [ExcelJS](https://exceljs.org) | [MIT](https://github.com/exceljs/exceljs/blob/master/LICENSE) |
+| [Sonner](https://sonner.emilkowal.ski) | [MIT](https://github.com/emilkowalski/sonner/blob/main/license.md) |
+| [next-themes](https://github.com/pacocoursey/next-themes) | [MIT](https://github.com/pacocoursey/next-themes/blob/main/license) |
+| [otplib](https://otplib.yeojz.dev) | [MIT](https://github.com/yeojz/otplib/blob/main/LICENSE) |
+| [qrcode](https://github.com/soldair/node-qrcode) | [MIT](https://github.com/soldair/node-qrcode/blob/master/license) |
+| [web-push](https://github.com/web-push-libs/web-push) | [MPL-2.0](https://github.com/web-push-libs/web-push/blob/master/LICENSE) |
+| [html5-qrcode](https://github.com/mebjas/html5-qrcode) | [Apache-2.0](https://github.com/mebjas/html5-qrcode/blob/master/LICENSE) |
+| [TypeScript](https://www.typescriptlang.org) | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt) |
+| [ESLint](https://eslint.org) | [MIT](https://github.com/eslint/eslint/blob/main/LICENSE) |
+| [Prettier](https://prettier.io) | [MIT](https://github.com/prettier/prettier/blob/main/LICENSE) |
+| [Vitest](https://vitest.dev) | [MIT](https://github.com/vitest-dev/vitest/blob/main/LICENSE) |
+| [Playwright](https://playwright.dev) | [Apache-2.0](https://github.com/microsoft/playwright/blob/main/LICENSE) |
+| [class-variance-authority](https://cva.tech) | [Apache-2.0](https://github.com/joe-bell/cva/blob/main/LICENSE) |
+| [clsx](https://github.com/lukeed/clsx) | [MIT](https://github.com/lukeed/clsx/blob/master/license) |
+| [tailwind-merge](https://github.com/dcastil/tailwind-merge) | [MIT](https://github.com/dcastil/tailwind-merge/blob/main/license) |
+| [tw-animate-css](https://github.com/Wahbidev/tw-animate-css) | [MIT](https://github.com/wahbidev/tw-animate-css/blob/main/LICENSE) |
+| [Base UI](https://base-ui.com) | [MIT](https://github.com/mui/base-ui/blob/master/LICENSE) |
+| [Docker](https://www.docker.com) | [Apache-2.0](https://github.com/moby/moby/blob/master/LICENSE) |
 
 <div align="center">
 

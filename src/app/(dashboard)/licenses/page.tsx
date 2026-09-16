@@ -24,7 +24,7 @@ const LICENSES: LicenseEntry[] = [
   },
   {
     name: "NextAuth.js",
-    url: "https://next-auth.js.org",
+    url: "https://nextjs.authjs.dev",
     license: "ISC",
     licenseUrl: "https://github.com/nextauthjs/next-auth/blob/main/license",
   },
@@ -72,9 +72,9 @@ const LICENSES: LicenseEntry[] = [
   },
   {
     name: "bcryptjs",
-    url: "https://github.com/nicohman/bcryptjs",
-    license: "MIT",
-    licenseUrl: "https://github.com/nicohman/bcryptjs/blob/master/LICENSE",
+    url: "https://github.com/dcodeIO/bcrypt.js",
+    license: "BSD-3-Clause",
+    licenseUrl: "https://github.com/dcodeIO/bcrypt.js/blob/master/LICENSE",
   },
   {
     name: "ExcelJS",
@@ -95,10 +95,34 @@ const LICENSES: LicenseEntry[] = [
     licenseUrl: "https://github.com/pacocoursey/next-themes/blob/main/license",
   },
   {
+    name: "otplib",
+    url: "https://otplib.yeojz.dev",
+    license: "MIT",
+    licenseUrl: "https://github.com/yeojz/otplib/blob/main/LICENSE",
+  },
+  {
+    name: "qrcode",
+    url: "https://github.com/soldair/node-qrcode",
+    license: "MIT",
+    licenseUrl: "https://github.com/soldair/node-qrcode/blob/master/LICENSE",
+  },
+  {
+    name: "web-push",
+    url: "https://github.com/web-push-libs/web-push",
+    license: "MPL-2.0",
+    licenseUrl: "https://github.com/web-push-libs/web-push/blob/master/LICENSE",
+  },
+  {
+    name: "html5-qrcode",
+    url: "https://github.com/mebjas/html5-qrcode",
+    license: "Apache-2.0",
+    licenseUrl: "https://github.com/mebjas/html5-qrcode/blob/master/LICENSE",
+  },
+  {
     name: "TypeScript",
     url: "https://www.typescriptlang.org",
     license: "Apache-2.0",
-    licenseUrl: "https://github.com/microsoft/TypeScript/blob/main/LICENSE",
+    licenseUrl: "https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt",
   },
   {
     name: "ESLint",
@@ -127,7 +151,7 @@ const LICENSES: LicenseEntry[] = [
   {
     name: "class-variance-authority",
     url: "https://cva.tech",
-    license: "MIT",
+    license: "Apache-2.0",
     licenseUrl: "https://github.com/joe-bell/cva/blob/main/LICENSE",
   },
   {
