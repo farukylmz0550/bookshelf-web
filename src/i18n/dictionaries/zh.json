@@ -355,21 +355,6 @@
     "adminLabel": "管理",
     "actions": "操作",
     "confirmDelete": "确定要删除此用户吗？",
-    "readingSettingsTitle": "阅读设置",
-    "readingSettingsDesc": "BookShelf 中使用的页数与 XP 数值（仅系统管理员）。",
-    "pagesPerReadEvent": "每次阅读记录的页数",
-    "xpBookAdded": "XP · 添加书籍",
-    "xpBookFinishedBase": "XP · 读完书籍（基础）",
-    "xpPagesPer10": "XP · 每 10 页",
-    "xpLending": "XP · 创建借阅",
-    "xpPerLevelBase": "XP · 等级基数",
-    "save": "保存",
-    "settingsSaved": "设置已保存。",
-    "pageBackfillTitle": "页数回填",
-    "pageBackfillDesc": "在 Open Library 上查找没有页数的图书并补全缺失页数（仅限有 ISBN 的图书）。仍有图书时可以再次点击。",
-    "pageBackfillRun": "补全缺失页数",
-    "pageBackfillRunning": "查询中…",
-    "pageBackfillDone": "已为 {filled} 本图书添加 · {missing} 本未找到",
     "dangerZoneTitle": "危险操作",
     "wipeTitle": "删除所有用户数据",
     "wipeDesc": "将删除所有非管理员账户及其书籍、书架、借阅记录、目标和统计。管理员账户和应用设置将保留。此操作无法撤销。",
@@ -466,7 +451,12 @@
     "soundOff": "声音已关闭"
   },
   "settings": {
-    "goalReminders": "目标进度提醒"
+    "goalReminders": "目标进度提醒",
+    "pageBackfillTitle": "页数回填",
+    "pageBackfillDesc": "在 Open Library 上查找没有页数的图书并补全缺失页数（仅限有 ISBN 的图书）。仍有图书时可以再次点击。",
+    "pageBackfillRun": "补全缺失页数",
+    "pageBackfillRunning": "查询中…",
+    "pageBackfillDone": "已为 {filled} 本图书添加 · {missing} 本未找到"
   },
   "notify": {
     "goalMonthStart": "新的一月开始。你本月的阅读目标是 {target} 本书。",
@@ -532,5 +522,20 @@
     "gateChangeCta": "保存新密码",
     "gateTotpTitle": "设置两步验证",
     "gateTotpDesc": "管理员账户必须启用两步验证。请用身份验证器应用扫描二维码并输入当前验证码。"
+  },
+  "kobo": {
+    "title": "Kobo 同步",
+    "desc": "让 Kobo 阅读器直接从本服务器拉取你的书库。创建同步 URL，并在设备的 Kobo eReader.conf 中填入。",
+    "noUrl": "还没有同步 URL",
+    "createUrl": "创建同步 URL",
+    "urlLabel": "在设备上填入的行：",
+    "confTitle": "设备设置",
+    "confDesc": "通过 USB 连接，将 .kobo/Kobo/Kobo eReader.conf 中 [OneStoreServices] 下的 api_endpoint 一行替换为上面的 URL，保存后同步。修改前请先备份文件。",
+    "created": "已创建新的同步 URL（旧 URL 已失效）。",
+    "fileSource": "图书文件 URL 模板",
+    "fileSourcePlaceholder": "https://nas.local/books/{isbn}.epub",
+    "fileSourceHint": "支持 {isbn}、{isbn10} 和 {isbn13} 占位符。只有带 ISBN 的书才能下载到设备。",
+    "saved": "已保存。",
+    "save": "保存"
   }
 }

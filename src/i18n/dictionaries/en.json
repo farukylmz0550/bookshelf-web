@@ -355,21 +355,6 @@
     "adminLabel": "Admin",
     "actions": "Actions",
     "confirmDelete": "Are you sure you want to delete this user?",
-    "readingSettingsTitle": "Reading Settings",
-    "readingSettingsDesc": "System-admin only: page and XP values used across BookShelf.",
-    "pagesPerReadEvent": "Pages per reading log",
-    "xpBookAdded": "XP · book added",
-    "xpBookFinishedBase": "XP · book finished (base)",
-    "xpPagesPer10": "XP · per 10 pages",
-    "xpLending": "XP · lending created",
-    "xpPerLevelBase": "XP · level base",
-    "save": "Save",
-    "settingsSaved": "Settings saved.",
-    "pageBackfillTitle": "Page-count backfill",
-    "pageBackfillDesc": "Looks up books without a page count on Open Library and fills the missing page numbers (only for books with an ISBN). Press again while books remain.",
-    "pageBackfillRun": "Fill missing page counts",
-    "pageBackfillRunning": "Looking up…",
-    "pageBackfillDone": "Added to {filled} books · {missing} not found",
     "dangerZoneTitle": "Danger zone",
     "wipeTitle": "Delete all user data",
     "wipeDesc": "This deletes every non-admin account with all books, shelves, lending records, goals and stats. Admin accounts and app settings stay. This cannot be undone.",
@@ -466,7 +451,12 @@
     "soundOff": "Sound off"
   },
   "settings": {
-    "goalReminders": "Goal progress reminders"
+    "goalReminders": "Goal progress reminders",
+    "pageBackfillTitle": "Page-count backfill",
+    "pageBackfillDesc": "Looks up books without a page count on Open Library and fills the missing page numbers (only for books with an ISBN). Press again while books remain.",
+    "pageBackfillRun": "Fill missing page counts",
+    "pageBackfillRunning": "Looking up…",
+    "pageBackfillDone": "Added to {filled} books · {missing} not found"
   },
   "notify": {
     "goalMonthStart": "New month started. Your reading goal this month is {target} books.",
@@ -532,5 +522,20 @@
     "gateChangeCta": "Save new password",
     "gateTotpTitle": "Set up two-factor authentication",
     "gateTotpDesc": "Admin accounts require two-factor authentication. Scan the QR code with your authenticator app and enter the current code."
+  },
+  "kobo": {
+    "title": "Kobo Sync",
+    "desc": "Let a Kobo eReader pull your library straight from this server. Create the sync URL and enter it in the device's Kobo eReader.conf.",
+    "noUrl": "No sync URL yet",
+    "createUrl": "Create sync URL",
+    "urlLabel": "Line to enter on the device:",
+    "confTitle": "Device setup",
+    "confDesc": "Connect via USB, replace the api_endpoint line under [OneStoreServices] in .kobo/Kobo/Kobo eReader.conf with the URL above, save and sync. Back up the file before editing.",
+    "created": "New sync URL created (the previous URL is now invalid).",
+    "fileSource": "Book file URL template",
+    "fileSourcePlaceholder": "https://nas.local/books/{isbn}.epub",
+    "fileSourceHint": "Supports the {isbn}, {isbn10} and {isbn13} placeholders. Only books with an ISBN can be downloaded to the device.",
+    "saved": "Saved.",
+    "save": "Save"
   }
 }

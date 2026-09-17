@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { lookupIsbn, lookupIsbns, type IsbnLookupResult } from "@/lib/isbn";
 import { awardXp, syncAchievements } from "@/lib/gamification";
-import { getAppSettings } from "@/lib/settings";
+import { getAppConfig } from "@/lib/app-config";
 
 const addBookSchema = z.object({
   isbn: z
@@ -182,7 +182,7 @@ export async function addBook(input: {
   }
   // XP/achievements are non-blocking — book creation already succeeded
   try {
-    const settings = await getAppSettings();
+    const settings = await getAppConfig();
     await awardXp(userId, settings.xpBookAdded);
   } catch {}
   try {
@@ -256,7 +256,7 @@ export async function logPagesRead(
   const book = await db.book.findFirst({ where: { id: bookId, userId } });
   if (!book) return { ok: false, error: "Not found" };
 
-  const settings = await getAppSettings();
+  const settings = await getAppConfig();
   const pagesLogged = Math.max(1, Math.min(5000, Math.floor(pages ?? settings.pagesPerReadEvent)));
   const totalPages = book.numberOfPages ? parseInt(book.numberOfPages, 10) : null;
   const knownPages = totalPages !== null && !isNaN(totalPages) && totalPages > 0;
@@ -396,12 +396,11 @@ export async function updateBook(
  * v2.9.6 — backfill missing page counts: for the caller's books that have no
  * numberOfPages but do carry an ISBN, look them up on Open Library (throttled)
  * and fill ONLY numberOfPages — user-entered metadata is never overwritten.
- * Chunked (MAX_BACKFILL_BATCH per call) so one request cannot run for minutes
- * or get killed by the "3 consecutive failures" abort of the bulk fetcher;
- * the button can simply be pressed again while books remain.
  */
-const BACKFILL_CHUNK = 20;
-const MAX_BACKFILL_BATCH = 40;
+// v3.0.0 — chunk sizes come from config.yaml (backfill.chunkSize / maxBatch);
+// chunked so one request cannot run for minutes or get killed by the "3
+// consecutive failures" abort of the bulk fetcher; the button can simply be
+// pressed again while books remain.
 
 export async function backfillPageCounts(): Promise<{
   ok: boolean;
@@ -412,6 +411,9 @@ export async function backfillPageCounts(): Promise<{
 }> {
   const userId = await requireUserId();
   try {
+    const cfg = await getAppConfig();
+    const BACKFILL_CHUNK = cfg.backfillChunkSize;
+    const MAX_BACKFILL_BATCH = cfg.backfillMaxBatch;
     const missing = await db.book.findMany({
       where: { userId, numberOfPages: null, isbn: { not: null } },
       select: { isbn: true },

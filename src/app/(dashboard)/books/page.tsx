@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { getAppSettings } from "@/lib/settings";
+import { getAppConfig } from "@/lib/app-config";
 import { BooksAddSection } from "./books-add-section";
 import { BooksGrid } from "./books-grid";
 import { ExcelActions } from "./excel-actions";
@@ -13,7 +13,7 @@ export default async function BooksPage() {
   const dict = await getDictionary();
   const [books, settings, groups, memberships] = await Promise.all([
     db.book.findMany({ where: { userId }, orderBy: { addedAt: "desc" } }),
-    getAppSettings(),
+    getAppConfig(),
     db.bookGroup.findMany({
       where: { userId },
       orderBy: [{ order: "asc" }, { createdAt: "asc" }],

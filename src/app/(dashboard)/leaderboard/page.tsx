@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { getAppSettings } from "@/lib/settings";
+import { getAppConfig } from "@/lib/app-config";
 import { LeaderboardTable } from "./leaderboard-table";
 
 export default async function LeaderboardPage() {
@@ -29,7 +29,7 @@ export default async function LeaderboardPage() {
         users={users}
         currentUserId={userId}
         dict={dict.leaderboard}
-        xpPerLevelBase={(await getAppSettings()).xpPerLevelBase}
+        xpPerLevelBase={(await getAppConfig()).xpPerLevelBase}
       />
     </div>
   );

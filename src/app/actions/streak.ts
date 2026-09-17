@@ -7,7 +7,7 @@ import { requireUserId } from "@/lib/session";
 import { calculateStreak, startOfUtcDay } from "@/lib/streak";
 import { calculateFinishXp, shieldCost as calcShieldCost } from "@/lib/gamification-pure";
 import { awardXp, syncAchievements } from "@/lib/gamification";
-import { getAppSettings } from "@/lib/settings";
+import { getAppConfig } from "@/lib/app-config";
 
 /** Record a reading activity for today. Called when a book is finished or page progress is made.
  * v2.9.6 — returns the recalculated streak so callers can surface it in toasts. */
@@ -92,7 +92,7 @@ export async function finishBookWithXp(bookId: string, pages: number | null) {
 
   const [user, settings] = await Promise.all([
     db.user.findUnique({ where: { id: userId }, select: { currentStreak: true } }),
-    getAppSettings(),
+    getAppConfig(),
   ]);
 
   const xp = calculateFinishXp(pages, user?.currentStreak ?? 0, {

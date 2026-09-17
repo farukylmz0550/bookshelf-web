@@ -301,7 +301,32 @@ If you answered the cookie banner with **preferences rejected**, theme and local
 
 ### Admin reading-settings change "didn't apply"
 
-App settings are cached server-side for 60 s — wait a minute or restart the container.
+*(v2.x behavior removed in v3.0.0.)* Reading/XP values are no longer editable in the admin panel — they live in `config.yaml` (site-wide). The loader caches the file for 60 s; restart the container after editing to apply immediately.
+
+---
+
+## 11b. Kobo Sync (v3.0.0)
+
+### Kobo "Sync failed" after pointing `api_endpoint` at the server
+
+Most common causes, in order:
+
+1. **No valid HTTPS** — the device refuses self-signed/plain-HTTP endpoints. Use a reverse proxy or tunnel with a trusted certificate.
+2. **Sync URL rotated** — creating a new URL in Settings invalidates the old one; re-copy `api_endpoint` into `Kobo eReader.conf`.
+3. **`kobo.enabled: false`** in `config.yaml` — the endpoints answer 404.
+4. Check reachability without the device: `npm run kobo:sim -- https://your-host <sync-token>`.
+
+### "Books sync but never download" / empty downloads
+
+Book files come from **your own URL template** (Settings → Kobo Sync). If no template is set, or a book has no ISBN, the device shows the book but the download 404s. Template placeholders: `{isbn}`, `{isbn10}`, `{isbn13}`.
+
+### Progress from the device doesn't show in the app
+
+Progress write-back happens on each device sync (`/v1/library/{id}/state`): the reported position updates `currentPage`, streak activity and auto-finish. Re-reported identical positions award nothing (no XP farming by re-syncing). If progress doesn't appear, confirm the device actually synced (not only opened the book) — states are sent during sync.
+
+### Old XP/reading values after the 3.0.0 upgrade
+
+v3.0.0 dropped the `AppSettings` table: admin-panel XP values are gone and `config.yaml` values apply. `XP_*` environment variables are no longer read.
 
 ---
 
@@ -371,3 +396,4 @@ Documented so they are not mistaken for bugs:
 - The offline-queue success toast is currently hardcoded in Turkish (`offline-queue.ts`).
 - Goodreads/ISBN enrichment depends on Open Library availability; metadata is never fabricated.
 - Sessions are JWTs valid ~30 days; signing out other devices is not possible (no server-side session store).
+- **Kobo Sync is simulation-verified only** (no hardware test yet): books deleted from the library are not removed from the device, and metadata edits made after a book's first sync are not re-pushed until re-rotating the sync token.

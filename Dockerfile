@@ -32,6 +32,9 @@ COPY --from=build --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=build --chown=nextjs:nodejs /app/prisma7.config.ts ./
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
+# v3.0.0 — default config baked in; override with a volume mount
+# (-v ./config.yaml:/app/config.yaml:ro) to customize without rebuilding.
+COPY --from=build --chown=nextjs:nodejs /app/config.yaml ./config.yaml
 
 RUN chmod +x docker-entrypoint.sh
 

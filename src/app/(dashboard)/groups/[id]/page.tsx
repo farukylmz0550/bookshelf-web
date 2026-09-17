@@ -4,7 +4,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { getAppSettings } from "@/lib/settings";
+import { getAppConfig } from "@/lib/app-config";
 import { BooksGrid } from "@/app/(dashboard)/books/books-grid";
 import { ShelfBookPicker } from "../shelf-book-picker";
 
@@ -31,7 +31,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
       where: { book: { userId }, returnedAt: null },
       select: { bookId: true },
     }),
-    getAppSettings(),
+    getAppConfig(),
   ]);
   const lentMap: Record<string, boolean> = {};
   books.forEach((b) => (lentMap[b.id] = lentRecords.some((r) => r.bookId === b.id)));

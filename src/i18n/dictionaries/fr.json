@@ -355,21 +355,6 @@
     "adminLabel": "Admin",
     "actions": "Actions",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
-    "readingSettingsTitle": "Réglages de lecture",
-    "readingSettingsDesc": "Valeurs de pages et XP utilisées dans BookShelf (administrateur système uniquement).",
-    "pagesPerReadEvent": "Pages par journal de lecture",
-    "xpBookAdded": "XP · livre ajouté",
-    "xpBookFinishedBase": "XP · livre terminé (base)",
-    "xpPagesPer10": "XP · par 10 pages",
-    "xpLending": "XP · prêt créé",
-    "xpPerLevelBase": "XP · base de niveau",
-    "save": "Enregistrer",
-    "settingsSaved": "Réglages enregistrés.",
-    "pageBackfillTitle": "Complément de pages",
-    "pageBackfillDesc": "Recherche sur Open Library les livres sans nombre de pages et complète les pages manquantes (livres avec ISBN uniquement). Rappuie tant qu'il reste des livres.",
-    "pageBackfillRun": "Compléter les pages manquantes",
-    "pageBackfillRunning": "Recherche…",
-    "pageBackfillDone": "Ajouté à {filled} livres · {missing} introuvables",
     "dangerZoneTitle": "Zone dangereuse",
     "wipeTitle": "Supprimer toutes les données utilisateur",
     "wipeDesc": "Cela supprime tous les comptes non-administrateur ainsi que leurs livres, étagères, prêts, objectifs et statistiques. Les comptes administrateur et les réglages de l'application sont conservés. Action irréversible.",
@@ -466,7 +451,12 @@
     "soundOff": "Son coupé"
   },
   "settings": {
-    "goalReminders": "Rappels de progression d'objectif"
+    "goalReminders": "Rappels de progression d'objectif",
+    "pageBackfillTitle": "Complément de pages",
+    "pageBackfillDesc": "Recherche sur Open Library les livres sans nombre de pages et complète les pages manquantes (livres avec ISBN uniquement). Rappuie tant qu'il reste des livres.",
+    "pageBackfillRun": "Compléter les pages manquantes",
+    "pageBackfillRunning": "Recherche…",
+    "pageBackfillDone": "Ajouté à {filled} livres · {missing} introuvables"
   },
   "notify": {
     "goalMonthStart": "Un nouveau mois commence. Ton objectif de lecture ce mois-ci : {target} livres.",
@@ -532,5 +522,20 @@
     "gateChangeCta": "Enregistrer le nouveau mot de passe",
     "gateTotpTitle": "Configurer l'authentification à deux facteurs",
     "gateTotpDesc": "Les comptes administrateur exigent l'authentification à deux facteurs. Scannez le QR code et saisissez le code actuel."
+  },
+  "kobo": {
+    "title": "Synchronisation Kobo",
+    "desc": "Permettez à une liseuse Kobo de récupérer votre bibliothèque directement depuis ce serveur. Créez l'URL de synchronisation et saisissez-la dans le Kobo eReader.conf de l'appareil.",
+    "noUrl": "Pas encore d'URL de synchronisation",
+    "createUrl": "Créer l'URL de synchronisation",
+    "urlLabel": "Ligne à saisir sur l'appareil :",
+    "confTitle": "Configuration de l'appareil",
+    "confDesc": "Connectez en USB, remplacez la ligne api_endpoint sous [OneStoreServices] dans .kobo/Kobo/Kobo eReader.conf par l'URL ci-dessus, enregistrez puis synchronisez. Sauvegardez le fichier avant modification.",
+    "created": "Nouvelle URL de synchronisation créée (l'ancienne URL n'est plus valide).",
+    "fileSource": "Modèle d'URL des fichiers",
+    "fileSourcePlaceholder": "https://nas.local/livres/{isbn}.epub",
+    "fileSourceHint": "Prend en charge les variables {isbn}, {isbn10} et {isbn13}. Seuls les livres avec ISBN peuvent être téléchargés sur l'appareil.",
+    "saved": "Enregistré.",
+    "save": "Enregistrer"
   }
 }

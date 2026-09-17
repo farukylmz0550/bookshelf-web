@@ -6,7 +6,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { awardXp, syncAchievements } from "@/lib/gamification";
-import { getAppSettings } from "@/lib/settings";
+import { getAppConfig } from "@/lib/app-config";
 import { normalizeName } from "@/lib/person";
 import { parseDueDate } from "@/lib/lending-due";
 
@@ -52,7 +52,7 @@ export async function createLending(bookId: string, borrowerName: string, dueDat
     });
   });
 
-  await awardXp(userId, (await getAppSettings()).xpLending);
+  await awardXp(userId, (await getAppConfig()).xpLending);
   await syncAchievements(userId);
   revalidatePath("/lending");
   revalidatePath("/people");

@@ -50,6 +50,7 @@
 | 🖥️ **Shell** | Collapsible sidebar (desktop, `sidebar-collapsed` cookie) + bottom nav (mobile) · `viewport-fit=cover` · safe-area |
 | 📦 **PWA** | `manifest.json` shortcuts · `sw.js` · install prompt |
 | 🔐 **Admin** | Approve/reject, promote/demote, delete users · cover cache · admin-assigned password resets (forced change at next login) · TOTP-confirmed danger zone that deletes all non-admin accounts · admins cannot act on their own account |
+| 📖 **Kobo Sync** *(v3.0.0, experimental)* | Kobo eReader pulls your whole library straight from this server — device `api_endpoint` → BookShelf sync URL · book files streamed from your own NAS URL template (`{isbn}`, `{isbn10}`, `{isbn13}`) · reading progress writes back (currentPage, streak activity, auto-finish) · see [Kobo Sync](#-kobo-sync-v300-experimental) |
 | 🎴 **Brand** | `brand/` set — Color + Symbolic masters, all icons rendered from the Color Master |
 | 🐳 **Docker** | `ghcr.io/farukylmz0550/bookshelf` — one command |
 
@@ -301,20 +302,42 @@ All mutations via `src/app/actions/` — `awardXp()` + `syncAchievements()` afte
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | No | — | Web Push — `npx web-push generate-vapid-keys` |
 | `VAPID_SUBJECT` | No | `mailto:…` | Push contact URL |
 | `CRON_SECRET` | No | — | Bearer token for the cron service (`/api/push/streak-remind`) |
-| `READ_EVENT_PAGES` | No | `20` | Pages logged per "I read N pages" click |
-| `XP_BOOK_ADDED` | No | `5` | XP per added book |
-| `XP_BOOK_FINISHED_BASE` | No | `50` | XP base for finishing a book |
-| `XP_PAGES_PER_10` | No | `3` | XP per 10 read pages |
-| `XP_LENDING` | No | `5` | XP per lending |
-| `XP_PER_LEVEL_BASE` | No | `100` | Fibonacci level-curve base XP |
+
+> **v3.0.0 — config.yaml:** the `READ_EVENT_PAGES` / `XP_*` variables are gone. Reading, XP, backfill and Kobo values now live in [`config.yaml`](config.yaml) (repo root, mounted read-only into the container). See the file itself for every key and its default.
+
+## 📖 Kobo Sync (v3.0.0, experimental)
+
+A Kobo eReader can sync your whole BookShelf library over Wi-Fi, pulling books straight from your server — no USB copying.
+
+> ⚠️ **Experimental:** verified against the device sync protocol via simulation (`src/lib/kobo-sync.test.ts`, `npm run kobo:sim`) but **not yet hardware-verified**. Please report device behavior in an issue.
+
+### Server setup
+
+1. **Settings → Kobo Sync → "Create sync URL"** — you get `api_endpoint=https://…/api/kobo/<token>`.
+2. **Book file URL template** — BookShelf serves metadata only; the book files come from *your* storage. Enter a URL template, e.g. `https://nas.local/books/{isbn}.epub` (placeholders: `{isbn}`, `{isbn10}`, `{isbn13}`; only ISBN books are downloadable). The server fetches the file and streams it to the device.
+3. The device must reach the server over **HTTPS with a valid certificate** (reverse proxy / Cloudflare tunnel). Sync fails on self-signed certs.
+
+### Device setup
+
+1. Connect the Kobo over USB and back up `.kobo/Kobo/Kobo eReader.conf`.
+2. In `[OneStoreServices]`, change `api_endpoint=https://storeapi.kobo.com` to your sync URL.
+3. Save, eject, then tap **Sync** on the Kobo. Books, covers and metadata download; unknown store requests are proxied to Kobo by default (`kobo.storeProxy` in `config.yaml`).
+
+### Verify without a device
+
+```bash
+npm run kobo:sim -- http://localhost:1024 <sync-token> https://nas.local/files
+```
+
+Notes: progress the device reports updates `currentPage`, streak activity and auto-finish (exactly once per finish); deleting a book on the device never deletes it from the library; only books added after the last sync are sent on the next sync.
 
 ---
 
 ## ✅ Testing
 
 ```bash
-npm test              # 97 unit (vitest)
-npx playwright test   # 25 e2e (chromium, webServer: npm run dev)
+npm test              # 226 unit (vitest)
+npx playwright test   # e2e (chromium, webServer: npm run dev)
 npm run lint
 npm run format:check
 ```

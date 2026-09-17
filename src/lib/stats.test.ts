@@ -7,7 +7,7 @@ import { goalProgressNotification } from "@/lib/goal-progress";
 import { moodForProgress, pieceForYear } from "@/lib/annual-music";
 import { isGoalUnlocked } from "@/lib/goals";
 import { isAnnualSummaryWindow, parseSelectedYear } from "@/lib/annual";
-import { defaultAppSettings, clampSetting } from "@/lib/settings";
+import { defaultAppConfig, validateAppConfig } from "@/lib/app-config";
 import { calculateFinishXp, levelForXp, levelProgress, xpForNextLevel } from "@/lib/gamification-pure";
 
 describe("monthlyFinishCounts", () => {
@@ -466,30 +466,36 @@ describe("goalProgressNotification", () => {
 });
 
 // ---------------------------------------------------------------------------
-// v2.7.0 — configurable settings + parametric XP
+// v3.0.0 — config.yaml-driven values + parametric XP
 // ---------------------------------------------------------------------------
 
-describe("defaultAppSettings + clampSetting", () => {
-  it("reads env overrides with sane defaults", () => {
-    const values = defaultAppSettings({
-      READ_EVENT_PAGES: "40",
-      XP_BOOK_ADDED: "10",
-    } as unknown as NodeJS.ProcessEnv);
+describe("defaultAppConfig + validateAppConfig", () => {
+  it("code defaults match the legacy v2.7.0 values", () => {
+    const values = defaultAppConfig();
+    expect(values.pagesPerReadEvent).toBe(20);
+    expect(values.xpBookAdded).toBe(5);
+    expect(values.xpBookFinishedBase).toBe(50);
+    expect(values.xpPagesPer10).toBe(3);
+    expect(values.xpLending).toBe(5);
+    expect(values.xpPerLevelBase).toBe(100);
+  });
+
+  it("validates a partial YAML document field-by-field", () => {
+    const values = validateAppConfig({ xp: { pagesPerReadEvent: 40, bookAdded: 10 } });
     expect(values.pagesPerReadEvent).toBe(40);
     expect(values.xpBookAdded).toBe(10);
     expect(values.xpBookFinishedBase).toBe(50);
+    expect(values.koboEnabled).toBe(true);
   });
 
-  it("ignores invalid env values", () => {
-    const values = defaultAppSettings({ READ_EVENT_PAGES: "abc" } as unknown as NodeJS.ProcessEnv);
+  it("falls back to defaults for invalid values and unknown keys", () => {
+    const values = validateAppConfig({ xp: { pagesPerReadEvent: "not-a-number" }, unknown: 1 });
     expect(values.pagesPerReadEvent).toBe(20);
   });
 
-  it("clamps settings values to a sane range", () => {
-    expect(clampSetting(0)).toBe(1);
-    expect(clampSetting(-5)).toBe(1);
-    expect(clampSetting(2.7)).toBe(2);
-    expect(clampSetting(999999999)).toBe(1000000);
+  it("clamps out-of-range values", () => {
+    const values = validateAppConfig({ xp: { pagesPerReadEvent: 999999 } });
+    expect(values.pagesPerReadEvent).toBe(1000);
   });
 });
 

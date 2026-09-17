@@ -1,7 +1,64 @@
 # Changelog
 
 All notable changes to **Book Shelf** are documented here.
-The 2.9.x feature-freeze was lifted with 2.10.0.
+The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
+3.0.0 (breaking: site-wide values moved out of the database; see below).
+
+## 3.0.0 — 2026-09-17
+
+### Breaking
+
+- **config.yaml is the single source of site-wide values** — the `AppSettings`
+  table and the admin panel's Reading Settings card are gone. Reading, XP,
+  level-curve, backfill and Kobo values now live in
+  [`config.yaml`](config.yaml) (repo root; mounted read-only into the Docker
+  container — edit the host copy and restart). The `READ_EVENT_PAGES` and
+  `XP_*` environment variables are no longer read. Existing deployments keep
+  working with code defaults identical to the v2.7.0 values; admin-customized
+  values must be transcribed into `config.yaml` once.
+  Migration: `20260917200000_drop_appsettings_add_kobo_sync`.
+- **Kobo sync token model** — new `KoboSyncToken` and `User.fileSourceUrl`
+  (same migration; existing rows untouched).
+
+### Added
+
+- **Kobo eReader sync (experimental)** — a customer-requested integration:
+  the device's `api_endpoint` (`.kobo/Kobo/Kobo eReader.conf`) is pointed at a
+  per-user BookShelf sync URL, and the reader pulls the whole library straight
+  from the server. Metadata + covers sync over the Kobo sync protocol;
+  book files stream from **the user's own URL template** (Settings →
+  Kobo Sync; `{isbn}` / `{isbn10}` / `{isbn13}` placeholders) so the books
+  live wherever the NAS keeps them. Device-reported reading progress writes
+  back into BookShelf: `currentPage`, streak activity, per-10-pages XP and
+  the exactly-once automatic FINISH. Deleting on the device never deletes
+  from the library. Unimplemented store requests are proxied to the real Kobo
+  store by default (`kobo.storeProxy`) so store features keep working.
+  Endpoints: `/api/kobo/<token>/v1/auth/device`, `/v1/initialization`,
+  `/v1/library/sync`, `/v1/library/{id}/metadata`, `/v1/library/{id}/state`,
+  `/download/{id}/epub`, cover images. Path-token auth (public in the proxy
+  middleware, token-keyed rate limit). Simulation-tested against the
+  calibre-web protocol reference — **not hardware-verified**; feedback from
+  real devices is expected. New `scripts/kobo-sim.ts` (`npm run kobo:sim`)
+  replays the full device flow for self-hosters without a spare eReader.
+- **Settings → Book data** — "Sayfa sayısı doldurma" (Open Library page-count
+  backfill, v2.9.6) moved from Admin to Settings: it fills the caller's own
+  books, so it was never an admin power. Chunk sizes now come from
+  `config.yaml` (`backfill.chunkSize` / `maxBatch`).
+- **Settings → Kobo Sync card** — create/rotate the device sync URL, enter
+  the book-file URL template, device setup instructions (6 languages).
+
+### Fixed
+
+- Race-safety suite trimmed of the removed settings-singleton cases; the
+  page-log/finish/group concurrency guarantees are unchanged.
+
+### QA
+
+- tsc ✅ · lint ✅ (1 pre-existing warning) · unit 226/226 ✅ (16→17 files,
+  incl. new Kobo device-flow simulation + app-config validation) · migration
+  `20260917200000_drop_appsettings_add_kobo_sync` drops AppSettings and adds
+  the Kobo tables ✅ · Docker: `config.yaml` volume-mounted read-only,
+  default file baked into the image ✅
 
 ## 2.11.0 — 2026-09-16
 

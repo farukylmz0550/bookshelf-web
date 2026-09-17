@@ -37,6 +37,11 @@ model User {
   totpEnabled        Boolean   @default(false)
   mustChangePassword Boolean   @default(false)
 
+  // v3.0.0 — Kobo sync: per-user URL template the device downloads book files
+  // from (e.g. "https://nas.local/books/{isbn}.epub"); placeholders are
+  // {isbn}, {isbn10}, {isbn13}.
+  fileSourceUrl String?
+
   books           Book[]
   persons         Person[]
   goal            Goal?
@@ -46,8 +51,22 @@ model User {
   settings        UserSettings?
   readEvents      BookReadEvent[]
   groups          BookGroup[]
+  koboToken       KoboSyncToken?
 
   @@index([id])
+}
+
+// v3.0.0 — Kobo eReader sync: one token per user, embedded in the device's
+// api_endpoint URL ("/api/kobo/<token>/v1/..."). The token is a capability
+// URL the user can re-copy from Settings, so it is stored as-is (low-risk
+// scope: read metadata + download files for this user's library only).
+model KoboSyncToken {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String    @unique
+  lastSyncAt DateTime?
+  createdAt  DateTime  @default(now())
 }
 
 model Book {
@@ -243,19 +262,8 @@ model PushSubscription {
   @@index([userId])
 }
 
-// Singleton site settings (v2.7.0) — system-admin editable reading/gamification
-// values. Absent row = env-var defaults. Env provides defaults; admin edits win.
-// v2.9.0: fixed singleton id ("singleton") — writes are a single upsert, so
-// concurrent admin updates can never produce more than one row.
-model AppSettings {
-  id                  String @id
-  pagesPerReadEvent   Int
-  xpBookAdded         Int
-  xpBookFinishedBase  Int
-  xpPagesPer10        Int
-  xpLending           Int
-  xpPerLevelBase      Int
-}
+// v3.0.0 — the AppSettings table was removed: site-wide values moved to
+// config.yaml (see src/lib/app-config.ts).
 
 // v2.8.0 — personal groups/shelves: user-defined many-to-many organization for
 // books. Groups are NOT tags (metadata/genres remain on Book.tags); a book can

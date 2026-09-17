@@ -355,21 +355,6 @@
     "adminLabel": "Admin",
     "actions": "İşlemler",
     "confirmDelete": "Bu kullanıcıyı silmek istediğinizden emin misiniz?",
-    "readingSettingsTitle": "Okuma Ayarları",
-    "readingSettingsDesc": "BookShelf genelinde kullanılan sayfa ve XP değerleri (sadece sistem yöneticisi).",
-    "pagesPerReadEvent": "Okuma kaydı başına sayfa",
-    "xpBookAdded": "XP · kitap eklendi",
-    "xpBookFinishedBase": "XP · kitap bitti (temel)",
-    "xpPagesPer10": "XP · 10 sayfaya",
-    "xpLending": "XP · ödünç verme",
-    "xpPerLevelBase": "XP · seviye tabanı",
-    "save": "Kaydet",
-    "settingsSaved": "Ayarlar kaydedildi.",
-    "pageBackfillTitle": "Sayfa sayısı doldurma",
-    "pageBackfillDesc": "Sayfa sayısı olmayan kitapları Open Library'de arar ve eksik sayfa sayılarını doldurur (yalnızca ISBN'li kitaplar). Kitap kaldıkça tekrar basabilirsin.",
-    "pageBackfillRun": "Eksik sayfa sayılarını doldur",
-    "pageBackfillRunning": "Sorgulanıyor…",
-    "pageBackfillDone": "{filled} kitaba eklendi · {missing} bulunamadı",
     "dangerZoneTitle": "Tehlikeli bölge",
     "wipeTitle": "Tüm kullanıcı verilerini sil",
     "wipeDesc": "Bu işlem yönetici olmayan tüm hesapları; kitapları, rafları, ödünç kayıtlarını, hedefleri ve istatistikleriyle birlikte siler. Yönetici hesapları ve uygulama ayarları kalır. Bu işlem geri alınamaz.",
@@ -466,7 +451,12 @@
     "soundOff": "Ses kapalı"
   },
   "settings": {
-    "goalReminders": "Hedef ilerleme bildirimleri"
+    "goalReminders": "Hedef ilerleme bildirimleri",
+    "pageBackfillTitle": "Sayfa sayısı doldurma",
+    "pageBackfillDesc": "Sayfa sayısı olmayan kitapları Open Library'de arar ve eksik sayfa sayılarını doldurur (yalnızca ISBN'li kitaplar). Kitap kaldıkça tekrar basabilirsin.",
+    "pageBackfillRun": "Eksik sayfa sayılarını doldur",
+    "pageBackfillRunning": "Sorgulanıyor…",
+    "pageBackfillDone": "{filled} kitaba eklendi · {missing} bulunamadı"
   },
   "notify": {
     "goalMonthStart": "Yeni ay başladı. Bu ayki okuma hedefin {target} kitap.",
@@ -532,5 +522,20 @@
     "gateChangeCta": "Yeni şifreyi kaydet",
     "gateTotpTitle": "İki adımlı doğrulamayı kurun",
     "gateTotpDesc": "Yönetici hesaplarında iki adımlı doğrulama zorunludur. QR kodunu okutun ve güncel kodu girin."
+  },
+  "kobo": {
+    "title": "Kobo Sync",
+    "desc": "Kobo eReader'ın kitapları doğrudan bu sunucudan çekmesini sağla. Senkron adresini oluştur ve cihazındaki Kobo eReader.conf dosyasına gir.",
+    "noUrl": "Henüz senkron adresi yok",
+    "createUrl": "Senkron adresi oluştur",
+    "urlLabel": "Cihaza girilecek satır:",
+    "confTitle": "Kobo cihazında kurulum",
+    "confDesc": "USB ile bağla, .kobo/Kobo/Kobo eReader.conf dosyasında [OneStoreServices] bölümündeki api_endpoint satırını yukarıdaki adresle değiştir, kaydet ve Sync'e bas. Düzenlemeden önce dosyayı yedekle.",
+    "created": "Yeni senkron adresi oluşturuldu (eski adres artık geçersiz).",
+    "fileSource": "Kitap dosyası URL şablonu",
+    "fileSourcePlaceholder": "https://nas.local/kitaplar/{isbn}.epub",
+    "fileSourceHint": "{isbn}, {isbn10} ve {isbn13} yer tutucularını destekler. Yalnızca ISBN'i olan kitaplar cihaza indirilebilir.",
+    "saved": "Kaydedildi.",
+    "save": "Kaydet"
   }
 }

@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# BookShelf v3.0.0 — site-wide configuration (single source of truth).
+#
+# Previously these values lived in the AppSettings DB table and were editable
+# from the admin panel; as of 3.0.0 the admin panel no longer changes them —
+# edit this file instead. Missing keys fall back to code defaults, so a partial
+# file is fine. Mounted read-only into the Docker container
+# (docker-compose.yml: ./config.yaml:/app/config.yaml:ro); edit the host copy
+# and restart the container to apply.
+
+xp:
+  # Pages credited by one "I read N pages" click (stats/reading CTA step).
+  pagesPerReadEvent: 20
+  # XP awarded when a book is added to the library.
+  bookAdded: 5
+  # Base XP for finishing a book (before the pages and streak bonus).
+  bookFinishedBase: 50
+  # XP per 10 pages of a finished book (floor(pages / 10) * n).
+  pagesPer10: 3
+  # XP for creating a lending record.
+  lending: 5
+  levels:
+    # Level curve: the XP needed to advance FROM level L to L+1 is
+    # base × fib(L) (Fibonacci: 1, 1, 2, 3, 5, 8, ...).
+    # Example thresholds with base: 100 (total XP required to REACH a level):
+    #   L1→0 · L2→100 · L3→300 · L4→800 · L5→2100 · L6→5500 · L7→14400
+    #   L8→37700 · L9→98900 · L10→258400
+    mode: fibonacci
+    base: 100
+
+backfill:
+  # "Fill missing page counts" (Settings → Book data): Open Library batch
+  # lookup size and the max ISBNs resolved per button press.
+  chunkSize: 20
+  maxBatch: 40
+
+kobo:
+  # Kobo eReader sync (Settings → Kobo Sync). The device pulls books straight
+  # from this server via a per-user api_endpoint URL.
+  enabled: true
+  # When true, endpoint requests the device makes that BookShelf does not
+  # implement are proxied to the real Kobo store so store features keep
+  # working. Disable for a fully offline/sandboxed sync.
+  storeProxy: true

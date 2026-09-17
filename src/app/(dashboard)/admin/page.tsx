@@ -3,11 +3,7 @@ import { requireAdminPage } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { getUsers } from "@/app/actions/admin";
 import { getCoverStats, clearCoverCache } from "@/app/actions/covers";
-import { readAppSettings } from "@/app/actions/settings-admin";
-import { defaultAppSettings } from "@/lib/settings";
 import { UserTable } from "./users/user-table";
-import { ReadingSettingsCard } from "./reading-settings-card";
-import { PageBackfillCard } from "./page-backfill-card";
 import { DangerZoneCard } from "./danger-zone-card";
 
 export default async function AdminPage() {
@@ -15,7 +11,6 @@ export default async function AdminPage() {
   const dict = await getDictionary();
   const users = await getUsers();
   const coverStats = await getCoverStats();
-  const appSettings = (await readAppSettings()) ?? defaultAppSettings();
 
   const pending = users.filter((u) => !u.approved);
   const approved = users.filter((u) => u.approved);
@@ -81,41 +76,9 @@ export default async function AdminPage() {
           </form>
         </div>
       </section>
-      {/* §3 — Reading Settings */}
-      <section className="space-y-3">
-        <h2 className="font-[var(--font-serif)] text-lg font-semibold tracking-tight text-foreground">
-          {dict.admin.readingSettingsTitle}
-        </h2>
-        <p className="font-[var(--font-sans)] text-sm text-muted-foreground">{dict.admin.readingSettingsDesc}</p>
-        <ReadingSettingsCard
-          initial={appSettings}
-          dict={{
-            pagesPerReadEvent: dict.admin.pagesPerReadEvent,
-            xpBookAdded: dict.admin.xpBookAdded,
-            xpBookFinishedBase: dict.admin.xpBookFinishedBase,
-            xpPagesPer10: dict.admin.xpPagesPer10,
-            xpLending: dict.admin.xpLending,
-            xpPerLevelBase: dict.admin.xpPerLevelBase,
-            save: dict.admin.save,
-            saved: dict.admin.settingsSaved,
-          }}
-        />
-      </section>
-      {/* §4 — Page-count backfill (v2.9.6) */}
-      <section className="space-y-3">
-        <h2 className="font-[var(--font-serif)] text-lg font-semibold tracking-tight text-foreground">
-          {dict.admin.pageBackfillTitle}
-        </h2>
-        <PageBackfillCard
-          dict={{
-            desc: dict.admin.pageBackfillDesc,
-            run: dict.admin.pageBackfillRun,
-            running: dict.admin.pageBackfillRunning,
-            done: dict.admin.pageBackfillDone,
-          }}
-        />
-      </section>
-      {/* §5 — Danger zone (v2.10.0) */}
+      {/* v3.0.0 — Reading settings moved to config.yaml; page-count backfill
+          moved to Settings → Book data (user-scoped, not an admin power). */}
+      {/* Danger zone (v2.10.0) */}
       <DangerZoneCard dict={{ ...dict.common, ...dict.admin, ...dict.security, cancel: dict.facts.cancel }} />
     </div>
   );

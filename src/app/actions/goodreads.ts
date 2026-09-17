@@ -13,7 +13,7 @@ import {
 } from "@/lib/books/goodreads";
 import { lookupIsbns, type IsbnLookupResult } from "@/lib/isbn";
 import { awardXp, syncAchievements } from "@/lib/gamification";
-import { getAppSettings } from "@/lib/settings";
+import { getAppConfig } from "@/lib/app-config";
 
 export type GoodreadsImportResult = {
   imported: number;
@@ -132,7 +132,7 @@ export async function importGoodreadsCsv(base64: string): Promise<GoodreadsImpor
 
     if (imported > 0) {
       revalidatePath("/books");
-      await awardXp(userId, imported * (await getAppSettings()).xpBookAdded);
+      await awardXp(userId, imported * (await getAppConfig()).xpBookAdded);
       await syncAchievements(userId);
     }
 

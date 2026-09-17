@@ -8,23 +8,73 @@ import type { Locale } from "@/i18n/get-dictionary";
 import type { UserSettingsData } from "@/app/actions/settings";
 import { NotificationSettings } from "@/components/settings/notification-settings";
 import { AppearanceSettings } from "@/components/settings/appearance-settings";
+import { PageBackfillCard } from "@/components/settings/page-backfill-card";
+import { KoboSyncCard } from "@/components/settings/kobo-sync-card";
 
 interface SettingsFormProps {
   settings: UserSettingsData;
   currentTheme: Theme;
   currentLocale: Locale;
+  koboSyncUrl: string | null;
+  koboFileSource: string | null;
   dict?: {
     settings?: {
       goalReminders?: string;
     };
+    backfill?: {
+      title: string;
+      desc: string;
+      run: string;
+      running: string;
+      done: string;
+    };
+    kobo?: {
+      title: string;
+      desc: string;
+      noUrl: string;
+      createUrl: string;
+      urlLabel: string;
+      confTitle: string;
+      confDesc: string;
+      created: string;
+      fileSource: string;
+      fileSourcePlaceholder: string;
+      fileSourceHint: string;
+      saved: string;
+      save: string;
+    };
   };
 }
 
-export function SettingsForm({ settings, currentTheme, currentLocale, dict }: SettingsFormProps) {
+export function SettingsForm({
+  settings,
+  currentTheme,
+  currentLocale,
+  koboSyncUrl,
+  koboFileSource,
+  dict,
+}: SettingsFormProps) {
   return (
     <div className="space-y-6">
       <NotificationSettings settings={settings} dict={{ goalReminders: dict?.settings?.goalReminders }} />
       <AppearanceSettings currentTheme={currentTheme} currentLocale={currentLocale} />
+
+      {/* Book data — v3.0.0: page-count backfill moved here from Admin */}
+      <section>
+        <h2 className="mb-2 px-1 font-[var(--font-sans)] text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {dict?.backfill?.title}
+        </h2>
+        <PageBackfillCard
+          dict={{
+            desc: dict?.backfill?.desc ?? "",
+            run: dict?.backfill?.run ?? "",
+            running: dict?.backfill?.running ?? "",
+            done: dict?.backfill?.done ?? "",
+          }}
+        />
+      </section>
+
+      <KoboSyncCard initialUrl={koboSyncUrl} initialFileSource={koboFileSource} dict={dict?.kobo ?? null} />
 
       {/* Licenses — link to /licenses */}
       <section>

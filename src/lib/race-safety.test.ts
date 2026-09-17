@@ -36,9 +36,8 @@ vi.mock("@/lib/session", () => ({
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), revalidateTag: vi.fn() }));
 
 import { db } from "@/lib/db";
-import { defaultAppSettings, invalidateAppSettingsCache } from "@/lib/settings";
+import { defaultAppConfig } from "@/lib/app-config";
 import { calculateFinishXp } from "@/lib/gamification-pure";
-import { updateAppSettings, readAppSettings } from "@/app/actions/settings-admin";
 import { logPagesRead } from "@/app/actions/books";
 import { finishBookWithXp } from "@/app/actions/streak";
 import { createGroup } from "@/app/actions/groups";
@@ -75,44 +74,10 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  // Fresh per-test state: wipe everything user-scoped + the settings singleton,
-  // and drop the in-memory settings cache so env/code defaults apply.
+  // Fresh per-test state: wipe everything user-scoped (v3.0.0 — AppSettings
+  // removed; site-wide values come from config.yaml/code defaults).
   await db.user.deleteMany();
-  await db.appSettings.deleteMany();
   await seedRaceUser();
-  invalidateAppSettingsCache();
-});
-
-describe("updateAppSettings singleton (v2.9.0 race fix)", () => {
-  it("concurrent admin updates leave exactly one AppSettings row", async () => {
-    const base = {
-      xpBookAdded: 5,
-      xpBookFinishedBase: 50,
-      xpPagesPer10: 3,
-      xpLending: 5,
-      xpPerLevelBase: 100,
-    };
-    const [a, b] = await Promise.all([
-      updateAppSettings({ ...base, pagesPerReadEvent: 25 }),
-      updateAppSettings({ ...base, pagesPerReadEvent: 40 }),
-    ]);
-    expect(a.ok).toBe(true);
-    expect(b.ok).toBe(true);
-
-    const rows = await db.appSettings.findMany();
-    expect(rows.length).toBe(1);
-    const read = await readAppSettings();
-    expect((await db.appSettings.findMany())[0].id).toBe("singleton");
-    expect([25, 40]).toContain(read?.pagesPerReadEvent);
-  });
-
-  it("sequential updates update the same singleton row", async () => {
-    const base = { xpBookAdded: 5, xpBookFinishedBase: 50, xpPagesPer10: 3, xpLending: 5, xpPerLevelBase: 100 };
-    expect((await updateAppSettings({ ...base, pagesPerReadEvent: 10 })).ok).toBe(true);
-    expect((await updateAppSettings({ ...base, pagesPerReadEvent: 30 })).ok).toBe(true);
-    expect((await db.appSettings.findMany()).length).toBe(1);
-    expect((await readAppSettings())?.pagesPerReadEvent).toBe(30);
-  });
 });
 
 describe("logPagesRead optimistic lock (v2.9.0 race fix)", () => {
@@ -123,7 +88,7 @@ describe("logPagesRead optimistic lock (v2.9.0 race fix)", () => {
 
     // Expected values derive from the same defaults the action reads, so the
     // assertions hold regardless of optional env overrides.
-    const settings = defaultAppSettings(process.env);
+    const settings = defaultAppConfig();
     const step = Math.max(1, Math.min(5000, settings.pagesPerReadEvent));
 
     const stored = await db.book.findUnique({ where: { id: book.id } });
@@ -145,7 +110,7 @@ describe("logPagesRead optimistic lock (v2.9.0 race fix)", () => {
     expect(stored?.currentPage).toBe(100);
     expect(await db.bookReadEvent.count({ where: { bookId: book.id } })).toBe(1);
 
-    const settings = defaultAppSettings(process.env);
+    const settings = defaultAppConfig();
     const expectedXp = calculateFinishXp(100, 0, {
       bookFinishedBase: settings.xpBookFinishedBase,
       pagesPer10: settings.xpPagesPer10,
@@ -160,7 +125,7 @@ describe("logPagesRead optimistic lock (v2.9.0 race fix)", () => {
 describe("finishBookWithXp idempotency guard (v2.9.0)", () => {
   it("a duplicate invocation right after the first awards no extra XP", async () => {
     const book = await seedBook({ numberOfPages: "100", currentPage: 100, status: "FINISHED" });
-    const settings = defaultAppSettings(process.env);
+    const settings = defaultAppConfig();
     const expectedXp = calculateFinishXp(100, 0, {
       bookFinishedBase: settings.xpBookFinishedBase,
       pagesPer10: settings.xpPagesPer10,

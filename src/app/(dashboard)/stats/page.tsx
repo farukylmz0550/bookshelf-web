@@ -7,7 +7,7 @@ import { levelProgress } from "@/lib/gamification";
 import { monthlyFinishCounts } from "@/lib/stats";
 import { finishedInMonth, finishedInYear } from "@/lib/goals";
 import { getStreakInfo } from "@/lib/streak";
-import { getAppSettings } from "@/lib/settings";
+import { getAppConfig } from "@/lib/app-config";
 import { getAnnualReadingSummary, getAvailableYears, isAnnualSummaryWindow, parseSelectedYear } from "@/lib/annual";
 import { isGoalUnlocked } from "@/lib/goals";
 import { MonthlyChart } from "./monthly-chart";
@@ -64,7 +64,7 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
   const doneYear = finishedInYear(readDates, now.getFullYear());
   const doneMonth = finishedInMonth(readDates, now.getFullYear(), now.getMonth());
 
-  const { level } = levelProgress(user.xp, (await getAppSettings()).xpPerLevelBase);
+  const { level } = levelProgress(user.xp, (await getAppConfig()).xpPerLevelBase);
   const chartData = monthlyFinishCounts(readDates);
 
   const booksWithDuration = await db.book.findMany({

@@ -16,6 +16,9 @@ services:
       - "${APP_PORT:-1024}:3000"
     volumes:
       - app-data:/data
+      # v3.0.0 — site-wide configuration (XP levels, backfill, Kobo). Edit the
+      # host copy and restart the container to apply.
+      - ./config.yaml:/app/config.yaml:ro
 
   # Daily streak push reminders — requires CRON_SECRET + VAPID keys.
   # Uses the same image; node fetch loop (no extra tooling needed).

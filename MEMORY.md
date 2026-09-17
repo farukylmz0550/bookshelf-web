@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
-> Last updated: 2026-09-16
-> Version: 2.11.0
+> Last updated: 2026-09-17
+> Version: 3.0.0
 > Branch: main
 
 ---
@@ -54,11 +54,11 @@ bookshelf/
 │   │   │   ├── achievements/     # Achievement badges (grid, monthly badge pill)
 │   │   │   ├── leaderboard/      # XP ranking
 │   │   │   ├── profile/          # Edit name, change password
-│   │   │   ├── settings/         # Notifications + appearance + language + security (TOTP) + licenses link
+│   │   │   ├── settings/         # Notifications + appearance + language + security (TOTP) + book data (page backfill, v3.0.0) + Kobo Sync (v3.0.0) + licenses link
 │   │   │   ├── more/             # Bottom-nav overflow
-│   │   │   └── admin/            # Admin (users, covers, reading settings, page backfill, danger zone) — bottom of sidebar
-│   │   ├── actions/              # Server actions (books, lending, people, goals, excel, profile, covers, admin, groups, security, locale, theme, logout, settings)
-│   │   ├── api/                  # API routes (auth, test reset, streak, well-known)
+│   │   │   └── admin/            # Admin (users, covers, danger zone) — bottom of sidebar
+│   │   ├── actions/              # Server actions (books, lending, people, goals, excel, profile, covers, admin, groups, security, locale, theme, logout, settings, kobo)
+│   │   ├── api/                  # API routes (auth, test reset, streak, well-known, kobo/<token>/v1 device sync v3.0.0)
 │   │   ├── login/                # Login page
 │   │   ├── register/             # Registration page
 │   │   └── setup/                # First-time admin setup
@@ -145,7 +145,7 @@ User ──────┬── Book ──────── LendingRecord
 | `theme.ts` | toggle theme Sun/Moon SVG (light/dark, consent-gated) |
 | `logout.ts` | signOut |
 | `settings.ts` | update notifications/streak/weeklyDigest/goalReminders (goalReminders feeds calendar-based goal-progress push) |
-| `settings-admin.ts` | updateAppSettings (system-admin only: reading/XP values) |
+| `kobo.ts` | v3.0.0 — Kobo sync management: getKoboSyncState, createKoboSyncUrl (token create/rotate), setFileSourceUrl (per-user download URL template) |
 | `cookies.ts` | setConsentCookie, hasConsent |
 
 Every data-modifying action runs `awardXp()` + `syncAchievements()`. ISBN one-click flow chains `lookupIsbnAction` → `addBook` with all Open Library fields.
@@ -196,6 +196,7 @@ npm run format:check  # prettier
 
 | Date | Commit | Description |
 |-------|--------|----------|
+| 2026-09-17 | pending | `3.0.0` — **breaking**: config.yaml replaces AppSettings (model dropped via migration `20260917200000_drop_appsettings_add_kobo_sync`; admin Reading Settings card removed; `XP_*`/`READ_EVENT_PAGES` env vars gone; `src/lib/app-config.ts` loader: yaml + zod field-by-field fallbacks + 60s cache); page-count backfill moved Admin → Settings ("Book data"; user-scoped action); **Kobo eReader sync (experimental)**: `/api/kobo/<token>/v1/...` catch-all (calibre-web protocol reference; auth/device handshake, initialization resources, library/sync entitlements since lastSyncAt, metadata, download stream from per-user `{isbn}` URL template, state write-back → currentPage/streak/auto-finish exactly-once, cover redirect, storeProxy default true, device-delete → no-op 204), `KoboSyncToken` + `User.fileSourceUrl`, path-token public in proxy.ts + token-keyed rate limit, Settings → Kobo Sync card (6 dicts), `scripts/kobo-sim.ts` simulator (`npm run kobo:sim`) — simulation-verified only, hardware feedback pending; 226 unit green |
 | 2026-09-15 | `a26fd16` | `2.10.1`/docs — TROUBLESHOOTING.md + SECURITY.md, README disclaimer + third-party license table, brand set consolidated under `brand/` (root master copies removed) |
 | 2026-09-15 | `bf1f39c` | `2.10.0` — feature-freeze lifted: Groups → Shelves copy (6 dicts, routes/model unchanged), bulk shelf picker dialog (`listBooksForShelfPicker`/`addBooksToGroup`, `shelf-book-picker.tsx`), TOTP 2FA (`otplib`+`qrcode`, migration `20260915153612_add_totp_and_must_change_password`: `totpSecret`/`totpEnabled`/`mustChangePassword`, admin-mandatory gate `account-gates.tsx`, login `TOTP_REQUIRED`/`INVALID_TOTP`), admin danger zone (`wipeNonAdminData`, TOTP-confirmed), admin-assigned forced password resets, native `<select>` → Base UI Select (book-personal, filter-bar ×8, lending-form, annual-summary), licenses page project-licensing block, 193 unit + 42 e2e green |
 | 2026-09-12 | `a1ae69b` | `2.9.1` — SPDX license headers on 206 files (GPL-3.0-only: src/179, root configs, e2e specs, prisma schema+seed, scripts w/ shebang exception; CC-BY-NC-ND-4.0: brand masters + icon/logo svgs) + root NOTICE.md license table; metadata only, prepend-only diff; 218 unit + 42 e2e green |
@@ -321,11 +322,11 @@ Both projects continue under GPLv3.
 >
 > ✅ **PROGRESS — 2026-09-11 (session 9 — v2.7.0 Annual Reading Summary + reading system):**
 > - **Annual Summary (no "Wrapped" branding anywhere):** `/stats` bottom section, visible ONLY Jan 1 00:00 → Jan 7 end on the **server-local clock** (`isAnnualSummaryWindow`, dev/e2e always open); default year = just-completed year in production (current year in dev). Metrics from **read events**; Recharts + sr-only text fallback; PNG share-card (deterministic canvas, no user data beyond stats).
-> - **Reading rules (user-defined):** "Log N pages read" card button on `/books` → `currentPage` +N (default 20, `AppSettings.pagesPerReadEvent`) + streak (`recordActivity`) + page-based XP (`floor(pages/10) × xpPagesPer10`, NO streak multiplier) — does NOT finish the book. Book finishes ONLY when ALL pages are read → automatic FINISHED (+1 `BookReadEvent`, finish XP w/ streak bonus). Early manual finish blocked (`RemainingPages`); page-less books keep manual finishing. "Read again" on FINISHED cards → currentPage=0 + READING; re-completion adds +1.
+> - **Reading rules (user-defined):** "Log N pages read" card button on `/books` → `currentPage` +N (default 20, `config.yaml xp.pagesPerReadEvent`) + streak (`recordActivity`) + page-based XP (`floor(pages/10) × xpPagesPer10`, NO streak multiplier) — does NOT finish the book. Book finishes ONLY when ALL pages are read → automatic FINISHED (+1 `BookReadEvent`, finish XP w/ streak bonus). Early manual finish blocked (`RemainingPages`); page-less books keep manual finishing. "Read again" on FINISHED cards → currentPage=0 + READING; re-completion adds +1.
 > - **Goal lock:** yearly+monthly targets confirmed ONCE per year (`confirmGoals`) → locked read-only cards until Jan 1 (server-local); migration marked existing goals as confirmed for the current year. Goal progress counts read events (completions).
 > - **Music (CC0):** 9 public-domain pieces rendered ONCE at dev time (`scripts/render-annual-audio.mjs` offline synth → ffmpeg/libmp3lame 96k, ID3 artist=`farukylmz0505`, CC0 comment; `LICENSE-CC0` + `public/audio/annual/README.md`). The APP picks the piece deterministically from goal-progress mood: `<⅓` sad (Chopin Nocturne, Moonlight, Swan Lake) · `⅓–⅔` neutral (Minuet in G, Für Elise) · `⅔–1` happy (Nachtmusik, Rondo alla Turca, Spring) · `>1` celebration (Ode to Joy) — mood pool pick by year hash. Plays once (no loop), lazy single fetch, mute toggle, autoplay "Enable sound" fallback, sw.js runtime-cache + CACHE_NAME v4.
 > - **Goal-progress push (calendar):** day 1 = month start + target · day 10/20 = "N books, P% of goal" · last 3 days = remaining books · **silenced once monthly goal reached (rule A)**. `/api/push/goal-progress` (CRON_SECRET) added to the daily docker cron list. Localized templates (percent sign inside the template: TR "%{percent}", EN "{percent}%"); per-user locale synced from the cookie into `UserSettings.locale` (EN fallback).
-> - **AppSettings (singleton):** pagesPerReadEvent, xpBookAdded, xpBookFinishedBase, xpPagesPer10, xpLending, xpPerLevelBase — env defaults (`READ_EVENT_PAGES`, `XP_*`), system-admin editable on `/admin` ("Reading Settings"). `gamification-pure` now parametric with legacy defaults; level curve base configurable (derived level → changes retroactively).
+> - **AppSettings → REMOVED in v3.0.0:** pagesPerReadEvent, xpBookAdded, xpBookFinishedBase, xpPagesPer10, xpLending, xpPerLevelBase now live in **`config.yaml`** (repo root; Docker volume-mount `./config.yaml:/app/config.yaml:ro`; loader `src/lib/app-config.ts` = yaml parse + zod per-field fallback + 60s cache; `XP_*`/`READ_EVENT_PAGES` env vars gone). Admin "Reading Settings" card deleted. Level curve base (`xp.levels.base`) is still the Fibonacci parameter; derived level changes retroactively.
 > - **Schema (user-driven, single migration `20260911193502_annual_summary_settings_reads`):** Goal.targetYear/confirmedAt (existing goals locked) · BookReadEvent (+backfill of existing FINISHED books) · AppSettings · UserSettings.goalReminders + locale.
 > - **QA:** tsc ✅ lint ✅ (1 pre-existing warning) format ✅ unit 190/190 ✅ e2e 38/38 ✅ prod build ✅ ffprobe assets ✅
 >
