@@ -31,8 +31,8 @@ before upgrading).
 
 | Version | Security fixes |
 | --- | --- |
-| latest release (2.10.x) | ✅ |
-| < 2.10 | ❌ upgrade |
+| latest release (3.0.x) | ✅ |
+| < 3.0 | ❌ upgrade |
 
 ## Scope
 

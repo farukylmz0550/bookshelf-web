@@ -115,6 +115,7 @@ Production deployments throttle login **per IP: 10 attempts / 5 minutes** (`src/
 | Admin danger-zone wipe | 5 | 5 min | per admin |
 | Register / first-run setup | 5 | 60 s | per IP |
 | `/api/*` requests | 100 | 1 min | per IP + path |
+| Kobo sync (`/api/kobo/<token>/*`, v3.0.0) | 100 | 1 min | per device token |
 
 All counters are in-memory: restarting the container clears them.
 

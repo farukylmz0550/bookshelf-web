@@ -274,11 +274,14 @@ describe("levelForXp", () => {
 ## Releases (maintainer)
 
 1. Bump the version in `package.json` and add a `CHANGELOG.md` entry
-2. Commit + push `main`, then tag: `git tag vX.Y.Z && git push origin vX.Y.Z`
+2. Commit + push `main`, then tag: `git tag X.Y.Z && git push origin X.Y.Z`
+   (no `v` prefix — the 2.4.0+ convention)
 3. **Every tag gets a matching GitHub Release** — create it right after the tag
-   lands: `gh release create vX.Y.Z --title "X.Y.Z" --notes "<changelog excerpt>"`
-4. Pushing the tag automatically triggers the **Docker Publish** workflow
-   (`ghcr.io/<owner>/bookshelf:latest` + `:X.Y.Z`)
+   lands: `gh release create X.Y.Z --title "X.Y.Z" --notes "<changelog excerpt>"`
+4. Tags without the `v` prefix don't auto-trigger the workflow — dispatch it
+   manually (`gh workflow run docker-publish.yml --ref main`); it reads the
+   version from `package.json` and publishes
+   `ghcr.io/<owner>/bookshelf:latest` + `:X.Y.Z`
 
 ---
 
@@ -289,7 +292,8 @@ describe("levelForXp", () => {
 3. Add server action in `src/app/actions/` if it mutates data
 4. Create page component in `src/app/(dashboard)/`
 5. Add i18n keys to all 6 dictionaries (`src/i18n/dictionaries/`)
-6. Update `README.md` if it's a user-facing feature
+6. Site-wide configurable values go in `config.yaml` + `src/lib/app-config.ts` (v3.0.0) — not the database
+7. Update `README.md` if it's a user-facing feature
 
 ---
 
