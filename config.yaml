@@ -27,6 +27,11 @@ xp:
     #   L8→37700 · L9→98900 · L10→258400
     mode: fibonacci
     base: 100
+    # v3.1.0 — optional custom level names (index 0 = level 1). Shown in
+    # Stats, the leaderboard and the profile instead of "Level N". One
+    # language only (site owner's choice); missing entries fall back to
+    # "Level N".
+    # names: [Novice Reader, Bookworm, Bibliophile, Librarian]
 
 backfill:
   # "Fill missing page counts" (Settings → Book data): Open Library batch

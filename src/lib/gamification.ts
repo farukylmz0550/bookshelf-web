@@ -6,6 +6,7 @@ export {
   XP_REWARDS,
   levelForXp,
   levelProgress,
+  levelName,
   evaluateAchievements,
   ACHIEVEMENT_RULES,
   ACHIEVEMENT_XP,

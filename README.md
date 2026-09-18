@@ -10,12 +10,12 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.0.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.1.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-> **3.0.0** — breaking + experimental: site-wide reading/XP values moved from the database to [`config.yaml`](config.yaml) (admin Reading Settings card removed, `XP_*` env vars gone); the Open Library page-count backfill moved from Admin to Settings (Book data); and the customer-requested **Kobo eReader sync** arrives as experimental — the device pulls your whole library straight from the server via its `api_endpoint`, with book files streamed from your own NAS URL template and reading progress written back. See [`CHANGELOG.md`](CHANGELOG.md) and the [Kobo Sync section](#-kobo-sync-v300-experimental).
+> **3.1.0** — Kobo sync goes delta: metadata edits re-push without re-downloading, device-side deletes archive on the eReader, and the device's cumulative reading minutes now feed a **Reading time** stats tile + heatmap tooltips. Optional custom level names (`config.yaml xp.levels.names`). See [`CHANGELOG.md`](CHANGELOG.md). Earlier: **3.0.0** moved site-wide values to [`config.yaml`](config.yaml) (breaking), brought the page-count backfill to Settings and added the experimental customer-requested **Kobo eReader sync**.
 
 *Self-hosted · Private · No tracking · Your books, your data.*
 
@@ -39,7 +39,7 @@
 | 🤝 **Lending** | Lend / return, copy-aware, auto Person creation |
 | 👥 **People** | Trust scores + lending history |
 | 📊 **Stats** | Total/finished/reading, avg days, monthly chart, streak widget, heatmap |
-| 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge |
+| 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level (+ optional custom level names via `config.yaml`, v3.1.0) · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge · device reading-time write-back (Kobo minutes → Stats tile + heatmap tooltips) |
 | 🏆 **Leaderboard** | Top ranking, opt-out |
 | 🎯 **Goals** | Yearly / monthly targets |
 | 👤 **Profile** | Name, password, XP, join date |
@@ -289,7 +289,9 @@ User ──────┬── Book ──────── LendingRecord
 | **Person** | name (unique per user) |
 | **LendingRecord** | book, borrower, lentAt, returnedAt, bookTitle, personId |
 | **KoboSyncToken** (v3.0.0) | userId (unique), token (device `api_endpoint` capability), lastSyncAt |
+| **KoboSyncedBook** (v3.1.0) | userId+bookId (unique), metaHash (delta-sync change detection), archivedAt (device archive tombstone) |
 | **Goal / Achievement / UserAchievement** | yearly/monthly targets, 21 achievements (permanent + monthly, v2.11.0) |
+| **DailyActivity** | date (unique per user), count, pagesRead, minutesRead (v3.1.0 — Kobo device minutes) |
 
 > v3.0.0 — the `AppSettings` table was removed: site-wide reading/XP values live in [`config.yaml`](config.yaml).
 
@@ -357,7 +359,7 @@ A Kobo eReader can sync your whole BookShelf library over Wi-Fi, pulling books s
 npm run kobo:sim -- http://localhost:1024 <sync-token> https://nas.local/files
 ```
 
-Notes: progress the device reports updates `currentPage`, streak activity and auto-finish (exactly once per finish); deleting a book on the device never deletes it from the library; only books added after the last sync are sent on the next sync.
+Notes (v3.1.0): device-reported progress updates `currentPage`, streak activity, reading minutes and auto-finish (exactly once per finish); metadata edits re-push to the device without re-downloading files; deleting a book **on the device** archives it there (the library keeps it); a book removed from the library server-side sends `IsRemoved` on the next sync.
 
 ---
 

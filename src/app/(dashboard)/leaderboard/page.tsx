@@ -15,6 +15,8 @@ export default async function LeaderboardPage() {
     orderBy: { xp: "desc" },
   });
 
+  const config = await getAppConfig();
+
   return (
     <div className="space-y-6">
       <header className="space-y-1">
@@ -29,7 +31,8 @@ export default async function LeaderboardPage() {
         users={users}
         currentUserId={userId}
         dict={dict.leaderboard}
-        xpPerLevelBase={(await getAppConfig()).xpPerLevelBase}
+        xpPerLevelBase={config.xpPerLevelBase}
+        xpLevelNames={config.xpLevelNames}
       />
     </div>
   );

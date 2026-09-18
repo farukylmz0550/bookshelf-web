@@ -44,19 +44,37 @@ const ts = (d: Date | null | undefined) => {
   return valid.toISOString().replace(/\.\d+Z$/, "Z");
 };
 
-function bookEntitlement(book: { id: string; addedAt: Date }) {
+function bookEntitlement(book: { id: string; addedAt: Date }, removed = false) {
   return {
     Accessibility: "Full",
     ActivePeriod: { From: ts(book.addedAt) },
     Created: ts(book.addedAt),
     CrossRevisionId: book.id,
     Id: book.id,
-    IsRemoved: false,
+    IsRemoved: removed,
     IsHiddenFromArchive: false,
     IsLocked: false,
     LastModified: ts(book.addedAt),
     OriginCategory: "Imported",
     RevisionId: book.id,
+    Status: "Active",
+  };
+}
+
+/** Tombstone entitlement for a book that left the library (v3.1.0). */
+function removedEntitlement(bookId: string) {
+  return {
+    Accessibility: "Full",
+    ActivePeriod: { From: ts(new Date()) },
+    Created: ts(new Date(0)),
+    CrossRevisionId: bookId,
+    Id: bookId,
+    IsRemoved: true,
+    IsHiddenFromArchive: false,
+    IsLocked: false,
+    LastModified: ts(new Date()),
+    OriginCategory: "Imported",
+    RevisionId: bookId,
     Status: "Active",
   };
 }
@@ -114,7 +132,14 @@ function bookMetadata(
   };
 }
 
-function readingState(book: { id: string; addedAt: Date; status: string; currentPage: number | null }) {
+function readingState(book: {
+  id: string;
+  addedAt: Date;
+  status: string;
+  currentPage: number | null;
+  koboSpentMinutes?: number | null;
+  koboRemainingMinutes?: number | null;
+}) {
   const knownPages = book.currentPage !== null && book.currentPage > 0;
   return {
     EntitlementId: book.id,
@@ -127,10 +152,15 @@ function readingState(book: { id: string; addedAt: Date; status: string; current
         book.status === "FINISHED" ? "Finished" : knownPages || book.status === "READING" ? "Reading" : "ReadyToRead",
       TimesStartedReading: book.status === "TO_READ" ? 0 : 1,
     },
-    Statistics: { LastModified: ts(book.addedAt) },
+    Statistics: {
+      LastModified: ts(book.addedAt),
+      // v3.1.0 — echo stored device reading time so re-syncs stay consistent
+      ...(book.koboSpentMinutes ? { SpentReadingMinutes: book.koboSpentMinutes } : {}),
+      ...(book.koboRemainingMinutes != null ? { RemainingTimeMinutes: book.koboRemainingMinutes } : {}),
+    },
     CurrentBookmark: {
       LastModified: ts(book.addedAt),
-      ...(knownPages ? { ProgressPercent: book.currentPage } : {}),
+      ...(knownPages ? { ProgressPercent: book.currentPage, ContentSourceProgressPercent: book.currentPage } : {}),
     },
   };
 }
@@ -179,19 +209,71 @@ export async function GET(request: Request, ctx: Ctx) {
     return json({ Resources: resources }, { headers: { "x-kobo-apitoken": "e30=" } });
   }
 
+  // v3.1.0 — delta sync via per-book state (KoboSyncedBook):
+  //   new book            → NewEntitlement
+  //   metadata hash moved → ChangedEntitlement (fresh metadata, same id)
+  //   book gone (cascade/DB) → ChangedEntitlement IsRemoved + tombstone cleared
+  //   device-archived     → entitlement IsRemoved until re-added
   if (route === "v1/library/sync") {
     const lastSync = user?.koboToken?.lastSyncAt ?? null;
-    const books = await db.book.findMany({
-      where: { userId: auth.userId, ...(lastSync ? { addedAt: { gt: lastSync } } : {}) },
-      orderBy: { addedAt: "asc" },
-    });
-    const syncResults = books.map((book) => ({
-      NewEntitlement: {
-        BookEntitlement: bookEntitlement(book),
-        BookMetadata: bookMetadata(book, deviceToken, origin),
-        ...(book.status === "READING" || (book.currentPage ?? 0) > 0 ? { ReadingState: readingState(book) } : {}),
-      },
-    }));
+    const [books, synced] = await Promise.all([
+      db.book.findMany({ where: { userId: auth.userId }, orderBy: { addedAt: "asc" } }),
+      db.koboSyncedBook.findMany({ where: { userId: auth.userId } }),
+    ]);
+    const syncedByBook = new Map(synced.map((s) => [s.bookId, s]));
+    const currentIds = new Set(books.map((b) => b.id));
+
+    const { bookMetaHash } = await import("@/lib/kobo");
+    const syncResults: Array<Record<string, unknown>> = [];
+
+    // Tombstones first: rows whose Book no longer exists → IsRemoved, then clear.
+    const tombstones = synced.filter((s) => !currentIds.has(s.bookId));
+    for (const s of tombstones) {
+      syncResults.push({
+        ChangedEntitlement: {
+          BookEntitlement: removedEntitlement(s.bookId),
+        },
+      });
+    }
+
+    for (const book of books) {
+      const hash = bookMetaHash(book);
+      const s = syncedByBook.get(book.id);
+      const archived = Boolean(s?.archivedAt);
+      const entitlement = bookEntitlement(book, archived);
+      if (!s) {
+        syncResults.push({
+          NewEntitlement: {
+            BookEntitlement: entitlement,
+            BookMetadata: bookMetadata(book, deviceToken, origin),
+            ...(book.status === "READING" || (book.currentPage ?? 0) > 0 ? { ReadingState: readingState(book) } : {}),
+          },
+        });
+      } else if (s.metaHash !== hash || archived) {
+        // metadata change → fresh metadata; device-archived → IsRemoved again
+        // every sync (calibre-web Archive semantics) so the device keeps it out.
+        syncResults.push({
+          ChangedEntitlement: {
+            BookEntitlement: entitlement,
+            BookMetadata: bookMetadata(book, deviceToken, origin),
+            ...(book.status === "READING" || (book.currentPage ?? 0) > 0 ? { ReadingState: readingState(book) } : {}),
+          },
+        });
+      }
+      if (!s || s.metaHash !== hash) {
+        await db.koboSyncedBook.upsert({
+          where: { userId_bookId: { userId: auth.userId, bookId: book.id } },
+          update: { metaHash: hash },
+          create: { userId: auth.userId, bookId: book.id, metaHash: hash },
+        });
+      }
+    }
+    if (tombstones.length > 0) {
+      await db.koboSyncedBook.deleteMany({
+        where: { userId: auth.userId, bookId: { in: tombstones.map((s) => s.bookId) } },
+      });
+    }
+
     await db.koboSyncToken.update({ where: { token: deviceToken }, data: { lastSyncAt: new Date() } });
     const syncToken = readSyncTokenHeader(request.headers) ?? (lastSync ? ts(lastSync) : ts(new Date(0)));
     return json(syncResults, { headers: koboSyncHeaders(syncToken) });
@@ -289,6 +371,8 @@ export async function POST(request: Request, ctx: Ctx) {
         ReadingStates?: Array<{
           CurrentBookmark?: { ProgressPercent?: number; Location?: { Value?: string } };
           StatusInfo?: { Status?: string };
+          // v3.1.0 — device cumulative reading minutes
+          Statistics?: { SpentReadingMinutes?: number; RemainingTimeMinutes?: number };
         }>;
       };
       const state = body.ReadingStates?.[0];
@@ -300,6 +384,8 @@ export async function POST(request: Request, ctx: Ctx) {
         {
           fraction: typeof percent === "number" ? percent / 100 : undefined,
           page: locationValue !== undefined && /^\d+$/.test(String(locationValue)) ? Number(locationValue) : undefined,
+          spentReadingMinutes: state?.Statistics?.SpentReadingMinutes ?? undefined,
+          remainingTimeMinutes: state?.Statistics?.RemainingTimeMinutes ?? undefined,
         },
         { pagesPerReadEvent: config.pagesPerReadEvent, xpPagesPer10: config.xpPagesPer10 },
       );
@@ -318,7 +404,7 @@ export async function POST(request: Request, ctx: Ctx) {
         ],
       };
       if (result.ok) {
-        if (result.delta > 0 || result.finished) {
+        if (result.delta > 0 || result.minutes > 0 || result.finished) {
           revalidatePath("/books");
           revalidatePath("/stats");
         }
@@ -343,7 +429,27 @@ export async function DELETE(_request: Request, ctx: Ctx) {
   const { token, path } = await ctx.params;
   const auth = await resolveKoboToken(token);
   if (!auth) return json({ error: "unauthorized" }, { status: 401 });
-  // v1: deleting a book from the device never deletes it from the library.
-  if (path[0] === "v1" && path[1] === "library") return new Response(null, { status: 204 });
-  return cfg.koboStoreProxy ? proxyToKoboStore(_request, "/" + path.join("/")) : new Response("", { status: 204 });
+  // v3.1.0 — deleting on the device ARCHIVES it there (KoboSyncedBook.archivedAt):
+  // the book stays in the library, the next sync keeps IsRemoved so the device
+  // does not re-download it. Rotation of the sync token resets the archive.
+  const deleteMatch = path.join("/").match(/^v1\/library\/([^/]+)$/);
+  if (deleteMatch) {
+    const book = await db.book.findFirst({ where: { id: deleteMatch[1], userId: auth.userId }, select: { id: true } });
+    if (book) {
+      const { bookMetaHash } = await import("@/lib/kobo");
+      const current = await db.book.findUnique({ where: { id: book.id } });
+      await db.koboSyncedBook.upsert({
+        where: { userId_bookId: { userId: auth.userId, bookId: book.id } },
+        update: { archivedAt: new Date(), ...(current ? { metaHash: bookMetaHash(current) } : {}) },
+        create: {
+          userId: auth.userId,
+          bookId: book.id,
+          metaHash: current ? bookMetaHash(current) : "removed",
+          archivedAt: new Date(),
+        },
+      });
+    }
+    return new Response(null, { status: 204 });
+  }
+  return cfg.koboStoreProxy ? proxyToKoboStore(_request, "/" + path.join("/")) : new Response(null, { status: 204 });
 }

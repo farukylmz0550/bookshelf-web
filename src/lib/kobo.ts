@@ -3,7 +3,7 @@
 // after its `.kobo/Kobo/Kobo eReader.conf` api_endpoint is pointed here
 // (calibre-web pattern). Token = capability URL scoped to one user's library.
 
-import { randomBytes } from "node:crypto";
+import { randomBytes, createHash } from "node:crypto";
 import { db } from "@/lib/db";
 import type { Book } from "@/generated/prisma/client";
 
@@ -23,6 +23,45 @@ export async function resolveKoboToken(token: string): Promise<{ userId: string;
 /** Build the api_endpoint URL the user puts into Kobo eReader.conf. */
 export function buildKoboApiEndpoint(token: string, origin: string): string {
   return `${origin.replace(/\/$/, "")}/api/kobo/${token}`;
+}
+
+/**
+ * v3.1.0 — stable metadata fingerprint for delta sync: only the fields the
+ * device's metadata reflects (title/author/cover/ISBN/pages/publisher/date/
+ * language/series). Deliberately EXCLUDES progress/status/page fields so a
+ * device-driven update can never re-trigger a ChangedEntitlement loop.
+ */
+export function bookMetaHash(book: {
+  title: string;
+  author: string | null;
+  coverUrl: string | null;
+  isbn: string | null;
+  isbn10: string | null;
+  isbn13: string | null;
+  numberOfPages: string | null;
+  publishers: string | null;
+  publishDate: string | null;
+  languages: string | null;
+  series: string | null;
+}): string {
+  const h = createHash("sha256");
+  for (const v of [
+    book.title,
+    book.author ?? "",
+    book.coverUrl ?? "",
+    book.isbn ?? "",
+    book.isbn10 ?? "",
+    book.isbn13 ?? "",
+    book.numberOfPages ?? "",
+    book.publishers ?? "",
+    book.publishDate ?? "",
+    book.languages ?? "",
+    book.series ?? "",
+  ]) {
+    h.update(v);
+    h.update("\u0000");
+  }
+  return h.digest("hex").slice(0, 32);
 }
 
 /** Apply a per-user URL template ({isbn}, {isbn10}, {isbn13}). */
@@ -97,12 +136,16 @@ export async function proxyToKoboStore(request: Request, path: string): Promise<
 }
 
 const MAX_PROGRESS_JUMP = 1000; // cap per-sync delta — a stale device must not award a day's XP at once
+const MAX_MINUTES_JUMP = 1440; // cap per-sync minutes delta (24h — anything beyond is device clock noise)
 
 export type KoboReadingStateInput = {
   /** Absolute page the device reports (1-based), when available. */
   page?: number | null;
   /** 0..1 fraction of the book read, when available. */
   fraction?: number | null;
+  /** v3.1.0 — device CUMULATIVE reading minutes for the book (Statistics). */
+  spentReadingMinutes?: number | null;
+  remainingTimeMinutes?: number | null;
 };
 
 /**
@@ -110,15 +153,39 @@ export type KoboReadingStateInput = {
  * currentPage (absolute), startedAt/status transitions, streak activity and
  * per-10-pages XP for the delta. Mirrors logPagesRead semantics without the
  * delta-based optimistic lock (the device reports an absolute position).
- * Returns the applied delta, or null when there is nothing to record.
+ * v3.1.0 — Statistics.SpentReadingMinutes (cumulative) → per-sync delta into
+ * DailyActivity.minutesRead; recorded even when the page position is
+ * unchanged (reading time without progress still counts as activity).
  */
 export async function applyKoboProgress(
   book: Book,
   input: KoboReadingStateInput,
   config: { pagesPerReadEvent: number; xpPagesPer10: number },
-): Promise<{ ok: boolean; delta: number; finished: boolean } | { ok: false; reason: string }> {
+): Promise<{ ok: boolean; delta: number; minutes: number; finished: boolean } | { ok: false; reason: string }> {
   const totalPages = book.numberOfPages ? parseInt(book.numberOfPages, 10) : null;
   const knownPages = totalPages !== null && !isNaN(totalPages) && totalPages > 0;
+
+  // Reading minutes: the device reports a cumulative total; the delta feeds
+  // the daily activity. Independent of position — recorded in every path.
+  let minutesDelta = 0;
+  if (typeof input.spentReadingMinutes === "number" && input.spentReadingMinutes >= 0) {
+    const reported = Math.floor(input.spentReadingMinutes);
+    const stored = book.koboSpentMinutes ?? 0;
+    minutesDelta = Math.min(Math.max(reported - stored, 0), MAX_MINUTES_JUMP);
+    const storedRemaining =
+      typeof input.remainingTimeMinutes === "number" && input.remainingTimeMinutes >= 0
+        ? Math.floor(input.remainingTimeMinutes)
+        : null;
+    if (reported !== stored || storedRemaining !== (book.koboRemainingMinutes ?? null)) {
+      await db.book.update({
+        where: { id: book.id },
+        data: {
+          koboSpentMinutes: Math.max(reported, stored),
+          ...(storedRemaining !== null ? { koboRemainingMinutes: storedRemaining } : {}),
+        },
+      });
+    }
+  }
 
   // Resolve the device position into an absolute page.
   let position: number | null = null;
@@ -128,11 +195,14 @@ export async function applyKoboProgress(
   if (position === null && typeof input.page === "number" && input.page >= 0) {
     position = knownPages ? Math.min(Math.floor(input.page), totalPages!) : Math.floor(input.page);
   }
-  if (position === null) return { ok: false, reason: "no-position" };
 
   const current = book.currentPage ?? 0;
-  const delta = Math.min(Math.max(position - current, 0), MAX_PROGRESS_JUMP);
-  const finished = knownPages && position >= totalPages!;
+  const delta = position === null ? 0 : Math.min(Math.max(position - current, 0), MAX_PROGRESS_JUMP);
+  const finished = position !== null && knownPages && position >= totalPages!;
+
+  if (position === null && minutesDelta <= 0) {
+    return { ok: false, reason: "no-position" };
+  }
 
   if (finished) {
     const updated = await db.book.updateMany({
@@ -147,32 +217,36 @@ export async function applyKoboProgress(
       } catch {}
       const { finishBookWithXp } = await import("@/app/actions/streak");
       await finishBookWithXp(book.id, totalPages);
-      return { ok: true, delta, finished: true };
+      return { ok: true, delta, minutes: minutesDelta, finished: true };
     }
     // Already finished by the user/another sync — no double finish bonus.
-    return { ok: true, delta: 0, finished: true };
+    return { ok: true, delta: 0, minutes: minutesDelta, finished: true };
   }
 
-  if (delta <= 0) {
+  if (delta <= 0 && minutesDelta <= 0) {
     // Same position re-reported — no XP/streak farming by re-syncing.
-    return { ok: true, delta: 0, finished: false };
+    return { ok: true, delta: 0, minutes: 0, finished: false };
   }
 
-  const updateData: { currentPage: number; status?: "READING"; startedAt?: Date } = { currentPage: position };
-  if (book.status === "TO_READ") {
-    updateData.status = "READING";
-    if (!book.startedAt) updateData.startedAt = new Date();
+  if (position !== null && (delta > 0 || book.status === "TO_READ")) {
+    const updateData: { currentPage: number; status?: "READING"; startedAt?: Date } = { currentPage: position };
+    if (book.status === "TO_READ") {
+      updateData.status = "READING";
+      if (!book.startedAt) updateData.startedAt = new Date();
+    }
+    await db.book.update({ where: { id: book.id }, data: updateData });
   }
-  await db.book.update({ where: { id: book.id }, data: updateData });
 
-  const { recordActivity } = await import("@/app/actions/streak");
-  await recordActivity(delta);
-  const { awardXp } = await import("@/lib/gamification");
-  const xp = Math.floor(delta / 10) * config.xpPagesPer10;
-  if (xp > 0) {
-    try {
-      await awardXp(book.userId, xp);
-    } catch {}
+  if (delta > 0 || minutesDelta > 0) {
+    const { recordActivity } = await import("@/app/actions/streak");
+    await recordActivity(delta, minutesDelta);
+    const { awardXp } = await import("@/lib/gamification");
+    const xp = Math.floor(delta / 10) * config.xpPagesPer10;
+    if (xp > 0) {
+      try {
+        await awardXp(book.userId, xp);
+      } catch {}
+    }
   }
-  return { ok: true, delta, finished: false };
+  return { ok: true, delta, minutes: minutesDelta, finished: false };
 }

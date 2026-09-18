@@ -148,6 +148,67 @@ describe("Kobo sync — device flow simulation", () => {
     expect(((await res3.json()) as unknown[]).length).toBe(1);
   });
 
+  it("v3.1.0 — metadata edit re-pushes as ChangedEntitlement with fresh metadata", async () => {
+    await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    await db.book.update({ where: { id: bookA.id }, data: { title: "Renamed Book A" } });
+
+    const res = await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    const results = (await res.json()) as Array<
+      Record<string, { BookEntitlement?: { Id: string; IsRemoved: boolean }; BookMetadata?: { Title: string } }>
+    >;
+    expect(results).toHaveLength(1);
+    const changed = results[0].ChangedEntitlement;
+    expect(changed.BookEntitlement?.Id).toBe(bookA.id);
+    expect(changed.BookEntitlement?.IsRemoved).toBe(false);
+    expect(changed.BookMetadata?.Title).toBe("Renamed Book A");
+  });
+
+  it("v3.1.0 — progress-only changes do NOT re-push metadata (no loop)", async () => {
+    await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    // The device itself drives page/state changes; these must not resurrect
+    // the entitlement on the next sync.
+    await db.book.update({ where: { id: bookB.id }, data: { currentPage: 120, status: "READING" } });
+    const res = await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    expect((await res.json()) as unknown[]).toHaveLength(0);
+  });
+
+  it("v3.1.0 — a book that left the library tombstones as IsRemoved and clears", async () => {
+    await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    expect(await db.koboSyncedBook.count({ where: { userId: USER_ID } })).toBe(2);
+
+    await db.book.delete({ where: { id: bookA.id } });
+    const res = await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    const results = (await res.json()) as Array<{
+      ChangedEntitlement?: { BookEntitlement?: { Id: string; IsRemoved: boolean; BookMetadata?: unknown } };
+    }>;
+    expect(results).toHaveLength(1);
+    expect(results[0].ChangedEntitlement?.BookEntitlement?.Id).toBe(bookA.id);
+    expect(results[0].ChangedEntitlement?.BookEntitlement?.IsRemoved).toBe(true);
+    // tombstone cleared — the next sync is silent
+    const res2 = await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    expect((await res2.json()) as unknown[]).toHaveLength(0);
+  });
+
+  it("v3.1.0 — device DELETE archives the book on the device, not in the library", async () => {
+    await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    const res = await DELETE(req(`v1/library/${bookB.id}`), ctx(["v1", "library", bookB.id]));
+    expect(res.status).toBe(204);
+    expect(await db.book.count({ where: { id: bookB.id } })).toBe(1);
+
+    const row = await db.koboSyncedBook.findUnique({
+      where: { userId_bookId: { userId: USER_ID, bookId: bookB.id } },
+    });
+    expect(row?.archivedAt).not.toBeNull();
+
+    const res2 = await GET(req("v1/library/sync"), ctx(["v1", "library", "sync"]));
+    const results = (await res2.json()) as Array<{
+      ChangedEntitlement?: { BookEntitlement?: { Id: string; IsRemoved: boolean } };
+    }>;
+    expect(results).toHaveLength(1);
+    expect(results[0].ChangedEntitlement?.BookEntitlement?.Id).toBe(bookB.id);
+    expect(results[0].ChangedEntitlement?.BookEntitlement?.IsRemoved).toBe(true);
+  });
+
   it("GET /v1/library/{id}/metadata returns the single book metadata", async () => {
     const res = await GET(req(`v1/library/${bookA.id}/metadata`), ctx(["v1", "library", bookA.id, "metadata"]));
     const [meta] = (await res.json()) as Array<Record<string, unknown>>;
@@ -253,6 +314,65 @@ describe("Kobo sync — device flow simulation", () => {
       ctx(["v1", "library", bookA.id, "state"]),
     );
     expect(res.status).toBe(400);
+  });
+
+  it("v3.1.0 — device reading minutes join the daily activity (delta, cumulative)", async () => {
+    const res = await POST(
+      req(`v1/library/${bookB.id}/state`, {
+        method: "PUT",
+        body: JSON.stringify({ ReadingStates: [{ Statistics: { SpentReadingMinutes: 30 } }] }),
+      }),
+      ctx(["v1", "library", bookB.id, "state"]),
+    );
+    expect(res.status).toBe(200);
+    const today = new Date();
+    const day = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+    const activity = await db.dailyActivity.findUnique({
+      where: { userId_date: { userId: USER_ID, date: day } },
+    });
+    expect(activity?.minutesRead).toBe(30);
+
+    const stored = await db.book.findUnique({ where: { id: bookB.id }, select: { koboSpentMinutes: true } });
+    expect(stored?.koboSpentMinutes).toBe(30);
+
+    // repeated identical report → no additional minutes
+    await POST(
+      req(`v1/library/${bookB.id}/state`, {
+        method: "PUT",
+        body: JSON.stringify({ ReadingStates: [{ Statistics: { SpentReadingMinutes: 30 } }] }),
+      }),
+      ctx(["v1", "library", bookB.id, "state"]),
+    );
+    const activity2 = await db.dailyActivity.findUnique({
+      where: { userId_date: { userId: USER_ID, date: day } },
+    });
+    expect(activity2?.minutesRead).toBe(30);
+
+    // a larger cumulative total is recorded as a delta
+    await POST(
+      req(`v1/library/${bookB.id}/state`, {
+        method: "PUT",
+        body: JSON.stringify({ ReadingStates: [{ Statistics: { SpentReadingMinutes: 55 } }] }),
+      }),
+      ctx(["v1", "library", bookB.id, "state"]),
+    );
+    const activity3 = await db.dailyActivity.findUnique({
+      where: { userId_date: { userId: USER_ID, date: day } },
+    });
+    expect(activity2 && activity3?.minutesRead).toBe(30 + 25);
+  });
+
+  it("v3.1.0 — minutes-only reports do not award page XP", async () => {
+    const before = (await db.user.findUnique({ where: { id: USER_ID }, select: { xp: true } }))?.xp ?? 0;
+    await POST(
+      req(`v1/library/${bookA.id}/state`, {
+        method: "PUT",
+        body: JSON.stringify({ ReadingStates: [{ Statistics: { SpentReadingMinutes: 10 } }] }),
+      }),
+      ctx(["v1", "library", bookA.id, "state"]),
+    );
+    const after = (await db.user.findUnique({ where: { id: USER_ID }, select: { xp: true } }))?.xp ?? 0;
+    expect(after).toBe(before);
   });
 
   it("device book deletion never touches the library", async () => {

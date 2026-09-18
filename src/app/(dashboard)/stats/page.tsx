@@ -3,8 +3,8 @@ import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary, getLocale } from "@/i18n/get-dictionary";
 import { getTheme } from "@/lib/theme";
-import { levelProgress } from "@/lib/gamification";
-import { monthlyFinishCounts } from "@/lib/stats";
+import { levelProgress, levelName } from "@/lib/gamification";
+import { monthlyFinishCounts, formatReadingMinutes } from "@/lib/stats";
 import { finishedInMonth, finishedInYear } from "@/lib/goals";
 import { getStreakInfo } from "@/lib/streak";
 import { getAppConfig } from "@/lib/app-config";
@@ -49,7 +49,7 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
       getStreakInfo(userId),
       db.dailyActivity.findMany({
         where: { userId },
-        select: { date: true, count: true, pagesRead: true },
+        select: { date: true, count: true, pagesRead: true, minutesRead: true },
         orderBy: { date: "asc" },
       }),
       db.bookReadEvent.findMany({ where: { userId }, select: { readAt: true } }),
@@ -65,6 +65,7 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
   const doneMonth = finishedInMonth(readDates, now.getFullYear(), now.getMonth());
 
   const { level } = levelProgress(user.xp, (await getAppConfig()).xpPerLevelBase);
+  const customLevelName = levelName(level, (await getAppConfig()).xpLevelNames);
   const chartData = monthlyFinishCounts(readDates);
 
   const booksWithDuration = await db.book.findMany({
@@ -106,12 +107,23 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
 
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
         {[
-          { label: dict.stats.totalBooks, value: totalBooks },
-          { label: dict.stats.finished, value: finishedCount },
-          { label: dict.stats.reading, value: reading },
-          { label: dict.stats.level, value: level },
-          { label: dict.stats.xp, value: user.xp },
-          { label: dict.stats.averageDays, value: avgDays },
+          { label: dict.stats.totalBooks, value: totalBooks, hint: undefined as string | undefined },
+          { label: dict.stats.finished, value: finishedCount, hint: undefined },
+          { label: dict.stats.reading, value: reading, hint: undefined },
+          {
+            label: dict.stats.level,
+            value: level,
+            // v3.1.0 — custom level name from config.yaml (optional)
+            hint: customLevelName ?? undefined,
+          },
+          { label: dict.stats.xp, value: user.xp, hint: undefined },
+          { label: dict.stats.averageDays, value: avgDays, hint: undefined },
+          {
+            // v3.1.0 — device-reported reading time (Kobo minutes)
+            label: dict.stats.readingTime,
+            value: formatReadingMinutes(dailyActivities.reduce((sum, a) => sum + (a.minutesRead ?? 0), 0)),
+            hint: undefined,
+          },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -119,6 +131,7 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
           >
             <p className="text-[11px] text-muted-foreground">{stat.label}</p>
             <p className="mt-0.5 text-lg font-semibold tabular-nums text-foreground">{stat.value}</p>
+            {stat.hint && <p className="text-[10px] text-muted-foreground/80">{stat.hint}</p>}
           </div>
         ))}
       </div>
@@ -173,6 +186,7 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
           date: a.date.toISOString().split("T")[0],
           count: a.count,
           pagesRead: a.pagesRead,
+          minutesRead: a.minutesRead,
         }))}
       />
 

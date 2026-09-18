@@ -90,6 +90,17 @@ export function parsePageCount(raw: string | null | undefined): number | null {
   return Number.isNaN(parsed) || parsed <= 0 ? null : parsed;
 }
 
+/**
+ * v3.1.0 — human display for a reading-minute total (device-reported or
+ * future timer data): "< 1h" → "42m", larger → "2h 30m", zero → "—".
+ */
+export function formatReadingMinutes(minutes: number): string {
+  const m = Math.max(0, Math.floor(minutes));
+  if (m === 0) return "—";
+  if (m < 60) return String(m);
+  return `${Math.floor(m / 60)}h${m % 60 > 0 ? ` ${m % 60}m` : ""}`;
+}
+
 function highlightOf(title: string | null, author: string | null, pages: number | null): AnnualBookHighlight {
   return { title: title ?? "—", author, pages };
 }

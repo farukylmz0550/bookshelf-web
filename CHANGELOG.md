@@ -4,6 +4,38 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.1.0 — 2026-09-18
+
+### Added
+
+- **Kobo delta sync (v3.1.0 completion)** — per-book sync state
+  (`KoboSyncedBook`): new books arrive as `NewEntitlement`, books whose
+  metadata changed (title/author/cover/ISBN/pages/…) re-push as
+  `ChangedEntitlement` with the same entitlement id (no re-download),
+  and progress-only changes never re-push (no sync loop). A book that leaves
+  the library sends `IsRemoved: true` and the tombstone row clears itself —
+  removal sync is dormant until a delete feature exists, then it works
+  automatically. Deleting a book **on the device** now archives it there
+  (`KoboSyncedBook.archivedAt`) instead of being ignored; the library keeps
+  the book and the device stops re-downloading it.
+- **Device reading-time write-back** — `Statistics.SpentReadingMinutes`
+  (cumulative, device-sent) is stored per book (`Book.koboSpentMinutes`) and
+  its per-sync delta feeds `DailyActivity.minutesRead`; re-reported identical
+  totals are idempotent (no XP/time inflation) and minutes-only reports award
+  no page XP. Stats gains a **Reading time** tile (`formatReadingMinutes`)
+  and the activity-heatmap tooltips show daily minutes (`25 min`).
+- **Custom level names** — `config.yaml xp.levels.names` (optional list,
+  index 0 = level 1): shown in Stats, the leaderboard and the profile instead
+  of "Level N". One language (site owner's choice); missing entries fall back
+  to the default label. Invalid/empty entries are dropped field-by-field.
+- `kobo:sim` gained delta-sync and reading-minute checks.
+
+### QA
+
+- tsc ✅ · lint ✅ (1 pre-existing warning) · unit 236/236 ✅ · e2e 44/44 ✅ ·
+  build ✅ · migration `20260918000000_kobo_sync_v3_1` (KoboSyncedBook +
+  Book minutes columns + DailyActivity.minutesRead) ✅
+
 ## 3.0.0 — 2026-09-17
 
 ### Breaking

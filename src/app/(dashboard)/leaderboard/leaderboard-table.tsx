@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { levelForXp } from "@/lib/gamification-pure";
+import { levelForXp, levelName } from "@/lib/gamification-pure";
 
 type User = { id: string; name: string; xp: number };
 
@@ -11,6 +11,7 @@ const PAGE_SIZE = 20;
 
 export function LeaderboardTable({
   xpPerLevelBase = 100,
+  xpLevelNames = [],
   users,
   currentUserId,
   dict,
@@ -19,6 +20,8 @@ export function LeaderboardTable({
   currentUserId: string;
   dict: { rank: string; name: string; level: string; xp: string };
   xpPerLevelBase?: number;
+  /** v3.1.0 — custom level names from config.yaml (optional). */
+  xpLevelNames?: readonly string[];
 }) {
   const [page, setPage] = useState(0);
   const totalPages = Math.ceil(users.length / PAGE_SIZE);
@@ -42,8 +45,16 @@ export function LeaderboardTable({
         >
           <span className="text-sm tabular-nums text-muted-foreground">{start + i + 1}</span>
           <span className="text-sm text-foreground">{user.name}</span>
-          <span className="text-center text-sm tabular-nums text-muted-foreground">
+          <span className="text-center text-sm text-muted-foreground">
             {levelForXp(user.xp, xpPerLevelBase)}
+            {levelName(levelForXp(user.xp, xpPerLevelBase), xpLevelNames) && (
+              <span
+                className="ml-1 text-[10px] text-muted-foreground/80"
+                title={levelName(levelForXp(user.xp, xpPerLevelBase), xpLevelNames) ?? undefined}
+              >
+                {levelName(levelForXp(user.xp, xpPerLevelBase), xpLevelNames)}
+              </span>
+            )}
           </span>
           <span className="text-right text-sm tabular-nums text-muted-foreground">{user.xp}</span>
         </div>

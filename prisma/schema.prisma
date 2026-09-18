@@ -52,6 +52,7 @@ model User {
   readEvents      BookReadEvent[]
   groups          BookGroup[]
   koboToken       KoboSyncToken?
+  koboSyncedBooks KoboSyncedBook[]
 
   @@index([id])
 }
@@ -99,16 +100,39 @@ model Book {
   notes          String?
   tags           String?    // csv lowercased
   startedAt      DateTime?
-  signed         Boolean    @default(false)
-  copies         Int        @default(1)
-  currentPage    Int?
+  signed        Boolean    @default(false)
+  copies        Int        @default(1)
+  currentPage   Int?
 
-  lendingRecords LendingRecord[]
-  readEvents     BookReadEvent[]
+  // v3.1.0 — Kobo device-reported reading time. SpentReadingMinutes is the
+  // device's CUMULATIVE total for the book; the delta per sync feeds
+  // DailyActivity.minutesRead. Remaining is informational only.
+  koboSpentMinutes     Int     @default(0)
+  koboRemainingMinutes Int?
+
+  lendingRecords   LendingRecord[]
+  readEvents       BookReadEvent[]
   groupMemberships BookGroupMembership[]
 
   @@index([userId])
   @@index([tags])
+}
+
+// v3.1.0 — per-book Kobo sync state: metadata hash for change detection and
+// device archive tombstones. A row whose Book no longer exists is a tombstone:
+// the next sync sends IsRemoved to the device and clears the row. The
+// non-cascade bookId keeps tombstones alive after cascaded deletes.
+model KoboSyncedBook {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId     String
+  metaHash   String
+  archivedAt DateTime?
+  syncedAt   DateTime  @default(now())
+
+  @@unique([userId, bookId])
+  @@index([userId])
 }
 
 // Read sessions (v2.7.0): one row per logged reading event — a book completion
@@ -214,13 +238,15 @@ model UserAchievement {
 }
 
 model DailyActivity {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date      DateTime
-  count     Int      @default(1)
-  pagesRead Int      @default(0)
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       DateTime
+  count      Int      @default(1)
+  pagesRead  Int      @default(0)
+  // v3.1.0 — device-reported reading minutes (Kobo SpentReadingMinutes delta)
+  minutesRead Int     @default(0)
+  createdAt  DateTime @default(now())
 
   @@unique([userId, date])
   @@index([userId, date])

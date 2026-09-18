@@ -73,6 +73,15 @@ export function levelProgress(xp: number, base: number = DEFAULT_XP_CONFIG.perLe
   };
 }
 
+/**
+ * v3.1.0 — display name for a level: custom name from config.yaml when
+ * defined, null otherwise (callers fall back to the i18n "Level N" label).
+ */
+export function levelName(level: number, names: readonly string[] = []): string | null {
+  const name = names[level - 1];
+  return typeof name === "string" && name.length > 0 ? name : null;
+}
+
 /** Streak multiplier for XP bonus. */
 export function streakMultiplier(streak: number): number {
   if (streak >= 100) return 2.0;

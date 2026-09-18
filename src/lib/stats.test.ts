@@ -8,6 +8,8 @@ import { moodForProgress, pieceForYear } from "@/lib/annual-music";
 import { isGoalUnlocked } from "@/lib/goals";
 import { isAnnualSummaryWindow, parseSelectedYear } from "@/lib/annual";
 import { defaultAppConfig, validateAppConfig } from "@/lib/app-config";
+import { formatReadingMinutes } from "@/lib/stats";
+import { levelName } from "@/lib/gamification-pure";
 import { calculateFinishXp, levelForXp, levelProgress, xpForNextLevel } from "@/lib/gamification-pure";
 
 describe("monthlyFinishCounts", () => {
@@ -496,6 +498,36 @@ describe("defaultAppConfig + validateAppConfig", () => {
   it("clamps out-of-range values", () => {
     const values = validateAppConfig({ xp: { pagesPerReadEvent: 999999 } });
     expect(values.pagesPerReadEvent).toBe(1000);
+  });
+
+  it("passes custom level names through (v3.1.0)", () => {
+    const values = validateAppConfig({ xp: { levels: { names: ["Novice", "Bookworm"] } } });
+    expect(values.xpLevelNames).toEqual(["Novice", "Bookworm"]);
+    expect(defaultAppConfig().xpLevelNames).toEqual([]);
+  });
+
+  it("drops invalid level names entries", () => {
+    const values = validateAppConfig({ xp: { levels: { names: ["", "  ", "ok"] } } });
+    expect(values.xpLevelNames).toEqual(["ok"]);
+  });
+});
+
+describe("formatReadingMinutes (v3.1.0)", () => {
+  it("formats minutes, hours+minutes and empty states", () => {
+    expect(formatReadingMinutes(0)).toBe("—");
+    expect(formatReadingMinutes(-5)).toBe("—");
+    expect(formatReadingMinutes(42)).toBe("42");
+    expect(formatReadingMinutes(60)).toBe("1h");
+    expect(formatReadingMinutes(150)).toBe("2h 30m");
+  });
+});
+
+describe("levelName (v3.1.0)", () => {
+  it("returns the configured name for the level, null otherwise", () => {
+    expect(levelName(1, ["Novice", "Bookworm"])).toBe("Novice");
+    expect(levelName(2, ["Novice", "Bookworm"])).toBe("Bookworm");
+    expect(levelName(5, ["Novice", "Bookworm"])).toBeNull();
+    expect(levelName(1, [])).toBeNull();
   });
 });
 

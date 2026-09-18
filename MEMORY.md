@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
-> Last updated: 2026-09-17
-> Version: 3.0.0
+> Last updated: 2026-09-18
+> Version: 3.1.0
 > Branch: main
 
 ---
@@ -196,6 +196,7 @@ npm run format:check  # prettier
 
 | Date | Commit | Description |
 |-------|--------|----------|
+| 2026-09-18 | pending | `3.1.0` — **Faz 1**: Kobo delta sync (`KoboSyncedBook`: metaHash SHA-256-of-metadata → ChangedEntitlement re-push without re-download, progress changes never re-push → no loop; tombstone = row without Book → IsRemoved + self-clear (dormant until a delete feature exists); device DELETE → archivedAt (device archive, calibre-web semantics, re-sent every sync)); reading-time write-back (`Book.koboSpentMinutes/Remaining`, Statistics.SpentReadingMinutes cumulative → per-sync delta → `DailyActivity.minutesRead`, idempotent, no page XP for minutes-only); Stats **Reading time** tile (`formatReadingMinutes` lib/stats) + heatmap tooltip daily minutes; custom level names (`config.yaml xp.levels.names` optional, `levelName` gamification-pure, shown in Stats tile hint + leaderboard); `recordActivity(pagesRead?, minutesRead=0)`; kobo:sim +delta/minutes checks; 236 unit green |
 | 2026-09-17 | pending | `3.0.0` — **breaking**: config.yaml replaces AppSettings (model dropped via migration `20260917200000_drop_appsettings_add_kobo_sync`; admin Reading Settings card removed; `XP_*`/`READ_EVENT_PAGES` env vars gone; `src/lib/app-config.ts` loader: yaml + zod field-by-field fallbacks + 60s cache); page-count backfill moved Admin → Settings ("Book data"; user-scoped action); **Kobo eReader sync (experimental)**: `/api/kobo/<token>/v1/...` catch-all (calibre-web protocol reference; auth/device handshake, initialization resources, library/sync entitlements since lastSyncAt, metadata, download stream from per-user `{isbn}` URL template, state write-back → currentPage/streak/auto-finish exactly-once, cover redirect, storeProxy default true, device-delete → no-op 204), `KoboSyncToken` + `User.fileSourceUrl`, path-token public in proxy.ts + token-keyed rate limit, Settings → Kobo Sync card (6 dicts), `scripts/kobo-sim.ts` simulator (`npm run kobo:sim`) — simulation-verified only, hardware feedback pending; 226 unit green |
 | 2026-09-15 | `a26fd16` | `2.10.1`/docs — TROUBLESHOOTING.md + SECURITY.md, README disclaimer + third-party license table, brand set consolidated under `brand/` (root master copies removed) |
 | 2026-09-15 | `bf1f39c` | `2.10.0` — feature-freeze lifted: Groups → Shelves copy (6 dicts, routes/model unchanged), bulk shelf picker dialog (`listBooksForShelfPicker`/`addBooksToGroup`, `shelf-book-picker.tsx`), TOTP 2FA (`otplib`+`qrcode`, migration `20260915153612_add_totp_and_must_change_password`: `totpSecret`/`totpEnabled`/`mustChangePassword`, admin-mandatory gate `account-gates.tsx`, login `TOTP_REQUIRED`/`INVALID_TOTP`), admin danger zone (`wipeNonAdminData`, TOTP-confirmed), admin-assigned forced password resets, native `<select>` → Base UI Select (book-personal, filter-bar ×8, lending-form, annual-summary), licenses page project-licensing block, 193 unit + 42 e2e green |
@@ -273,6 +274,29 @@ Desktop app written with PyQt6. Located in `legacy` branch.
 Both projects continue under GPLv3.
 
 ---
+
+## 14. Feature Roadmap — 2026-09-18 (approved by user)
+
+All items approved; **each phase ships as its own release**. Priorities set by
+value/effort + dependency order; Kobo hardware verification stays with the
+customer (simulation-verified code is released with an "experimental" note).
+
+**Faz 1 → 3.1.0 ✅ (this release)** — Kobo delta sync completion (#12: metaHash
+re-push, tombstones, device archive; hardware feedback pending), reading-time
+write-back (#8: SpentReadingMinutes → DailyActivity.minutesRead + Stats tile),
+custom level names (#10: config.yaml xp.levels.names).
+
+**Faz 2 → 3.2.0 "Library intelligence"** — OPDS catalog `/api/opds/<token>`
+(reuses Kobo token/template/stream infra, P0), series view + series progress
+(series field exists, P1), Author entity + author pages (P1, new model).
+
+**Faz 3 → 3.3.0 "Challenges + imports"** — seasonal challenges (Goal/
+Achievement period infra), Calibre CSV / StoryGraph import, automatic DB
+backup (cron container).
+
+**Faz 4 → 3.4.0 "UX depth"** — in-app reading timer (needs #8's table),
+page-numbered quotes/highlights (new table), kepubify EPUB→KEPUB for Kobo
+(binary into the image).
 
 ## 12. PWA Improvements TODO
 

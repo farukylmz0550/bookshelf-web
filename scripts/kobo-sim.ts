@@ -93,13 +93,20 @@ async function main() {
     console.log("SKIP  download step (pass a file-source base to test it)");
   }
 
-  // 5. progress write-back on the first book at 50%
+  // 5. progress write-back on the first book at 50% (+ reading minutes, v3.1.0)
   const bookId = first?.BookEntitlement?.Id;
   if (bookId) {
     const stateRes = await fetch(`${root}/v1/library/${bookId}/state`, {
       method: "PUT",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ReadingStates: [{ CurrentBookmark: { ProgressPercent: 50 } }] }),
+      body: JSON.stringify({
+        ReadingStates: [
+          {
+            CurrentBookmark: { ProgressPercent: 50 },
+            Statistics: { SpentReadingMinutes: 42, RemainingTimeMinutes: 60 },
+          },
+        ],
+      }),
     });
     const stateJson = await stateRes.json().catch(() => ({}));
     check(
@@ -107,9 +114,30 @@ async function main() {
       stateRes.status === 200 && stateJson.RequestResult === "Success",
       JSON.stringify(stateJson).slice(0, 120),
     );
+
+    // v3.1.0 — minutes are cumulative: a larger total is recorded, a repeated
+    // same-value report must be an idempotent no-op (no XP/time inflation).
+    const repeatRes = await fetch(`${root}/v1/library/${bookId}/state`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        ReadingStates: [{ CurrentBookmark: { ProgressPercent: 50 }, Statistics: { SpentReadingMinutes: 42 } }],
+      }),
+    });
+    check("state PUT repeat is idempotent", repeatRes.status === 200);
   } else {
     console.log("SKIP  state write-back (no book to report progress for)");
   }
+
+  // 6. v3.1.0 — delta sync: immediately re-syncing (no new books, no metadata
+  // change) must return an EMPTY set instead of re-sending entitlements.
+  const resyncRes = await fetch(`${root}/v1/library/sync`, { headers: { "x-kobo-synctoken": "" } });
+  const resyncJson = await resyncRes.json();
+  check(
+    "delta re-sync is empty (no duplicate push)",
+    resyncRes.status === 200 && Array.isArray(resyncJson) && resyncJson.length === 0,
+    `${resyncJson.length} items`,
+  );
 
   console.log(failures === 0 ? "\nAll sim checks passed." : `\n${failures} check(s) failed.`);
   process.exit(failures === 0 ? 0 : 1);

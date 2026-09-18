@@ -18,6 +18,11 @@ export type AppConfigValues = {
   xpLending: number;
   /** Base XP of the Fibonacci level curve. */
   xpPerLevelBase: number;
+  /**
+   * v3.1.0 — optional custom level names (index 0 = level 1); shown in
+   * Stats/leaderboard/profile when present. Absent → i18n "Level N".
+   */
+  xpLevelNames: string[];
   /** "Fill missing page counts": Open Library lookup chunk size. */
   backfillChunkSize: number;
   /** Max ISBNs resolved per backfill button press. */
@@ -38,6 +43,7 @@ const xpSchema = z.object({
     .object({
       mode: z.enum(["fibonacci"]).default("fibonacci"),
       base: intInRange(1, 100000).default(100),
+      names: z.array(z.string()).max(50).optional(),
     })
     .default({ mode: "fibonacci", base: 100 }),
 });
@@ -74,6 +80,7 @@ export function defaultAppConfig(): AppConfigValues {
     xpPagesPer10: 3,
     xpLending: 5,
     xpPerLevelBase: 100,
+    xpLevelNames: [],
     backfillChunkSize: 20,
     backfillMaxBatch: 40,
     koboEnabled: true,
@@ -97,6 +104,12 @@ export function validateAppConfig(doc: unknown): AppConfigValues {
     xpPagesPer10: data.xp?.pagesPer10 ?? defaults.xpPagesPer10,
     xpLending: data.xp?.lending ?? defaults.xpLending,
     xpPerLevelBase: data.xp?.levels?.base ?? defaults.xpPerLevelBase,
+    xpLevelNames: Array.isArray(data.xp?.levels?.names)
+      ? data.xp.levels.names
+          .filter((n) => typeof n === "string" && n.trim().length > 0)
+          .slice(0, 50)
+          .map((n) => n.trim().slice(0, 60))
+      : defaults.xpLevelNames,
     backfillChunkSize: data.backfill?.chunkSize ?? defaults.backfillChunkSize,
     backfillMaxBatch: data.backfill?.maxBatch ?? defaults.backfillMaxBatch,
     koboEnabled: data.kobo?.enabled ?? defaults.koboEnabled,

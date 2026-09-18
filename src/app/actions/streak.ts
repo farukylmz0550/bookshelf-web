@@ -10,8 +10,13 @@ import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppConfig } from "@/lib/app-config";
 
 /** Record a reading activity for today. Called when a book is finished or page progress is made.
- * v2.9.6 — returns the recalculated streak so callers can surface it in toasts. */
-export async function recordActivity(pagesRead?: number): Promise<{ current: number; longest: number }> {
+ * v2.9.6 — returns the recalculated streak so callers can surface it in toasts.
+ * v3.1.0 — optional minutesRead (Kobo device-reported reading time) joins the
+ * same upsert. Every call counts as one activity (original semantics). */
+export async function recordActivity(
+  pagesRead?: number,
+  minutesRead = 0,
+): Promise<{ current: number; longest: number }> {
   const userId = await requireUserId();
 
   const today = startOfUtcDay();
@@ -27,6 +32,7 @@ export async function recordActivity(pagesRead?: number): Promise<{ current: num
       data: {
         count: existing.count + 1,
         pagesRead: existing.pagesRead + (pagesRead ?? 0),
+        minutesRead: existing.minutesRead + minutesRead,
       },
     });
   } else {
@@ -36,6 +42,7 @@ export async function recordActivity(pagesRead?: number): Promise<{ current: num
         date: today,
         count: 1,
         pagesRead: pagesRead ?? 0,
+        minutesRead,
       },
     });
   }

@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 
 interface ActivityHeatmapProps {
-  activities: { date: string; count: number; pagesRead: number }[];
+  activities: { date: string; count: number; pagesRead: number; minutesRead?: number }[];
   dict: { yearlyActivity: string; activities: string; less: string; more: string };
 }
 
@@ -23,8 +23,8 @@ function formatDate(date: Date): string {
   return date.toISOString().split("T")[0];
 }
 
-function buildGrid(activities: { date: string; count: number }[]) {
-  const activityMap = new Map(activities.map((a) => [a.date, a.count]));
+function buildGrid(activities: { date: string; count: number; pagesRead?: number; minutesRead?: number }[]) {
+  const activityMap = new Map(activities.map((a) => [a.date, a]));
 
   const today = new Date();
   const endDate = new Date(today);
@@ -37,14 +37,20 @@ function buildGrid(activities: { date: string; count: number }[]) {
   const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
   startDate.setDate(startDate.getDate() - daysToMonday);
 
-  const weeks: { date: Date; count: number }[][] = [];
-  let currentWeek: { date: Date; count: number }[] = [];
+  const weeks: { date: Date; count: number; pagesRead: number; minutesRead: number }[][] = [];
+  let currentWeek: { date: Date; count: number; pagesRead: number; minutesRead: number }[] = [];
 
   const current = new Date(startDate);
   while (current <= endDate) {
     const dateStr = formatDate(current);
-    const count = activityMap.get(dateStr) ?? 0;
-    currentWeek.push({ date: new Date(current), count });
+    const activity = activityMap.get(dateStr);
+    const count = activity?.count ?? 0;
+    currentWeek.push({
+      date: new Date(current),
+      count,
+      pagesRead: activity?.pagesRead ?? 0,
+      minutesRead: activity?.minutesRead ?? 0,
+    });
 
     if (current.getDay() === 0) {
       weeks.push(currentWeek);
@@ -127,7 +133,7 @@ export function ActivityHeatmap({ activities, dict }: ActivityHeatmapProps) {
                     <div
                       key={di}
                       className={`h-[10px] w-[10px] rounded-sm ${getIntensityClass(day.count)} transition-colors`}
-                      title={`${formatDate(day.date)} — ${day.count} activities`}
+                      title={`${formatDate(day.date)} — ${day.count} activities${day.pagesRead > 0 ? ` · ${day.pagesRead}p` : ""}${day.minutesRead > 0 ? ` · ${day.minutesRead} min` : ""}`}
                     />
                   ))}
                 </div>
