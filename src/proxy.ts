@@ -15,9 +15,10 @@ const PUBLIC_PATHS = [
   "/icon.svg",
   "/logo.svg",
   "/apple-touch-icon.png",
-  // v3.0.0 — Kobo eReader sync: the device cannot hold a NextAuth cookie;
-  // it authenticates via its per-user path token.
+  // v3.0.0 — Kobo eReader sync + v3.2.0 OPDS catalog: devices/apps cannot
+  // hold a NextAuth cookie; they authenticate via the per-user path token.
   "/api/kobo/",
+  "/api/opds/",
 ];
 
 // NOTE: The limiter util holds a Map per runtime — proxy (middleware) and the
@@ -34,12 +35,16 @@ export default auth(async (req) => {
   // Rate limit API routes (except auth — auth throttling lives in auth.ts
   // authorize() because the middleware runtime cannot load db/bcrypt).
   if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {
-    // Kobo sync: a device hammers sync/download from one IP for one token —
-    // key by token, not IP, so the whole building's readers can't exhaust each
-    // other and one device can't rotate IPs to bypass its own budget.
-    const koboPrefix = "/api/kobo/";
-    const key = pathname.startsWith(koboPrefix)
-      ? `kobo:${pathname.slice(koboPrefix.length).split("/")[0] ?? "anon"}`
+    // Kobo sync / OPDS: a device hammers sync/download from one IP for one
+    // token — key by token, not IP, so the whole building's readers can't
+    // exhaust each other and one device can't rotate IPs to bypass its budget.
+    const tokenPrefix = pathname.startsWith("/api/kobo/")
+      ? "/api/kobo/"
+      : pathname.startsWith("/api/opds/")
+        ? "/api/opds/"
+        : null;
+    const key = tokenPrefix
+      ? `device:${pathname.slice(tokenPrefix.length).split("/")[0] ?? "anon"}`
       : `${req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "anonymous"}:${pathname}`;
     if (throttlingEnabled() && !checkRateLimit(key, DEFAULT_LIMITS.api)) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });

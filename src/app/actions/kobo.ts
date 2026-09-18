@@ -19,6 +19,8 @@ function originFromHeaders(h: Headers): string {
 export type KoboSyncState = {
   enabled: boolean;
   syncUrl: string | null;
+  /** v3.2.0 — OPDS 1.2 catalog root for the same token (Settings display). */
+  opdsUrl: string | null;
   fileSourceUrl: string | null;
 };
 
@@ -31,9 +33,11 @@ export async function getKoboSyncState(): Promise<KoboSyncState> {
     select: { fileSourceUrl: true, koboToken: { select: { token: true } } },
   });
   const token = user?.koboToken?.token ?? null;
+  const origin = originFromHeaders(await headers());
   return {
     enabled,
-    syncUrl: token && enabled ? buildKoboApiEndpoint(token, originFromHeaders(await headers())) : null,
+    syncUrl: token && enabled ? buildKoboApiEndpoint(token, origin) : null,
+    opdsUrl: token && enabled ? `${origin.replace(/\/$/, "")}/api/opds/${token}/` : null,
     fileSourceUrl: user?.fileSourceUrl ?? null,
   };
 }

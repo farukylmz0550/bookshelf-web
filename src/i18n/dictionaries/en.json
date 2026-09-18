@@ -9,7 +9,9 @@
     "more": "More",
     "settings": "Settings",
     "logout": "Log out",
-    "groups": "Shelves"
+    "groups": "Shelves",
+    "series": "Series",
+    "authors": "Authors"
   },
   "theme": {
     "light": "Light",
@@ -537,6 +539,24 @@
     "fileSourcePlaceholder": "https://nas.local/books/{isbn}.epub",
     "fileSourceHint": "Supports the {isbn}, {isbn10} and {isbn13} placeholders. Only books with an ISBN can be downloaded to the device.",
     "saved": "Saved.",
-    "save": "Save"
+    "save": "Save",
+    "opdsLabel": "OPDS catalog (compatible reader apps):"
+  },
+  "series": {
+    "title": "Series",
+    "subtitle": "Your books grouped by series",
+    "finishedOf": "read",
+    "empty": "No series yet. Fill in the Series field when adding or editing a book.",
+    "emptyShelf": "No books in this series.",
+    "back": "Back to series"
+  },
+  "authors": {
+    "title": "Authors",
+    "subtitle": "Your books grouped by author",
+    "finishedOf": "read",
+    "reading": "reading",
+    "empty": "No author information in your library yet.",
+    "emptyShelf": "No books found for this author.",
+    "back": "Back to authors"
   }
 }

@@ -16,6 +16,7 @@ interface SettingsFormProps {
   currentTheme: Theme;
   currentLocale: Locale;
   koboSyncUrl: string | null;
+  koboOpdsUrl: string | null;
   koboFileSource: string | null;
   dict?: {
     settings?: {
@@ -34,6 +35,7 @@ interface SettingsFormProps {
       noUrl: string;
       createUrl: string;
       urlLabel: string;
+      opdsLabel: string;
       confTitle: string;
       confDesc: string;
       created: string;
@@ -51,6 +53,7 @@ export function SettingsForm({
   currentTheme,
   currentLocale,
   koboSyncUrl,
+  koboOpdsUrl,
   koboFileSource,
   dict,
 }: SettingsFormProps) {
@@ -74,7 +77,12 @@ export function SettingsForm({
         />
       </section>
 
-      <KoboSyncCard initialUrl={koboSyncUrl} initialFileSource={koboFileSource} dict={dict?.kobo ?? null} />
+      <KoboSyncCard
+        initialUrl={koboSyncUrl}
+        initialFileSource={koboFileSource}
+        initialOpdsUrl={koboOpdsUrl}
+        dict={dict?.kobo ?? null}
+      />
 
       {/* Licenses — link to /licenses */}
       <section>

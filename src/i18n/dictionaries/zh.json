@@ -9,7 +9,9 @@
     "more": "更多",
     "settings": "设置",
     "logout": "退出",
-    "groups": "书架"
+    "groups": "书架",
+    "series": "系列",
+    "authors": "作者"
   },
   "theme": {
     "light": "浅色",
@@ -537,6 +539,24 @@
     "fileSourcePlaceholder": "https://nas.local/books/{isbn}.epub",
     "fileSourceHint": "支持 {isbn}、{isbn10} 和 {isbn13} 占位符。只有带 ISBN 的书才能下载到设备。",
     "saved": "已保存。",
-    "save": "保存"
+    "save": "保存",
+    "opdsLabel": "OPDS 目录（兼容的阅读应用）："
+  },
+  "series": {
+    "title": "系列",
+    "subtitle": "按系列分组的图书",
+    "finishedOf": "已读",
+    "empty": "还没有系列。添加或编辑图书时填写“系列”字段。",
+    "emptyShelf": "该系列暂无图书。",
+    "back": "返回系列"
+  },
+  "authors": {
+    "title": "作者",
+    "subtitle": "按作者分组的图书",
+    "finishedOf": "已读",
+    "reading": "在读",
+    "empty": "书库中还没有作者信息。",
+    "emptyShelf": "未找到该作者的图书。",
+    "back": "返回作者"
   }
 }

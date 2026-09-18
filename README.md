@@ -10,12 +10,12 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.1.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.2.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-> **3.1.0** — Kobo sync goes delta: metadata edits re-push without re-downloading, device-side deletes archive on the eReader, and the device's cumulative reading minutes now feed a **Reading time** stats tile + heatmap tooltips. Optional custom level names (`config.yaml xp.levels.names`). See [`CHANGELOG.md`](CHANGELOG.md). Earlier: **3.0.0** moved site-wide values to [`config.yaml`](config.yaml) (breaking), brought the page-count backfill to Settings and added the experimental customer-requested **Kobo eReader sync**.
+> **3.2.0** — Library intelligence: your library is now browsable by **series** and **author** (derived from the Open Library data you already store) and served as an **OPDS 1.2 catalog** (`/api/opds/<token>`) to any reader app. Earlier: **3.1.0** made Kobo sync delta-based (metadata re-push without re-download, device archive) with reading-time write-back and custom level names. See [`CHANGELOG.md`](CHANGELOG.md).
 
 *Self-hosted · Private · No tracking · Your books, your data.*
 
@@ -35,6 +35,9 @@
 |---|---|
 | 📚 **Library** | One-click ISBN (Open Library, full metadata: publishers, dates, languages, subjects, ISBN10/13) + detailed manual form (arrow → 14 fields) · header "Read N pages" CTA on first open · Card/List toggle · Excel import/export |
 | 🎴 **Cards** | Equal `h-[380px]` **60% cover / 40% meta** · `object-contain` · 12px radius · `2→3→4` responsive grid |
+| 📚 **Series** *(v3.2.0)* | Books grouped by the Open Library `series` field — progress bars (finished/total), detail grid per series (`/series`) |
+| ✍️ **Authors** *(v3.2.0)* | Derived author pages — counts (finished/reading) + per-author grid (`/authors`) |
+| 📡 **OPDS** *(v3.2.0)* | OPDS 1.2 catalog `/api/opds/<token>` for any reader app (KOReader, Moon+, Foliate) — navigation feed per series/author, covers + EPUB downloads from your own URL template |
 | 🗂️ **Shelves** | Create/rename/delete/reorder, optional color · bulk picker dialog (+ button per shelf — select books, one "Add" click) · many-to-many books · dedicated `/groups/[id]` grid view · main-page shelf filter (AND with tags/status/search) |
 | 🤝 **Lending** | Lend / return, copy-aware, auto Person creation |
 | 👥 **People** | Trust scores + lending history |
@@ -344,6 +347,7 @@ A Kobo eReader can sync your whole BookShelf library over Wi-Fi, pulling books s
 ### Server setup
 
 1. **Settings → Kobo Sync → "Create sync URL"** — you get `api_endpoint=https://…/api/kobo/<token>`.
+   The same card also shows your **OPDS catalog** URL (`/api/opds/<token>/`) for reader apps (v3.2.0).
 2. **Book file URL template** — BookShelf serves metadata only; the book files come from *your* storage. Enter a URL template, e.g. `https://nas.local/books/{isbn}.epub` (placeholders: `{isbn}`, `{isbn10}`, `{isbn13}`; only ISBN books are downloadable). The server fetches the file and streams it to the device.
 3. The device must reach the server over **HTTPS with a valid certificate** (reverse proxy / Cloudflare tunnel). Sync fails on self-signed certs.
 

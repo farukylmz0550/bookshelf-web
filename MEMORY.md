@@ -196,6 +196,7 @@ npm run format:check  # prettier
 
 | Date | Commit | Description |
 |-------|--------|----------|
+| 2026-09-18 | pending | `3.2.0` — **Faz 2 (Library intelligence)**: OPDS 1.2 catalog `/api/opds/<token>` (src/lib/opds.ts Atom XML builders + route; nav feed All books+series+authors, acquisition feeds with cover+EPUB links via Kobo download endpoint; same capability token; gated by kobo.enabled; public in proxy.ts + device-token rate limit); Series view `/series` + `/series/[name]` (groupSeries in lib/collections, progress bars); Authors view `/authors` + `/authors/[name]` (groupAuthors, derived - NO new tables); sidebar/more nav entries + nav.series/authors + series/authors i18n sections (6 dicts); Settings card shows OPDS URL (kobo.opdsLabel); opds.test.ts (6); e2e library-intelligence.spec.ts (4); 242 unit + 48 e2e green |
 | 2026-09-18 | pending | `3.1.0` — **Faz 1**: Kobo delta sync (`KoboSyncedBook`: metaHash SHA-256-of-metadata → ChangedEntitlement re-push without re-download, progress changes never re-push → no loop; tombstone = row without Book → IsRemoved + self-clear (dormant until a delete feature exists); device DELETE → archivedAt (device archive, calibre-web semantics, re-sent every sync)); reading-time write-back (`Book.koboSpentMinutes/Remaining`, Statistics.SpentReadingMinutes cumulative → per-sync delta → `DailyActivity.minutesRead`, idempotent, no page XP for minutes-only); Stats **Reading time** tile (`formatReadingMinutes` lib/stats) + heatmap tooltip daily minutes; custom level names (`config.yaml xp.levels.names` optional, `levelName` gamification-pure, shown in Stats tile hint + leaderboard); `recordActivity(pagesRead?, minutesRead=0)`; kobo:sim +delta/minutes checks; 236 unit green |
 | 2026-09-17 | pending | `3.0.0` — **breaking**: config.yaml replaces AppSettings (model dropped via migration `20260917200000_drop_appsettings_add_kobo_sync`; admin Reading Settings card removed; `XP_*`/`READ_EVENT_PAGES` env vars gone; `src/lib/app-config.ts` loader: yaml + zod field-by-field fallbacks + 60s cache); page-count backfill moved Admin → Settings ("Book data"; user-scoped action); **Kobo eReader sync (experimental)**: `/api/kobo/<token>/v1/...` catch-all (calibre-web protocol reference; auth/device handshake, initialization resources, library/sync entitlements since lastSyncAt, metadata, download stream from per-user `{isbn}` URL template, state write-back → currentPage/streak/auto-finish exactly-once, cover redirect, storeProxy default true, device-delete → no-op 204), `KoboSyncToken` + `User.fileSourceUrl`, path-token public in proxy.ts + token-keyed rate limit, Settings → Kobo Sync card (6 dicts), `scripts/kobo-sim.ts` simulator (`npm run kobo:sim`) — simulation-verified only, hardware feedback pending; 226 unit green |
 | 2026-09-15 | `a26fd16` | `2.10.1`/docs — TROUBLESHOOTING.md + SECURITY.md, README disclaimer + third-party license table, brand set consolidated under `brand/` (root master copies removed) |
@@ -287,9 +288,9 @@ re-push, tombstones, device archive; hardware feedback pending), reading-time
 write-back (#8: SpentReadingMinutes → DailyActivity.minutesRead + Stats tile),
 custom level names (#10: config.yaml xp.levels.names).
 
-**Faz 2 → 3.2.0 "Library intelligence"** — OPDS catalog `/api/opds/<token>`
-(reuses Kobo token/template/stream infra, P0), series view + series progress
-(series field exists, P1), Author entity + author pages (P1, new model).
+**Faz 2 → 3.2.0 ✅ (shipped)** — OPDS catalog `/api/opds/<token>`, series view,
+authors view (authors derived from Book.author, no new model — simpler and
+equivalent for a personal library).
 
 **Faz 3 → 3.3.0 "Challenges + imports"** — seasonal challenges (Goal/
 Achievement period infra), Calibre CSV / StoryGraph import, automatic DB

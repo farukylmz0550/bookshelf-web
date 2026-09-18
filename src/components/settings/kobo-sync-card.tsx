@@ -13,6 +13,7 @@ export type KoboDict = {
   noUrl: string;
   createUrl: string;
   urlLabel: string;
+  opdsLabel: string;
   confTitle: string;
   confDesc: string;
   created: string;
@@ -28,13 +29,16 @@ const CONF_STEPS = ["1. USB: .kobo/Kobo/Kobo eReader.conf", "2. [OneStoreService
 export function KoboSyncCard({
   initialUrl,
   initialFileSource,
+  initialOpdsUrl,
   dict,
 }: {
   initialUrl: string | null;
   initialFileSource: string | null;
+  initialOpdsUrl: string | null;
   dict: KoboDict | null;
 }) {
   const [syncUrl, setSyncUrl] = useState(initialUrl);
+  const [opdsUrl, setOpdsUrl] = useState<string | null>(initialOpdsUrl);
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -50,6 +54,7 @@ export function KoboSyncCard({
       const res = await createKoboSyncUrl();
       if (res.ok && res.url) {
         setSyncUrl(res.url);
+        setOpdsUrl(res.url.replace("/api/kobo/", "/api/opds/") + "/");
         setMsg(d.created);
       } else {
         setMsg(res.error ?? "Failed");
@@ -78,6 +83,14 @@ export function KoboSyncCard({
             <code className="block break-all rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 text-xs text-foreground">
               api_endpoint={syncUrl}
             </code>
+            {opdsUrl && (
+              <>
+                <p className="font-[var(--font-sans)] text-xs text-muted-foreground">{d.opdsLabel}</p>
+                <code className="block break-all rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 text-xs text-foreground">
+                  {opdsUrl}
+                </code>
+              </>
+            )}
           </div>
         ) : (
           <div>

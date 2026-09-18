@@ -9,6 +9,8 @@ import {
   Library,
   Handshake,
   BarChart3,
+  Layers,
+  PenLine,
   Trophy,
   Medal,
   Users,
@@ -39,6 +41,8 @@ const MAIN_NAV: NavItem[] = [
 ];
 
 const MORE_NAV: NavItem[] = [
+  { href: "/series", label: "series", icon: Layers },
+  { href: "/authors", label: "authors", icon: PenLine },
   { href: "/achievements", label: "achievements", icon: Trophy },
   { href: "/leaderboard", label: "leaderboard", icon: Medal },
   { href: "/people", label: "people", icon: Users },

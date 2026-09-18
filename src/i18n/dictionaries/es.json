@@ -9,7 +9,9 @@
     "more": "Más",
     "settings": "Ajustes",
     "logout": "Cerrar sesión",
-    "groups": "Estanterías"
+    "groups": "Estanterías",
+    "series": "Series",
+    "authors": "Autores"
   },
   "theme": {
     "light": "Claro",
@@ -537,6 +539,24 @@
     "fileSourcePlaceholder": "https://nas.local/libros/{isbn}.epub",
     "fileSourceHint": "Admite las marcas {isbn}, {isbn10} y {isbn13}. Solo los libros con ISBN se pueden descargar al dispositivo.",
     "saved": "Guardado.",
-    "save": "Guardar"
+    "save": "Guardar",
+    "opdsLabel": "Catálogo OPDS (apps de lectura compatibles):"
+  },
+  "series": {
+    "title": "Series",
+    "subtitle": "Tus libros agrupados por serie",
+    "finishedOf": "leídos",
+    "empty": "Aún no hay series. Rellena el campo Serie al añadir o editar un libro.",
+    "emptyShelf": "No hay libros en esta serie.",
+    "back": "Volver a series"
+  },
+  "authors": {
+    "title": "Autores",
+    "subtitle": "Tus libros agrupados por autor",
+    "finishedOf": "leídos",
+    "reading": "leyendo",
+    "empty": "Tu biblioteca aún no tiene información de autores.",
+    "emptyShelf": "No se encontraron libros de este autor.",
+    "back": "Volver a autores"
   }
 }

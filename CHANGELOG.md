@@ -4,6 +4,34 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.2.0 — 2026-09-18
+
+### Added
+
+- **OPDS 1.2 catalog (Faz 2 — "Library intelligence")** — `/api/opds/<token>/`
+  serves your whole library as an OPDS 1.2 catalog to any compatible reader
+  app (Moon+ Reader, KOReader, Foliate, …). Same per-user capability token as
+  the Kobo sync (Settings shows both URLs). Root = navigation feed
+  ("All books" + one entry per series + per author); acquisition feeds carry
+  covers and the EPUB download link streamed from the user's own
+  fileSourceUrl template. Token-keyed rate limit, public in the proxy
+  middleware, gated by `kobo.enabled` in config.yaml.
+- **Series view** (`/series`) — the Open Library `series` data already in the
+  library becomes navigable: cards with finished/total progress bars and a
+  detail grid per series (`/series/[name]`, ownership-scoped). Sidebar "More"
+  + bottom-nav overflow entries in all 6 dictionaries.
+- **Authors view** (`/authors`) — the caller's books grouped by author
+  (derived, no new tables): card counts (finished/reading) and a per-author
+  detail grid (`/authors/[name]`).
+- New pure helpers `src/lib/collections.ts` (groupSeries/groupAuthors) and
+  `src/lib/opds.ts` (Atom/XML feed builders, XML-escaped), both unit-tested.
+
+### QA
+
+- tsc ✅ · lint ✅ (1 pre-existing warning) · unit 242/242 ✅ (new: opds.test.ts
+  grouping + feed XML) · e2e 48/48 ✅ (new: library-intelligence.spec.ts) ·
+  build ✅ (no schema change — derived views only)
+
 ## 3.1.0 — 2026-09-18
 
 ### Added

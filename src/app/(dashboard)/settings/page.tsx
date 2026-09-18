@@ -25,7 +25,7 @@ export default async function SettingsPage() {
   // v3.0.0 — Kobo sync card (hidden when disabled in config.yaml).
   const koboState = (await getAppConfig()).koboEnabled
     ? await getKoboSyncState()
-    : { enabled: false, syncUrl: null, fileSourceUrl: null };
+    : { enabled: false, syncUrl: null, opdsUrl: null, fileSourceUrl: null };
 
   return (
     <div className="space-y-6">
@@ -40,6 +40,7 @@ export default async function SettingsPage() {
         currentTheme={theme}
         currentLocale={locale}
         koboSyncUrl={koboState.syncUrl}
+        koboOpdsUrl={koboState.opdsUrl}
         koboFileSource={koboState.fileSourceUrl}
         dict={{
           settings: { goalReminders: dict.settings.goalReminders },
@@ -56,6 +57,7 @@ export default async function SettingsPage() {
             noUrl: dict.kobo.noUrl,
             createUrl: dict.kobo.createUrl,
             urlLabel: dict.kobo.urlLabel,
+            opdsLabel: dict.kobo.opdsLabel,
             confTitle: dict.kobo.confTitle,
             confDesc: dict.kobo.confDesc,
             created: dict.kobo.created,

@@ -9,7 +9,9 @@
     "more": "Daha Fazla",
     "settings": "Ayarlar",
     "logout": "Çıkış yap",
-    "groups": "Raflar"
+    "groups": "Raflar",
+    "series": "Seriler",
+    "authors": "Yazarlar"
   },
   "theme": {
     "light": "Aydınlık",
@@ -537,6 +539,24 @@
     "fileSourcePlaceholder": "https://nas.local/kitaplar/{isbn}.epub",
     "fileSourceHint": "{isbn}, {isbn10} ve {isbn13} yer tutucularını destekler. Yalnızca ISBN'i olan kitaplar cihaza indirilebilir.",
     "saved": "Kaydedildi.",
-    "save": "Kaydet"
+    "save": "Kaydet",
+    "opdsLabel": "OPDS kataloğu (uyumlu okuyucu uygulamalar için):"
+  },
+  "series": {
+    "title": "Seriler",
+    "subtitle": "Kitaplığın serilere göre gruplanmış",
+    "finishedOf": "okundu",
+    "empty": "Henüz serili kitap yok. Kitap eklerken veya düzenlerken 'Seri' alanını doldur.",
+    "emptyShelf": "Bu seride kitap yok.",
+    "back": "Serilere dön"
+  },
+  "authors": {
+    "title": "Yazarlar",
+    "subtitle": "Kitaplığın yazarlara göre gruplanmış",
+    "finishedOf": "okundu",
+    "reading": "okuyor",
+    "empty": "Kitaplarında henüz yazar bilgisi yok.",
+    "emptyShelf": "Bu yazarın kitapları bulunamadı.",
+    "back": "Yazarlara dön"
   }
 }
