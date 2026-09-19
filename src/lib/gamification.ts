@@ -164,3 +164,36 @@ async function collectGoalContext(userId: string) {
     readEventsInGoalYear,
   };
 }
+
+/**
+ * v3.3.0 — seasonal challenges: complete any challenge whose read-event count
+ * within [startAt, endAt] reached its target. The conditional updateMany
+ * (completedAt still null) makes completion + XP exactly-once, even under
+ * concurrent syncs. Called fire-and-forget from the read-event paths
+ * (finish / page-log / Kobo state).
+ */
+export async function syncChallenges(userId: string, now: Date = new Date()): Promise<void> {
+  const challenges = await db.challenge.findMany({ where: { userId, completedAt: null } });
+  if (challenges.length === 0) return;
+
+  const events = await db.bookReadEvent.findMany({ where: { userId }, select: { readAt: true } });
+  const dates = events.map((e) => e.readAt);
+
+  for (const challenge of challenges) {
+    const start = challenge.startAt.getTime();
+    const end = challenge.endAt.getTime();
+    const done = dates.filter((d) => d.getTime() >= start && d.getTime() <= end).length;
+    if (done < challenge.target) continue;
+    const updated = await db.challenge.updateMany({
+      where: { id: challenge.id, userId, completedAt: null },
+      data: { completedAt: now },
+    });
+    if (updated.count > 0) {
+      try {
+        const { getAppConfig } = await import("@/lib/app-config");
+        const { challengeCompletionXp } = await getAppConfig();
+        if (challengeCompletionXp > 0) await awardXp(userId, challengeCompletionXp);
+      } catch {}
+    }
+  }
+}

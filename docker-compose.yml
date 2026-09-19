@@ -33,7 +33,8 @@ services:
        const urls = [
          ['streak-remind', 'http://app:3000/api/push/streak-remind'],
          ['overdue-remind', 'http://app:3000/api/push/overdue-remind'],
-         ['goal-progress', 'http://app:3000/api/push/goal-progress']
+         ['goal-progress', 'http://app:3000/api/push/goal-progress'],
+         ['backup', 'http://app:3000/api/backup']
        ];
        async function tick() {
          for (const [name, url] of urls) {

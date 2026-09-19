@@ -11,7 +11,8 @@
     "logout": "Выйти",
     "groups": "Полки",
     "series": "Серии",
-    "authors": "Авторы"
+    "authors": "Авторы",
+    "challenges": "Челленджи"
   },
   "theme": {
     "light": "Светлая",
@@ -410,10 +411,11 @@
     "duplicatesSkipped": "Пропущено дублей",
     "invalidRows": "Некорректных строк",
     "lookupFailed": "Не найдено в Open Library",
-    "invalidCsv": "Недопустимый CSV-файл Goodreads",
+    "invalidCsv": "Недопустимый CSV-файл",
     "fileTooLarge": "Файл слишком большой (лимит 20МБ)",
     "noValidBooks": "Действительных книг не найдено",
-    "tooManyRows": "Слишком много строк (максимум 5000)"
+    "tooManyRows": "Слишком много строк (максимум 5000)",
+    "importCsv": "Импорт CSV (Goodreads / Calibre / StoryGraph)"
   },
   "annual": {
     "title": "Годовой итог",
@@ -558,5 +560,22 @@
     "empty": "В библиотеке пока нет информации об авторах.",
     "emptyShelf": "Книги этого автора не найдены.",
     "back": "К авторам"
+  },
+  "challenges": {
+    "title": "Челленджи",
+    "subtitle": "Сезонные читательские челленджи — прогресс считается по событиям чтения",
+    "create": "Создать",
+    "createCta": "Новый челлендж",
+    "titleLabel": "Название",
+    "targetLabel": "Цель",
+    "startLabel": "Начало",
+    "endLabel": "Конец",
+    "created": "Челлендж создан.",
+    "invalidWindow": "Недопустимый диапазон дат.",
+    "invalidTarget": "Цель должна быть от 1 до 1000.",
+    "empty": "Челленджей пока нет — создайте первый!",
+    "completed": "Завершён",
+    "delete": "Удалить",
+    "deleteConfirm": "Удалить этот челлендж?"
   }
 }

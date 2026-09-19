@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import Link from "next/link";
-import { Trophy, TrendingUp, Settings, Shield, ChevronRight, Library, Layers, PenLine } from "lucide-react";
+import { Trophy, TrendingUp, Settings, Shield, ChevronRight, Library, Layers, PenLine, Flag } from "lucide-react";
 import { auth } from "@/auth";
 import { getDictionary } from "@/i18n/get-dictionary";
 
@@ -22,6 +22,7 @@ export default async function MorePage() {
     {
       items: [
         { href: "/groups", icon: Library, label: dict.nav.groups },
+        { href: "/challenges", icon: Flag, label: dict.nav.challenges },
         { href: "/series", icon: Layers, label: dict.nav.series },
         { href: "/authors", icon: PenLine, label: dict.nav.authors },
         { href: "/achievements", icon: Trophy, label: dict.nav.achievements },

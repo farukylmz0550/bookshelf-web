@@ -188,6 +188,10 @@ export async function addBook(input: {
   try {
     await syncAchievements(userId);
   } catch {}
+  try {
+    const { syncChallenges } = await import("@/lib/gamification");
+    await syncChallenges(userId);
+  } catch {}
   revalidatePath("/books");
   return { ok: true };
 }
@@ -320,6 +324,10 @@ export async function logPagesRead(
       await syncAchievements(userId);
     } catch {}
   }
+  try {
+    const { syncChallenges } = await import("@/lib/gamification");
+    await syncChallenges(userId);
+  } catch {}
 
   revalidatePath("/books");
   revalidatePath("/stats");

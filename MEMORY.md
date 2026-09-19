@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
-> Last updated: 2026-09-18
-> Version: 3.1.0
+> Last updated: 2026-09-19
+> Version: 3.3.0
 > Branch: main
 
 ---
@@ -111,7 +111,9 @@ bookshelf/
 User ──────┬── Book ──────── LendingRecord
            ├── Person ────── LendingRecord
            ├── Goal
-           └── UserAchievement ── Achievement
+           ├── UserAchievement ── Achievement
+           ├── Challenge (v3.3.0 — seasonal windows, exactly-once completion)
+           └── DailyActivity ── (count, pagesRead, minutesRead)
 ```
 
 | Model | Key Fields |
@@ -124,6 +126,7 @@ User ──────┬── Book ──────── LendingRecord
 | **Achievement** | key, titleKey/descriptionKey/iconKey (i18n), recurrence (NONE = permanent / MONTHLY, v2.11.0) — 21 achievements |
 | **UserAchievement** | user + achievement link with unlock date + periodKey ("" = permanent, "YYYY-MM" = monthly period; unique per user+achievement+period) |
 | **DailyActivity / StreakShield / UserSettings / PushSubscription** | streak & notification tracking |
+| **Challenge (v3.3.0)** | title, target (1–1000), startAt/endAt (≤366d), completedAt; progress = BookReadEvent.readAt inside window; completion exactly-once + config `challenges.completionXp` (default 25) |
 
 ---
 
@@ -137,7 +140,7 @@ User ──────┬── Book ──────── LendingRecord
 | `people.ts` | create, remove |
 | `goals.ts` | set yearly/monthly |
 | `excel.ts` | export, template, import |
-| `goodreads.ts` | importGoodreadsCsv (Goodreads CSV → books: ISBN dedupe, shelf→status/tags, Open Library enrichment, XP+achievements) |
+| `goodreads.ts` | importGoodreadsCsv (delegate) + importBooksCsv (unified CSV: Goodreads/Calibre/StoryGraph detected from header; shared pipeline: ISBN dedupe, shelf→status/tags, Open Library enrichment, XP+achievements) |
 | `profile.ts` | update name, change password |
 | `covers.ts` | clear cache (admin) |
 | `admin.ts` | approve/reject users, toggle admin, delete users |
@@ -147,6 +150,7 @@ User ──────┬── Book ──────── LendingRecord
 | `settings.ts` | update notifications/streak/weeklyDigest/goalReminders (goalReminders feeds calendar-based goal-progress push) |
 | `kobo.ts` | v3.0.0 — Kobo sync management: getKoboSyncState, createKoboSyncUrl (token create/rotate), setFileSourceUrl (per-user download URL template) |
 | `cookies.ts` | setConsentCookie, hasConsent |
+| `challenges.ts` | v3.3.0 — createChallenge, deleteChallenge (ownership-scoped); progress sync in gamification.syncChallenges |
 
 Every data-modifying action runs `awardXp()` + `syncAchievements()`. ISBN one-click flow chains `lookupIsbnAction` → `addBook` with all Open Library fields.
 
@@ -196,6 +200,7 @@ npm run format:check  # prettier
 
 | Date | Commit | Description |
 |-------|--------|----------|
+| 2026-09-19 | pending | `3.3.0` — **Faz 3 (Challenges + imports)**: seasonal challenges (`Challenge` model migration 20260919000000_seasonal_challenges; lib/challenges.ts pure validation zod + window<=366d; /challenges page + challenge-card.tsx client form + challenge-item.tsx confirm-guarded delete; syncChallenges in gamification.ts = conditional updateMany exactly-once + config challengeCompletionXp default 25; hooked into finish/page-log/Kobo read-event paths); unified CSV import `importBooksCsv` (detectCsvFormat header signature goodreads/calibre/storygraph; parseCalibreRows + parseStorygraphRows in lib/books/csv-import.ts; GoodreadsRow +pages/series/publishers; UI button now "Import CSV"; importGoodreadsCsv delegates); auto-backup `/api/backup` (Bearer CRON_SECRET, better-sqlite3 .backup() WAL-safe, /data/backups bookshelf-YYYYMMDD.db keep 7, lib/backup.ts pure helpers; docker-compose cron list + backup entry); challenges.test.ts 13 + challenges e2e 3; 255 unit + 51 e2e green |
 | 2026-09-18 | pending | `3.2.0` — **Faz 2 (Library intelligence)**: OPDS 1.2 catalog `/api/opds/<token>` (src/lib/opds.ts Atom XML builders + route; nav feed All books+series+authors, acquisition feeds with cover+EPUB links via Kobo download endpoint; same capability token; gated by kobo.enabled; public in proxy.ts + device-token rate limit); Series view `/series` + `/series/[name]` (groupSeries in lib/collections, progress bars); Authors view `/authors` + `/authors/[name]` (groupAuthors, derived - NO new tables); sidebar/more nav entries + nav.series/authors + series/authors i18n sections (6 dicts); Settings card shows OPDS URL (kobo.opdsLabel); opds.test.ts (6); e2e library-intelligence.spec.ts (4); 242 unit + 48 e2e green |
 | 2026-09-18 | pending | `3.1.0` — **Faz 1**: Kobo delta sync (`KoboSyncedBook`: metaHash SHA-256-of-metadata → ChangedEntitlement re-push without re-download, progress changes never re-push → no loop; tombstone = row without Book → IsRemoved + self-clear (dormant until a delete feature exists); device DELETE → archivedAt (device archive, calibre-web semantics, re-sent every sync)); reading-time write-back (`Book.koboSpentMinutes/Remaining`, Statistics.SpentReadingMinutes cumulative → per-sync delta → `DailyActivity.minutesRead`, idempotent, no page XP for minutes-only); Stats **Reading time** tile (`formatReadingMinutes` lib/stats) + heatmap tooltip daily minutes; custom level names (`config.yaml xp.levels.names` optional, `levelName` gamification-pure, shown in Stats tile hint + leaderboard); `recordActivity(pagesRead?, minutesRead=0)`; kobo:sim +delta/minutes checks; 236 unit green |
 | 2026-09-17 | pending | `3.0.0` — **breaking**: config.yaml replaces AppSettings (model dropped via migration `20260917200000_drop_appsettings_add_kobo_sync`; admin Reading Settings card removed; `XP_*`/`READ_EVENT_PAGES` env vars gone; `src/lib/app-config.ts` loader: yaml + zod field-by-field fallbacks + 60s cache); page-count backfill moved Admin → Settings ("Book data"; user-scoped action); **Kobo eReader sync (experimental)**: `/api/kobo/<token>/v1/...` catch-all (calibre-web protocol reference; auth/device handshake, initialization resources, library/sync entitlements since lastSyncAt, metadata, download stream from per-user `{isbn}` URL template, state write-back → currentPage/streak/auto-finish exactly-once, cover redirect, storeProxy default true, device-delete → no-op 204), `KoboSyncToken` + `User.fileSourceUrl`, path-token public in proxy.ts + token-keyed rate limit, Settings → Kobo Sync card (6 dicts), `scripts/kobo-sim.ts` simulator (`npm run kobo:sim`) — simulation-verified only, hardware feedback pending; 226 unit green |
@@ -292,9 +297,9 @@ custom level names (#10: config.yaml xp.levels.names).
 authors view (authors derived from Book.author, no new model — simpler and
 equivalent for a personal library).
 
-**Faz 3 → 3.3.0 "Challenges + imports"** — seasonal challenges (Goal/
-Achievement period infra), Calibre CSV / StoryGraph import, automatic DB
-backup (cron container).
+**Faz 3 → 3.3.0 ✅ (shipped)** — seasonal challenges (own Challenge model,
+read-event progress, exactly-once completion), Calibre/StoryGraph CSV import
+(header-detected), automatic daily DB backup (cron + /api/backup).
 
 **Faz 4 → 3.4.0 "UX depth"** — in-app reading timer (needs #8's table),
 page-numbered quotes/highlights (new table), kepubify EPUB→KEPUB for Kobo

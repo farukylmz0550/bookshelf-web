@@ -67,7 +67,7 @@ export function parseCsvText(input: string): string[][] {
   return rows;
 }
 
-function headerIndex(headers: string[], candidates: string[]): number {
+export function headerIndex(headers: string[], candidates: string[]): number {
   const lowered = headers.map((h) => h.trim().toLowerCase());
   for (const candidate of candidates) {
     const idx = lowered.indexOf(candidate.toLowerCase());
@@ -145,9 +145,14 @@ export type GoodreadsRow = {
   tags: string[];
   notes: string | null;
   status: BookStatusLiteral | null;
+  // v3.3.0 — source-side values (Calibre/StoryGraph) fill these; Goodreads
+  // rows leave them undefined and rely on Open Library enrichment.
+  pages?: number | null;
+  series?: string | null;
+  publishers?: string | null;
 };
 
-const rowSchema = z.object({
+export const rowSchema = z.object({
   title: z.string().trim().min(1).max(500),
   author: z.string().trim().max(300).optional(),
   isbn: z.string().nullable(),

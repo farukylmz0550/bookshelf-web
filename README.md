@@ -10,12 +10,12 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.2.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.3.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-> **3.2.0** — Library intelligence: your library is now browsable by **series** and **author** (derived from the Open Library data you already store) and served as an **OPDS 1.2 catalog** (`/api/opds/<token>`) to any reader app. Earlier: **3.1.0** made Kobo sync delta-based (metadata re-push without re-download, device archive) with reading-time write-back and custom level names. See [`CHANGELOG.md`](CHANGELOG.md).
+> **3.3.0** — seasonal **challenges** (`/challenges`: target read events in a date window, completion XP via config.yaml), unified **CSV import** (Goodreads / Calibre / StoryGraph, header-detected) and automatic **daily DB backups** (cron → `/data/backups`, newest 7 kept). Earlier: **3.2.0** added the OPDS catalog, series and author views. See [`CHANGELOG.md`](CHANGELOG.md).
 
 *Self-hosted · Private · No tracking · Your books, your data.*
 
@@ -45,6 +45,8 @@
 | 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level (+ optional custom level names via `config.yaml`, v3.1.0) · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge · device reading-time write-back (Kobo minutes → Stats tile + heatmap tooltips) |
 | 🏆 **Leaderboard** | Top ranking, opt-out |
 | 🎯 **Goals** | Yearly / monthly targets |
+| 🏁 **Challenges** *(v3.3.0)* | Seasonal reading challenges — custom window + target, read-event progress, exactly-once completion XP (`/challenges`) |
+| 💾 **Auto-backup** *(v3.3.0)* | Daily SQLite backup via cron (`/data/backups`, newest 7 kept) — requires CRON_SECRET |
 | 👤 **Profile** | Name, password, XP, join date |
 | 🔢 **TOTP 2FA** | Optional TOTP (QR enrollment in Settings → Security) · mandatory for admin accounts · throttled per-account login attempts |
 | 🌍 **i18n** | 6 languages (EN/TR/ES/FR/RU/ZH) — cookie, `src/i18n/dictionaries` |

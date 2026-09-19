@@ -240,13 +240,16 @@ export async function applyKoboProgress(
   if (delta > 0 || minutesDelta > 0) {
     const { recordActivity } = await import("@/app/actions/streak");
     await recordActivity(delta, minutesDelta);
-    const { awardXp } = await import("@/lib/gamification");
+    const { awardXp, syncChallenges } = await import("@/lib/gamification");
     const xp = Math.floor(delta / 10) * config.xpPagesPer10;
     if (xp > 0) {
       try {
         await awardXp(book.userId, xp);
       } catch {}
     }
+    try {
+      await syncChallenges(book.userId);
+    } catch {}
   }
   return { ok: true, delta, minutes: minutesDelta, finished: false };
 }

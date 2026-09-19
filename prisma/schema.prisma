@@ -53,8 +53,27 @@ model User {
   groups          BookGroup[]
   koboToken       KoboSyncToken?
   koboSyncedBooks KoboSyncedBook[]
+  challenges      Challenge[]
 
   @@index([id])
+}
+
+// v3.3.0 — seasonal challenges: free-form reading challenges with a target
+// number of read events inside a date window (e.g. "Winter: 5 books").
+// Progress derives from BookReadEvent.readAt (canonical counting, same as
+// goals); completedAt is set exactly once via a conditional guard.
+model Challenge {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  target      Int
+  startAt     DateTime
+  endAt       DateTime
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
 }
 
 // v3.0.0 — Kobo eReader sync: one token per user, embedded in the device's

@@ -46,6 +46,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     groups: dict.nav.groups,
     lending: dict.nav.lending,
     stats: dict.nav.stats,
+    challenges: dict.nav.challenges,
     series: dict.nav.series,
     authors: dict.nav.authors,
     achievements: dict.nav.achievements,

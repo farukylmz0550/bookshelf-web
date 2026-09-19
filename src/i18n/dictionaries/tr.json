@@ -11,7 +11,8 @@
     "logout": "Çıkış yap",
     "groups": "Raflar",
     "series": "Seriler",
-    "authors": "Yazarlar"
+    "authors": "Yazarlar",
+    "challenges": "Meydan Okumalar"
   },
   "theme": {
     "light": "Aydınlık",
@@ -410,10 +411,11 @@
     "duplicatesSkipped": "Atlanan kopya",
     "invalidRows": "Geçersiz satır",
     "lookupFailed": "Eşleşmeyen ISBN",
-    "invalidCsv": "Geçersiz Goodreads CSV dosyası",
+    "invalidCsv": "Geçersiz CSV dosyası",
     "fileTooLarge": "Dosya çok büyük (20MB sınırı)",
     "noValidBooks": "Geçerli kitap bulunamadı",
-    "tooManyRows": "Çok fazla satır (en fazla 5000)"
+    "tooManyRows": "Çok fazla satır (en fazla 5000)",
+    "importCsv": "CSV'den içe aktar (Goodreads / Calibre / StoryGraph)"
   },
   "annual": {
     "title": "Yıllık Özet",
@@ -558,5 +560,22 @@
     "empty": "Kitaplarında henüz yazar bilgisi yok.",
     "emptyShelf": "Bu yazarın kitapları bulunamadı.",
     "back": "Yazarlara dön"
+  },
+  "challenges": {
+    "title": "Meydan Okumalar",
+    "subtitle": "Sezonluk okuma meydan okumaları — hedefe okuma olayları sayılır",
+    "create": "Oluştur",
+    "createCta": "Meydan okuma oluştur",
+    "titleLabel": "Başlık",
+    "targetLabel": "Hedef kitap sayısı",
+    "startLabel": "Başlangıç",
+    "endLabel": "Bitiş",
+    "created": "Meydan okuma oluşturuldu.",
+    "invalidWindow": "Tarih aralığı geçersiz.",
+    "invalidTarget": "Hedef 1 ile 1000 arasında olmalı.",
+    "empty": "Henüz meydan okuma yok. İlkini oluştur!",
+    "completed": "Tamamlandı",
+    "delete": "Sil",
+    "deleteConfirm": "Bu meydan okuma silinsin mi?"
   }
 }

@@ -11,7 +11,8 @@
     "logout": "Log out",
     "groups": "Shelves",
     "series": "Series",
-    "authors": "Authors"
+    "authors": "Authors",
+    "challenges": "Challenges"
   },
   "theme": {
     "light": "Light",
@@ -410,10 +411,11 @@
     "duplicatesSkipped": "Duplicates skipped",
     "invalidRows": "Invalid rows",
     "lookupFailed": "Lookup failed",
-    "invalidCsv": "Invalid Goodreads CSV file",
+    "invalidCsv": "Invalid CSV file",
     "fileTooLarge": "File too large (20MB limit)",
     "noValidBooks": "No valid books found",
-    "tooManyRows": "Too many rows (5000 max)"
+    "tooManyRows": "Too many rows (5000 max)",
+    "importCsv": "Import CSV (Goodreads / Calibre / StoryGraph)"
   },
   "annual": {
     "title": "Annual Summary",
@@ -558,5 +560,22 @@
     "empty": "No author information in your library yet.",
     "emptyShelf": "No books found for this author.",
     "back": "Back to authors"
+  },
+  "challenges": {
+    "title": "Challenges",
+    "subtitle": "Seasonal reading challenges — progress counts read events",
+    "create": "Create",
+    "createCta": "New challenge",
+    "titleLabel": "Title",
+    "targetLabel": "Target (books)",
+    "startLabel": "Start",
+    "endLabel": "End",
+    "created": "Challenge created.",
+    "invalidWindow": "Invalid date range.",
+    "invalidTarget": "Target must be between 1 and 1000.",
+    "empty": "No challenges yet — create your first one!",
+    "completed": "Completed",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this challenge?"
   }
 }

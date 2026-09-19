@@ -11,7 +11,8 @@
     "logout": "退出",
     "groups": "书架",
     "series": "系列",
-    "authors": "作者"
+    "authors": "作者",
+    "challenges": "挑战"
   },
   "theme": {
     "light": "浅色",
@@ -410,10 +411,11 @@
     "duplicatesSkipped": "跳过的重复项",
     "invalidRows": "无效行",
     "lookupFailed": "查询失败",
-    "invalidCsv": "无效的 Goodreads CSV 文件",
+    "invalidCsv": "无效的 CSV 文件",
     "fileTooLarge": "文件过大（上限 20MB）",
     "noValidBooks": "未找到有效书籍",
-    "tooManyRows": "行数过多（最多 5000）"
+    "tooManyRows": "行数过多（最多 5000）",
+    "importCsv": "导入 CSV（Goodreads / Calibre / StoryGraph）"
   },
   "annual": {
     "title": "年度总结",
@@ -558,5 +560,22 @@
     "empty": "书库中还没有作者信息。",
     "emptyShelf": "未找到该作者的图书。",
     "back": "返回作者"
+  },
+  "challenges": {
+    "title": "挑战",
+    "subtitle": "季节性阅读挑战 — 进度按阅读事件计",
+    "create": "创建",
+    "createCta": "新挑战",
+    "titleLabel": "标题",
+    "targetLabel": "目标",
+    "startLabel": "开始",
+    "endLabel": "结束",
+    "created": "挑战已创建。",
+    "invalidWindow": "日期范围无效。",
+    "invalidTarget": "目标必须在 1 到 1000 之间。",
+    "empty": "还没有挑战 — 快来创建第一个！",
+    "completed": "已完成",
+    "delete": "删除",
+    "deleteConfirm": "删除这个挑战？"
   }
 }

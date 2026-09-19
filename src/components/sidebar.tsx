@@ -11,6 +11,7 @@ import {
   BarChart3,
   Layers,
   PenLine,
+  Flag,
   Trophy,
   Medal,
   Users,
@@ -41,6 +42,7 @@ const MAIN_NAV: NavItem[] = [
 ];
 
 const MORE_NAV: NavItem[] = [
+  { href: "/challenges", label: "challenges", icon: Flag },
   { href: "/series", label: "series", icon: Layers },
   { href: "/authors", label: "authors", icon: PenLine },
   { href: "/achievements", label: "achievements", icon: Trophy },

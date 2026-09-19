@@ -12,6 +12,7 @@ import {
   type GoodreadsRow,
 } from "@/lib/books/goodreads";
 import { lookupIsbns, type IsbnLookupResult } from "@/lib/isbn";
+import { detectCsvFormat, parseCalibreRows, parseStorygraphRows } from "@/lib/books/csv-import";
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppConfig } from "@/lib/app-config";
 
@@ -32,13 +33,28 @@ export type GoodreadsImportResult = {
  * → batch creation scoped to the authenticated user.
  */
 export async function importGoodreadsCsv(base64: string): Promise<GoodreadsImportResult> {
+  return importBooksCsv(base64);
+}
+
+/**
+ * v3.3.0 — unified CSV import: accepts Goodreads, Calibre and StoryGraph
+ * exports. The format is detected from the header row; unknown layouts are
+ * rejected with invalidCsv rather than guessed.
+ */
+export async function importBooksCsv(base64: string): Promise<GoodreadsImportResult> {
   const userId = await requireUserId();
   try {
     const buffer = Buffer.from(base64, "base64");
     if (buffer.byteLength > GOODREADS_CSV_MAX_BYTES) throw new Error("FileTooLarge");
     const text = buffer.toString("utf8");
 
-    const parsed = parseGoodreadsRows(text);
+    const format = detectCsvFormat(text) ?? "goodreads";
+    const parsed =
+      format === "calibre"
+        ? parseCalibreRows(text)
+        : format === "storygraph"
+          ? parseStorygraphRows(text)
+          : parseGoodreadsRows(text);
     if ("error" in parsed) {
       return { imported: 0, duplicates: 0, invalid: 0, lookupFailed: 0, errors: [], error: "invalidCsv" };
     }
@@ -102,8 +118,9 @@ export async function importGoodreadsCsv(base64: string): Promise<GoodreadsImpor
         notes: r.notes,
         status: (r.status ?? (r.dateRead ? "FINISHED" : "TO_READ")) as "TO_READ" | "READING" | "FINISHED",
         finishedAt: r.dateRead ?? null,
-        numberOfPages: ol?.numberOfPages ?? null,
-        publishers: ol?.publishers ?? null,
+        numberOfPages: ol?.numberOfPages ?? (r.pages ? String(r.pages) : null),
+        publishers: ol?.publishers ?? r.publishers ?? null,
+        series: r.series ?? null,
         subjects: ol?.subjects ?? null,
         languages: ol?.languages ?? null,
         subtitle: null,

@@ -110,6 +110,10 @@ export async function finishBookWithXp(bookId: string, pages: number | null) {
   await awardXp(userId, xp);
   await recordActivity(pages ?? undefined);
   await syncAchievements(userId);
+  const { syncChallenges } = await import("@/lib/gamification");
+  try {
+    await syncChallenges(userId);
+  } catch {}
 
   return xp;
 }

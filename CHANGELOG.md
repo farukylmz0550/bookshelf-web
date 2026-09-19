@@ -4,6 +4,36 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.3.0 — 2026-09-18
+
+### Added
+
+- **Seasonal challenges (Faz 3 — "Challenges + imports")** — free-form reading
+  challenges ("Winter: 5 books") with a target number of read events inside a
+  date window (`/challenges`, new `Challenge` model, migration
+  `20260919000000_seasonal_challenges`). Progress derives from
+  `BookReadEvent.readAt` (canonical counting, same as goals); completion is
+  exactly-once via a conditional guard and awards config-defined XP
+  (`config.yaml challenges.completionXp`, default 25). Challenges can be
+  deleted from the card (confirm-guarded, ownership-scoped).
+- **Calibre + StoryGraph CSV import** — the unified "Import CSV" button now
+  accepts Goodreads, Calibre and StoryGraph exports. Format is detected from
+  the header row (unknown layouts rejected, not guessed); Calibre's
+  pages/series/publisher and StoryGraph's read status/pages map into the
+  shared pipeline (dedupe, Open Library enrichment, XP) unchanged.
+- **Automatic DB backup** — the Docker cron container now also calls
+  `POST /api/backup` daily (Bearer CRON_SECRET): an online WAL-consistent
+  better-sqlite3 `.backup()` copy into `/data/backups`, newest 7 files kept
+  (`bookshelf-YYYYMMDD.db`, prune beyond retention).
+
+### QA
+
+- tsc ✅ · lint ✅ (1 pre-existing warning) · unit 255/255 ✅ (new
+  `challenges.test.ts`: challenge validation/progress, CSV detection +
+  Calibre/StoryGraph parsing, backup helpers, config) · e2e 51/51 ✅ (new
+  `challenges.spec.ts`: create, exact-once completion, confirm-guarded delete) ·
+  build ✅ · migration `20260919000000_seasonal_challenges` ✅
+
 ## 3.2.0 — 2026-09-18
 
 ### Added

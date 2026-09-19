@@ -11,7 +11,8 @@
     "logout": "Cerrar sesión",
     "groups": "Estanterías",
     "series": "Series",
-    "authors": "Autores"
+    "authors": "Autores",
+    "challenges": "Desafíos"
   },
   "theme": {
     "light": "Claro",
@@ -410,10 +411,11 @@
     "duplicatesSkipped": "Duplicados omitidos",
     "invalidRows": "Filas no válidas",
     "lookupFailed": "Búsqueda fallida",
-    "invalidCsv": "Archivo CSV de Goodreads no válido",
+    "invalidCsv": "Archivo CSV no válido",
     "fileTooLarge": "Archivo demasiado grande (límite 20MB)",
     "noValidBooks": "No se encontraron libros válidos",
-    "tooManyRows": "Demasiadas filas (máximo 5000)"
+    "tooManyRows": "Demasiadas filas (máximo 5000)",
+    "importCsv": "Importar CSV (Goodreads / Calibre / StoryGraph)"
   },
   "annual": {
     "title": "Resumen anual",
@@ -558,5 +560,22 @@
     "empty": "Tu biblioteca aún no tiene información de autores.",
     "emptyShelf": "No se encontraron libros de este autor.",
     "back": "Volver a autores"
+  },
+  "challenges": {
+    "title": "Desafíos",
+    "subtitle": "Desafíos de lectura de temporada — el progreso cuenta eventos de lectura",
+    "create": "Crear",
+    "createCta": "Nuevo desafío",
+    "titleLabel": "Título",
+    "targetLabel": "Objetivo",
+    "startLabel": "Inicio",
+    "endLabel": "Fin",
+    "created": "Desafío creado.",
+    "invalidWindow": "Rango de fechas no válido.",
+    "invalidTarget": "El objetivo debe estar entre 1 y 1000.",
+    "empty": "Aún no hay desafíos — ¡crea el primero!",
+    "completed": "Completado",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar este desafío?"
   }
 }

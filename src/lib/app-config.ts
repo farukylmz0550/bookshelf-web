@@ -27,6 +27,8 @@ export type AppConfigValues = {
   backfillChunkSize: number;
   /** Max ISBNs resolved per backfill button press. */
   backfillMaxBatch: number;
+  /** v3.3.0 — XP awarded once when a seasonal challenge is completed. */
+  challengeCompletionXp: number;
   /** Kobo eReader sync availability (Settings → Kobo Sync). */
   koboEnabled: boolean;
   /** Proxy unimplemented device requests to the real Kobo store. */
@@ -53,6 +55,11 @@ const backfillSchema = z.object({
   maxBatch: intInRange(1, 200).default(40),
 });
 
+// v3.3.0 — seasonal challenges
+const challengesSchema = z.object({
+  completionXp: intInRange(0, 1000).default(25),
+});
+
 const koboSchema = z.object({
   enabled: z.boolean().default(true),
   storeProxy: z.boolean().default(true),
@@ -61,6 +68,7 @@ const koboSchema = z.object({
 const configSchema = z.object({
   xp: xpSchema.optional(),
   backfill: backfillSchema.optional(),
+  challenges: challengesSchema.optional(),
   kobo: koboSchema.optional(),
 });
 
@@ -83,6 +91,7 @@ export function defaultAppConfig(): AppConfigValues {
     xpLevelNames: [],
     backfillChunkSize: 20,
     backfillMaxBatch: 40,
+    challengeCompletionXp: 25,
     koboEnabled: true,
     koboStoreProxy: true,
   };
@@ -112,6 +121,7 @@ export function validateAppConfig(doc: unknown): AppConfigValues {
       : defaults.xpLevelNames,
     backfillChunkSize: data.backfill?.chunkSize ?? defaults.backfillChunkSize,
     backfillMaxBatch: data.backfill?.maxBatch ?? defaults.backfillMaxBatch,
+    challengeCompletionXp: data.challenges?.completionXp ?? defaults.challengeCompletionXp,
     koboEnabled: data.kobo?.enabled ?? defaults.koboEnabled,
     koboStoreProxy: data.kobo?.storeProxy ?? defaults.koboStoreProxy,
   };

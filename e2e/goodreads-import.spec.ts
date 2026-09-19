@@ -61,12 +61,12 @@ test.describe("Goodreads CSV import", () => {
   test("rejects an invalid Goodreads CSV with an actionable message (M)", async ({ page }) => {
     await page.goto("/books");
     await importCsv(page, Buffer.from(`Foo,Bar\n1,2\n`, "utf8"), "broken.csv");
-    await expect(page.getByText(/invalid goodreads csv/i)).toBeVisible();
+    await expect(page.getByText(/invalid csv/i)).toBeVisible();
   });
 
   test("existing Excel import still works (regression)", async ({ page }) => {
     await page.goto("/books");
     await expect(page.getByRole("button", { name: /template/i })).toBeVisible();
-    await expect(page.getByText(/import from goodreads/i)).toBeVisible();
+    await expect(page.getByText(/import csv/i)).toBeVisible();
   });
 });

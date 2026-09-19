@@ -4,7 +4,7 @@
 import { useState, useTransition } from "react";
 import { BookOpen, FileDown, FileUp, FileSpreadsheet } from "lucide-react";
 import { exportLibraryExcel, buildTemplateExcel, importExcelFile } from "@/app/actions/excel";
-import { importGoodreadsCsv } from "@/app/actions/goodreads";
+import { importBooksCsv } from "@/app/actions/goodreads";
 import { Button } from "@/components/ui/button";
 
 function downloadBase64(base64: string, filename: string) {
@@ -72,7 +72,8 @@ export function ExcelActions({
     reader.onload = () => {
       const base64 = (reader.result as string).split(",")[1];
       startGr(async () => {
-        const res = await importGoodreadsCsv(base64);
+        // v3.3.0 — unified CSV import: Goodreads / Calibre / StoryGraph
+        const res = await importBooksCsv(base64);
         if (res.error) {
           const msg =
             res.error === "invalidCsv"
@@ -113,7 +114,7 @@ export function ExcelActions({
       </label>
       <label className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
         <BookOpen size={14} />
-        {grPending ? goodreadsDict.importing : goodreadsDict.importGoodreads}
+        {grPending ? goodreadsDict.importing : goodreadsDict.importCsv}
         <input type="file" accept=".csv,text/csv" onChange={onGoodreadsFile} className="hidden" />
       </label>
       {grMsg && <span className="text-sm text-muted-foreground">{grMsg}</span>}

@@ -39,6 +39,10 @@ backfill:
   chunkSize: 20
   maxBatch: 40
 
+challenges:
+  # v3.3.0 — XP awarded once when a seasonal challenge is completed.
+  completionXp: 25
+
 kobo:
   # Kobo eReader sync (Settings → Kobo Sync). The device pulls books straight
   # from this server via a per-user api_endpoint URL.
