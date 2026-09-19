@@ -4,6 +4,38 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.4.0 — 2026-09-19
+
+### Added
+
+- **In-app reading timer (Faz 4 — "UX derinlik")** — READING books get a
+  session timer on the detail page (start/pause/resume/stop, reload-safe via
+  localStorage). Whole-minute batches flush to the server every 5 minutes
+  (`logReadingSession` → `recordActivity`) and join `DailyActivity.minutesRead`,
+  the same column Kobo device minutes use, so Stats shows one combined total.
+  Anti-farm: ≤90 min per flush and a combined 1440 min/UTC-day cap
+  (`lib/timer.ts`); minutes give no XP, consistent with the Kobo write-back.
+- **Book quotes** — new `Quote` model (migration
+  `20260919093000_book_quotes`: text, optional page ref, denormalized
+  `bookTitle` snapshot, CASCADE on book delete). Quotes section on the book
+  detail page: add, edit in place, confirm-guarded delete; ownership-scoped
+  actions (`actions/quotes.ts`, validation in `lib/quotes.ts`).
+- **kepubify (EPUB → KEPUB)** — with `config.yaml → kobo.kepubify: true`, the
+  Kobo sync advertises a KEPUB download (`/download/{id}/kepub`) and converts
+  lazily on first request with the `kepubify` binary (bundled in the Docker
+  image, `KEPUBIFY_PATH` to override). Conversions cache in
+  `<data dir>/cache/kepub/<bookId>.kepub.epub` (atomic placement) and are
+  invalidated when a book's Kobo metadata hash changes; disabled by default —
+  `kepub` requests return 404 and metadata stays EPUB-only.
+
+### QA
+
+- tsc ✅ · lint ✅ (1 pre-existing warning) · unit 269/269 ✅ (new: `timer.test.ts`
+  rounding/caps, `quotes.test.ts` validation, `kepub.test.ts` cache paths) ·
+  e2e 57/57 ✅ (new: `reading-timer.spec.ts` ×2, `quotes.spec.ts` ×3, kepub
+  disabled-path in `kobo-sync.spec.ts`) · build ✅ · migration
+  `20260919093000_book_quotes` ✅
+
 ## 3.3.0 — 2026-09-18
 
 ### Added

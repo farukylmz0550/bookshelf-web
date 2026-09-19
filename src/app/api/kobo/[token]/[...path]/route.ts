@@ -13,7 +13,8 @@
 //   GET/PUT  /v1/library/{id}/state   → progress write-back (currentPage,
 //                                       streak activity, finish detection)
 //   GET      /download/{bookId}/{fmt} → file proxy: streams the book file from
-//                                       the caller's URL template (fileSourceUrl)
+//                                       the caller's URL template (fileSourceUrl);
+//                                       fmt=kepub converts via kepubify (v3.4.0)
 //   GET      /{bookId}/{w}/{h}/{grey}/image.jpg → cover redirect
 //   ...      anything else            → storeProxy ? proxy to Kobo store : {}
 
@@ -95,6 +96,7 @@ function bookMetadata(
   },
   token: string,
   origin: string,
+  kepubify = false,
 ) {
   const language = (book.languages ?? "").split(",")[0]?.trim().slice(0, 2) || "en";
   return {
@@ -107,6 +109,17 @@ function bookMetadata(
     Description: null,
     DownloadUrls: book.isbn
       ? [
+          // v3.4.0 — kepubify enabled → advertise KEPUB first (devices prefer
+          // it for typography/reading stats); EPUB stays as a fallback.
+          ...(kepubify
+            ? [
+                {
+                  Format: "KEPUB",
+                  Platform: "Android",
+                  Url: `${origin}/api/kobo/${token}/download/${book.id}/kepub`,
+                },
+              ]
+            : []),
           {
             Format: "EPUB",
             Platform: "Generic",
@@ -245,7 +258,7 @@ export async function GET(request: Request, ctx: Ctx) {
         syncResults.push({
           NewEntitlement: {
             BookEntitlement: entitlement,
-            BookMetadata: bookMetadata(book, deviceToken, origin),
+            BookMetadata: bookMetadata(book, deviceToken, origin, cfg.koboKepubify),
             ...(book.status === "READING" || (book.currentPage ?? 0) > 0 ? { ReadingState: readingState(book) } : {}),
           },
         });
@@ -255,12 +268,22 @@ export async function GET(request: Request, ctx: Ctx) {
         syncResults.push({
           ChangedEntitlement: {
             BookEntitlement: entitlement,
-            BookMetadata: bookMetadata(book, deviceToken, origin),
+            BookMetadata: bookMetadata(book, deviceToken, origin, cfg.koboKepubify),
             ...(book.status === "READING" || (book.currentPage ?? 0) > 0 ? { ReadingState: readingState(book) } : {}),
           },
         });
       }
       if (!s || s.metaHash !== hash) {
+        // v3.4.0 — metadata changed → any cached kepub conversion is stale
+        // (lazy regeneration on the next download request).
+        const { kepubCacheDir, kepubCachePath } = await import("@/lib/kepub");
+        const cacheDir = kepubCacheDir(process.env.DATABASE_URL);
+        if (cacheDir) {
+          try {
+            const { rm } = await import("node:fs/promises");
+            await rm(kepubCachePath(cacheDir, book.id), { force: true });
+          } catch {}
+        }
         await db.koboSyncedBook.upsert({
           where: { userId_bookId: { userId: auth.userId, bookId: book.id } },
           update: { metaHash: hash },
@@ -292,7 +315,7 @@ export async function GET(request: Request, ctx: Ctx) {
   if (metaMatch) {
     const book = await db.book.findFirst({ where: { id: metaMatch[1], userId: auth.userId } });
     if (!book) return json({ error: "not found" }, { status: 404 });
-    return json([bookMetadata(book, deviceToken, origin)]);
+    return json([bookMetadata(book, deviceToken, origin, cfg.koboKepubify)]);
   }
 
   // GET /download/{bookId}/{format} — stream the file from the URL template
@@ -304,6 +327,58 @@ export async function GET(request: Request, ctx: Ctx) {
     const { applyFileSourceTemplate } = await import("@/lib/kobo");
     const target = applyFileSourceTemplate(user.fileSourceUrl, book);
     if (!target) return json({ error: "book has no ISBN" }, { status: 404 });
+
+    // v3.4.0 — fmt=kepub: fetch the source EPUB, convert with kepubify and
+    // cache the result under <db dir>/cache/kepub (lazy, first request only).
+    if (dlMatch[2].toLowerCase() === "kepub") {
+      if (!cfg.koboKepubify) return json({ error: "kepubify disabled" }, { status: 404 });
+      const { createWriteStream } = await import("node:fs");
+      const { mkdir, stat, rm } = await import("node:fs/promises");
+      const { createReadStream } = await import("node:fs");
+      const { Readable } = await import("node:stream");
+      const { pipeline } = await import("node:stream/promises");
+      const { kepubCacheDir, convertToKepub, kepubSourceTmpPath } = await import("@/lib/kepub");
+
+      const cacheDir = kepubCacheDir(process.env.DATABASE_URL);
+      if (!cacheDir) return json({ error: "no data dir" }, { status: 404 });
+      const { join: pathJoin } = await import("node:path");
+      const finalPath = pathJoin(cacheDir, `${book.id}.kepub.epub`);
+
+      let cached = false;
+      try {
+        await stat(finalPath);
+        cached = true;
+      } catch {}
+
+      if (!cached) {
+        try {
+          const res = await fetch(target, { signal: AbortSignal.timeout(60_000) });
+          if (!res.ok || !res.body) return json({ error: "file source error" }, { status: 502 });
+          await mkdir(cacheDir, { recursive: true });
+          const tmp = kepubSourceTmpPath(cacheDir, book.id);
+          await pipeline(
+            Readable.fromWeb(res.body as import("node:stream/web").ReadableStream),
+            createWriteStream(tmp),
+          );
+          const binary = process.env.KEPUBIFY_PATH ?? "kepubify";
+          const out = await convertToKepub(binary, tmp, cacheDir, book.id);
+          await rm(tmp, { force: true });
+          if (!out) return json({ error: "kepubify conversion failed" }, { status: 502 });
+        } catch {
+          return json({ error: "kepub conversion failed" }, { status: 502 });
+        }
+      }
+
+      const nodeStream = createReadStream(finalPath);
+      return new Response(Readable.toWeb(nodeStream) as unknown as ReadableStream, {
+        headers: {
+          "content-type": "application/x-kobo-epub+zip",
+          "content-disposition": `attachment; filename="${(book.title || "book").replace(/[^\w .-]/g, "_")}.kepub.epub"`,
+          "x-content-type-options": "nosniff",
+        },
+      });
+    }
+
     try {
       const res = await fetch(target, { signal: AbortSignal.timeout(30_000) });
       if (!res.ok || !res.body) return json({ error: "file source error" }, { status: 502 });

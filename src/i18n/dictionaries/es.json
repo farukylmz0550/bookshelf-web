@@ -170,6 +170,34 @@
     "saveNotes": "Guardar notas",
     "preview": "Vista previa:"
   },
+  "timer": {
+    "title": "Temporizador de lectura",
+    "start": "Iniciar",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "stop": "Terminar",
+    "flushed": "{m} min registrados.",
+    "flushedNothing": "Sesión de menos de un minuto — no se registró nada.",
+    "saved": "Los minutos completos se suman a tu tiempo diario de lectura (junto con los minutos de Kobo)."
+  },
+  "quotes": {
+    "title": "Citas",
+    "add": "Añadir",
+    "save": "Guardar",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar esta cita?",
+    "textPlaceholder": "Texto de la cita…",
+    "pagePlaceholder": "Página",
+    "page": "p. {n}",
+    "empty": "Aún no hay citas — guarda un pasaje que te encante.",
+    "added": "Cita añadida.",
+    "updated": "Cita actualizada.",
+    "deleted": "Cita eliminada.",
+    "errorGeneric": "Algo salió mal.",
+    "invalidPage": "La página debe ser un número positivo."
+  },
   "bookLending": {
     "lending": "Préstamo",
     "copies": "Copias:",

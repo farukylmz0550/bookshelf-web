@@ -170,6 +170,34 @@
     "saveNotes": "Notları kaydet",
     "preview": "Önizleme:"
   },
+  "timer": {
+    "title": "Okuma sayacı",
+    "start": "Başlat",
+    "pause": "Duraklat",
+    "resume": "Devam et",
+    "stop": "Bitir",
+    "flushed": "{m} dk kaydedildi.",
+    "flushedNothing": "Oturum bir dakikadan kısa — kayıt yapılmadı.",
+    "saved": "Tam dakikalar günlük okuma sürene işlenir (Kobo dakikalarıyla birlikte)."
+  },
+  "quotes": {
+    "title": "Alıntılar",
+    "add": "Ekle",
+    "save": "Kaydet",
+    "edit": "Düzenle",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "deleteConfirm": "Bu alıntı silinsin mi?",
+    "textPlaceholder": "Alıntı metni…",
+    "pagePlaceholder": "Sayfa",
+    "page": "s. {n}",
+    "empty": "Henüz alıntı yok — sevdiğin bir pasajı kaydet.",
+    "added": "Alıntı eklendi.",
+    "updated": "Alıntı güncellendi.",
+    "deleted": "Alıntı silindi.",
+    "errorGeneric": "Bir şeyler ters gitti.",
+    "invalidPage": "Sayfa pozitif bir sayı olmalı."
+  },
   "bookLending": {
     "lending": "Ödünç Verme",
     "copies": "Kopya:",

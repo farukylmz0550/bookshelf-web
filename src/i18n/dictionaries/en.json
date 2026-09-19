@@ -170,6 +170,34 @@
     "saveNotes": "Save notes",
     "preview": "Preview:"
   },
+  "timer": {
+    "title": "Reading timer",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "flushed": "{m} min recorded.",
+    "flushedNothing": "Session under a minute — nothing recorded.",
+    "saved": "Whole minutes flow into your daily reading time (with Kobo minutes)."
+  },
+  "quotes": {
+    "title": "Quotes",
+    "add": "Add",
+    "save": "Save",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this quote?",
+    "textPlaceholder": "Quote text…",
+    "pagePlaceholder": "Page",
+    "page": "p. {n}",
+    "empty": "No quotes yet — capture a passage you love.",
+    "added": "Quote added.",
+    "updated": "Quote updated.",
+    "deleted": "Quote deleted.",
+    "errorGeneric": "Something went wrong.",
+    "invalidPage": "Page must be a positive number."
+  },
   "bookLending": {
     "lending": "Lending",
     "copies": "Copies:",

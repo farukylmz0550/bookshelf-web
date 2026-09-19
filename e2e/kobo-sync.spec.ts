@@ -52,4 +52,55 @@ test.describe("Kobo sync (v3.0.0)", () => {
       await device.close();
     }
   });
+
+  test("kepub downloads are rejected while kepubify is disabled (default)", async ({ page }) => {
+    // Seed a book with an ISBN + a per-user fileSourceUrl directly
+    const { execSync } = await import("node:child_process");
+    execSync(
+      `python3 -c "
+import sqlite3, uuid
+conn = sqlite3.connect('prisma/dev.db')
+uid = conn.execute('SELECT id FROM User LIMIT 1').fetchone()[0]
+bid = uuid.uuid4().hex
+conn.execute('INSERT INTO Book (id, userId, title, status, isbn) VALUES (?,?,?,?,?)',
+             (bid, uid, 'Kepub Book', 'READING', '9780142437239'))
+conn.execute(\\"UPDATE User SET fileSourceUrl='https://books.example/{isbn}.epub' WHERE id=?\\", (uid,))
+conn.commit(); conn.close()"`,
+      { stdio: "ignore" },
+    );
+
+    // Create the device token and act without a session
+    await page.goto("/settings");
+    await page
+      .getByRole("button", { name: /sync url/i })
+      .first()
+      .click();
+    const code = page.locator("code", { hasText: "api_endpoint=" }).first();
+    await expect(code).toBeVisible();
+    const token = (await code.textContent())!.split("/api/kobo/")[1]!.trim();
+
+    const device = await page.context().browser()?.newContext();
+    if (device) {
+      // Sync metadata: no KEPUB entry in DownloadUrls while disabled
+      const sync = (await device.request.get(`/api/kobo/${token}/v1/library/sync`)) as {
+        status: () => number;
+        json: () => Promise<unknown>;
+      };
+      expect(sync.status()).toBe(200);
+      const body = (await sync.json()) as Array<{
+        NewEntitlement?: {
+          BookEntitlement?: { Id?: string };
+          BookMetadata?: { DownloadUrls?: Array<{ Format?: string }> };
+        };
+      }>;
+      const urls = body?.[0]?.NewEntitlement?.BookMetadata?.DownloadUrls ?? [];
+      expect(urls.map((u) => u.Format)).toEqual(["EPUB"]);
+
+      // Direct kepub download → 404 (graceful, feature off)
+      const bookId = body?.[0]?.NewEntitlement?.BookEntitlement?.Id;
+      const dl = await device.request.get(`/api/kobo/${token}/download/${bookId}/kepub`);
+      expect(dl.status()).toBe(404);
+      await device.close();
+    }
+  });
 });

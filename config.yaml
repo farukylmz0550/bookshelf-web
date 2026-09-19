@@ -51,3 +51,9 @@ kobo:
   # implement are proxied to the real Kobo store so store features keep
   # working. Disable for a fully offline/sandboxed sync.
   storeProxy: true
+  # v3.4.0 — serve books to the device as KEPUB (Kobo's preferred format,
+  # better typography/stats integration). Requires the kepubify binary on the
+  # PATH (the Docker image ships it); conversions are cached in
+  # <data dir>/cache/kepub. The source EPUB still comes from your
+  # fileSourceUrl template.
+  # kepubify: false

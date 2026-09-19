@@ -8,6 +8,8 @@ import { BookFacts } from "./book-facts";
 import { BookPersonal } from "./book-personal";
 import { BookGroups } from "./book-groups";
 import { BookLending } from "./book-lending";
+import { ReadingTimer } from "./reading-timer";
+import { BookQuotes } from "./book-quotes";
 import { ShareButton } from "@/components/share-button";
 
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -17,7 +19,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
   const book = await db.book.findFirst({ where: { id, userId } });
   if (!book) notFound();
 
-  const [lendings, persons, groups, memberships] = await Promise.all([
+  const [lendings, persons, groups, memberships, quotes] = await Promise.all([
     db.lendingRecord.findMany({ where: { bookId: id }, orderBy: { lentAt: "desc" } }),
     db.person.findMany({ where: { userId }, select: { id: true, name: true } }),
     db.bookGroup.findMany({
@@ -29,6 +31,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
       where: { group: { userId }, bookId: id },
       select: { groupId: true },
     }),
+    db.quote.findMany({ where: { userId, bookId: id }, orderBy: { createdAt: "desc" } }),
   ]);
   const lentOut = lendings.filter((l) => !l.returnedAt).length;
   const memberGroupIds = new Set(memberships.map((m) => m.groupId));
@@ -85,7 +88,18 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
       </div>
 
       <BookFacts book={book} dict={dict.facts} />
+      {book.status === "READING" && <ReadingTimer bookId={book.id} dict={dict.timer} />}
       <BookPersonal book={book} dict={{ ...dict.personal, earlyFinishBlocked: dict.books.earlyFinishBlocked }} />
+      <BookQuotes
+        bookId={book.id}
+        quotes={quotes.map((q) => ({
+          id: q.id,
+          text: q.text,
+          page: q.page,
+          createdAt: q.createdAt.toISOString(),
+        }))}
+        dict={dict.quotes}
+      />
       <BookGroups
         bookId={book.id}
         memberGroups={memberGroups}

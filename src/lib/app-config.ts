@@ -33,6 +33,8 @@ export type AppConfigValues = {
   koboEnabled: boolean;
   /** Proxy unimplemented device requests to the real Kobo store. */
   koboStoreProxy: boolean;
+  /** v3.4.0 — convert EPUB downloads to KEPUB (kepubify binary required). */
+  koboKepubify: boolean;
 };
 
 const xpSchema = z.object({
@@ -63,6 +65,7 @@ const challengesSchema = z.object({
 const koboSchema = z.object({
   enabled: z.boolean().default(true),
   storeProxy: z.boolean().default(true),
+  kepubify: z.boolean().default(false),
 });
 
 const configSchema = z.object({
@@ -94,6 +97,7 @@ export function defaultAppConfig(): AppConfigValues {
     challengeCompletionXp: 25,
     koboEnabled: true,
     koboStoreProxy: true,
+    koboKepubify: false,
   };
 }
 
@@ -124,6 +128,7 @@ export function validateAppConfig(doc: unknown): AppConfigValues {
     challengeCompletionXp: data.challenges?.completionXp ?? defaults.challengeCompletionXp,
     koboEnabled: data.kobo?.enabled ?? defaults.koboEnabled,
     koboStoreProxy: data.kobo?.storeProxy ?? defaults.koboStoreProxy,
+    koboKepubify: data.kobo?.kepubify ?? defaults.koboKepubify,
   };
 }
 

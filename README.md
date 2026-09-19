@@ -10,12 +10,12 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.3.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.4.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-> **3.3.0** — seasonal **challenges** (`/challenges`: target read events in a date window, completion XP via config.yaml), unified **CSV import** (Goodreads / Calibre / StoryGraph, header-detected) and automatic **daily DB backups** (cron → `/data/backups`, newest 7 kept). Earlier: **3.2.0** added the OPDS catalog, series and author views. See [`CHANGELOG.md`](CHANGELOG.md).
+> **3.4.0** — in-app **reading timer** (book detail, start/pause/stop → whole minutes into your daily reading time), **quotes** (page-referenced excerpts per book) and optional **KEPUB downloads** for Kobo (`config.yaml → kobo.kepubify`, cached conversion). Earlier: **3.3.0** added seasonal challenges, unified CSV import and automatic daily DB backups. See [`CHANGELOG.md`](CHANGELOG.md).
 
 *Self-hosted · Private · No tracking · Your books, your data.*
 
@@ -47,6 +47,8 @@
 | 🎯 **Goals** | Yearly / monthly targets |
 | 🏁 **Challenges** *(v3.3.0)* | Seasonal reading challenges — custom window + target, read-event progress, exactly-once completion XP (`/challenges`) |
 | 💾 **Auto-backup** *(v3.3.0)* | Daily SQLite backup via cron (`/data/backups`, newest 7 kept) — requires CRON_SECRET |
+| ⏱️ **Reading timer** *(v3.4.0)* | In-app start/pause/resume/stop session timer on READING books — whole minutes flow into daily reading time (device + app combined), reload-safe, anti-farm capped |
+| ❝ **Quotes** *(v3.4.0)* | Page-referenced excerpts per book — add/edit/delete in the book detail page, timestamped list |
 | 👤 **Profile** | Name, password, XP, join date |
 | 🔢 **TOTP 2FA** | Optional TOTP (QR enrollment in Settings → Security) · mandatory for admin accounts · throttled per-account login attempts |
 | 🌍 **i18n** | 6 languages (EN/TR/ES/FR/RU/ZH) — cookie, `src/i18n/dictionaries` |
@@ -55,7 +57,7 @@
 | 🖥️ **Shell** | Collapsible sidebar (desktop, `sidebar-collapsed` cookie) + bottom nav (mobile) · `viewport-fit=cover` · safe-area |
 | 📦 **PWA** | `manifest.json` shortcuts · `sw.js` · install prompt |
 | 🔐 **Admin** | Approve/reject, promote/demote, delete users · cover cache · admin-assigned password resets (forced change at next login) · TOTP-confirmed danger zone that deletes all non-admin accounts · admins cannot act on their own account |
-| 📖 **Kobo Sync** *(v3.0.0, experimental)* | Kobo eReader pulls your whole library straight from this server — device `api_endpoint` → BookShelf sync URL · book files streamed from your own NAS URL template (`{isbn}`, `{isbn10}`, `{isbn13}`) · reading progress writes back (currentPage, streak activity, auto-finish) · see [Kobo Sync](#-kobo-sync-v300-experimental) |
+| 📖 **Kobo Sync** *(v3.0.0, experimental)* | Kobo eReader pulls your whole library straight from this server — device `api_endpoint` → BookShelf sync URL · book files streamed from your own NAS URL template (`{isbn}`, `{isbn10}`, `{isbn13}`) · reading progress writes back (currentPage, streak activity, auto-finish) · optional EPUB→KEPUB conversion with cached output (`config.yaml → kobo.kepubify`, v3.4.0) · see [Kobo Sync](#-kobo-sync-v300-experimental) |
 | 🎴 **Brand** | `brand/` set — Color + Symbolic masters, all icons rendered from the Color Master |
 | 🐳 **Docker** | `ghcr.io/farukylmz0550/bookshelf` — one command |
 

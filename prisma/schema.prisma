@@ -54,6 +54,7 @@ model User {
   koboToken       KoboSyncToken?
   koboSyncedBooks KoboSyncedBook[]
   challenges      Challenge[]
+  quotes          Quote[]
 
   @@index([id])
 }
@@ -132,6 +133,7 @@ model Book {
   lendingRecords   LendingRecord[]
   readEvents       BookReadEvent[]
   groupMemberships BookGroupMembership[]
+  quotes           Quote[]
 
   @@index([userId])
   @@index([tags])
@@ -170,6 +172,24 @@ model BookReadEvent {
   readAt    DateTime @default(now())
 
   @@index([userId, readAt])
+  @@index([bookId])
+}
+
+// v3.4.0 — user-added quotes/excerpts attached to a book (optional page
+// reference). The denormalized bookTitle snapshot survives book edits
+// (same convention as BookReadEvent); deleting the book cascades its quotes.
+model Quote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookTitle String?
+  text      String
+  page      Int?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
   @@index([bookId])
 }
 

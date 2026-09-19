@@ -170,6 +170,34 @@
     "saveNotes": "保存笔记",
     "preview": "预览:"
   },
+  "timer": {
+    "title": "阅读计时器",
+    "start": "开始",
+    "pause": "暂停",
+    "resume": "继续",
+    "stop": "结束",
+    "flushed": "已记录 {m} 分钟。",
+    "flushedNothing": "会话不足一分钟 — 未记录任何内容。",
+    "saved": "整分钟会计入你的每日阅读时长（与 Kobo 分钟合并）。"
+  },
+  "quotes": {
+    "title": "书摘",
+    "add": "添加",
+    "save": "保存",
+    "edit": "编辑",
+    "cancel": "取消",
+    "delete": "删除",
+    "deleteConfirm": "删除这条书摘？",
+    "textPlaceholder": "书摘内容…",
+    "pagePlaceholder": "页码",
+    "page": "第 {n} 页",
+    "empty": "还没有书摘 — 收录你喜欢的段落吧。",
+    "added": "书摘已添加。",
+    "updated": "书摘已更新。",
+    "deleted": "书摘已删除。",
+    "errorGeneric": "出了点问题。",
+    "invalidPage": "页码必须是正数。"
+  },
   "bookLending": {
     "lending": "借阅",
     "copies": "副本:",

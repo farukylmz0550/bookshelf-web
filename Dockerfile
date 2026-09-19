@@ -36,6 +36,10 @@ COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
 # (-v ./config.yaml:/app/config.yaml:ro) to customize without rebuilding.
 COPY --from=build --chown=nextjs:nodejs /app/config.yaml ./config.yaml
 
+# v3.4.0 — kepubify (static Go binary) for optional EPUB→KEPUB conversion in
+# the Kobo sync download path (config.yaml → kobo.kepubify).
+COPY --from=ghcr.io/pgaskin/kepubify:v4.0.4 /usr/local/bin/kepubify /usr/local/bin/kepubify
+
 RUN chmod +x docker-entrypoint.sh
 
 # SQLite veri dizini (DATABASE_URL=file:/data/bookshelf.db) non-root'a yazılabilir olmalı
