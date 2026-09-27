@@ -270,7 +270,7 @@ bookshelf/
 ├── prisma/  schema.prisma  seed.ts/cjs  migrations/
 ├── e2e/  *.spec.ts  screenshots/
 ├── scripts/                       # kobo-sim.ts (device-flow simulator, v3.0.0) · render-annual-audio.mjs
-├── public/  sw.js  manifest.json  icon.svg
+├── public/  sw.js  manifest.json  icon.svg  icon-512-monochrome.png (v3.5.0)
 ├── UI_Design_Language.md  Architecture_Principles.md  Project_Rules.md
 ├── Dockerfile  docker-compose.yml  vitest.config.ts
 ```

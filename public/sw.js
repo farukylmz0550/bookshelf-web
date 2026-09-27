@@ -4,10 +4,10 @@
 // Scheduled notifications are server-driven only: docker-compose cron → /api/push/streak-remind → Web Push.
 
 /** @type {string} */
-const CACHE_NAME = "bookshelf-v4";
+const CACHE_NAME = "bookshelf-v5";
 
 /** @type {string[]} */
-const PRECACHE_URLS = ["/offline.html", "/manifest.json", "/icon-192.png", "/icon-512.png", "/icon-512-maskable.png", "/icon.svg"];
+const PRECACHE_URLS = ["/offline.html", "/manifest.json", "/icon-192.png", "/icon-512.png", "/icon-512-maskable.png", "/icon-512-monochrome.png", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS)));

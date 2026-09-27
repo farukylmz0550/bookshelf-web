@@ -359,6 +359,10 @@ Navigations are served **network-first**, but if the server is unreachable the l
 
 Adding a book while offline queues it in browser localStorage and syncs on reconnect (toast: "Offline — book saved locally…"). Only book creation is queued; server actions (status changes, lending, notes) need connectivity. Background sync is **Chromium-only** — on Firefox/Safari the queue flushes on the next page load instead. Note the queue retries indefinitely; clear site data if a permanently invalid entry keeps failing.
 
+### Launcher icon is not tinted (Material You)
+
+Android 13+ tints launcher icons with the wallpaper palette only when the app provides a `monochrome` icon. Book Shelf ships one (`manifest.json → purpose: "monochrome"`), but **Chrome on Android does not yet pass manifest monochrome icons to installed PWAs** (open Chromium bug 40277264) — on Android 13–15 the classic icon is shown. Android 16 QPR2+ auto-themes all icons (including PWAs) in the "Minimal" launcher mode, no app change needed. Nothing to fix server-side; the monochrome icon will activate automatically once Chromium ships the fix.
+
 ### Install prompt never shows
 
 Only Chromium/Android fires `beforeinstallprompt`; iOS Safari uses Share → "Add to Home Screen". Once dismissed, the prompt is suppressed permanently (clear site data to re-see it).
