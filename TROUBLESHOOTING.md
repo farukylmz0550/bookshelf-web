@@ -60,6 +60,36 @@ behavior, so you can verify or patch locally.
 
 - `latest` follows the newest published release; a specific version pin like `2.10.0` never moves. Confirm which tag your compose file references, then `docker compose pull && docker compose up -d`.
 
+### Container runs but the site is unreachable (wrong port mapping)
+
+- **Symptom:** `docker pull` succeeds and logs look healthy (`✓ Ready`), but `docker ps` shows the container with no useful port mapping — or the app is unreachable at the expected URL. `ps -a` may not even list a container if only `docker pull` (not `run`/`compose up`) was executed.
+- **Cause:** the pull step only downloads the image; **it does not create or start a container**, and it does not apply ports, env vars or volumes. A container started with a mismatched mapping (e.g. `-p 8080:8080` when the app listens on **3000**, or `-p 1024:1024`) publishes a port nothing listens on; the browser gets connection-refused / reset.
+- **Fix:** always launch through the compose file so ports, env and volumes are wired correctly, then verify:
+  ```sh
+  docker compose up -d
+  docker ps   # expect 0.0.0.0:APP_PORT->3000/tcp
+  curl -I http://<host-ip>:1024   # HTTP 307 to /setup or /login is healthy
+  ```
+  If a stray `docker run` container already exists, remove it first (`docker rm -f <name>`) so compose can create its own.
+
+### Cloudflare Tunnel returns 502/530 (cloudflared cannot reach the app)
+
+- **Symptom:** `https://your-domain` returns HTTP 530 (Cloudflare error page) or 502, while the app is healthy on LAN.
+- **Cause:** `cloudflared` runs **inside a container on a bridge network**, so its `localhost` is the container itself — but the tunnel ingress targets `http://localhost:1024` (or another host port). The connection never reaches the app.
+- **Fix:** run cloudflared with host networking so `localhost` in the ingress rule is the real host:
+  ```sh
+  docker run -d --name cloudflared --restart unless-stopped --network host \
+    cloudflare/cloudflared:latest tunnel --no-autoupdate run --token <TUNNEL_TOKEN>
+  ```
+  (Token/config-managed tunnels: alternatively join the cloudflared container to the app's compose network and target the service name, e.g. `http://app:3000`.)
+- **Verify:** `docker logs cloudflared` shows `Registered tunnel connection`; then `curl -I https://your-domain` returns 307 instead of 530/502.
+
+### `NEXTAUTH_URL` redirects LAN visitors to the public domain (mixed login flow)
+
+- **Symptom:** with `NEXTAUTH_URL=https://your-domain`, browsing the app over LAN (`http://<host-ip>:1024`) bounces to the public domain — desired for a public-facing deployment, confusing for LAN-only setups (and the reverse: with `NEXTAUTH_URL=http://<host-ip>:1024`, tunnels/domain visitors bounce back to the LAN IP).
+- **Cause:** NextAuth builds every redirect (login, sign-out, callback) from **one** canonical `NEXTAUTH_URL`; there is no per-host redirect table.
+- **Fix:** set `NEXTAUTH_URL` to the address you consider canonical and keep `AUTH_TRUST_HOST=true` (already set in the shipped compose) so requests from the *other* address are still trusted at the session-check level. Users landing on the non-canonical address get redirected to the canonical one on the first auth redirect. Prefer a stable hostname (domain or DHCP-reserved IP) over a changeable one.
+
 ---
 
 ## 2. Database & backups
