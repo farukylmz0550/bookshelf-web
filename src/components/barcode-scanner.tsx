@@ -30,6 +30,9 @@ export function BarcodeScanner({ onDetected, title = "Scan" }: BarcodeScannerPro
             fps: 10,
             qrbox: { width: 250, height: 150 },
             aspectRatio: 1.5,
+            // v3.5.2 — default to the rear camera; the scanner UI still lets
+            // the user switch to any other camera.
+            videoConstraints: { facingMode: "environment" },
           },
           false,
         );

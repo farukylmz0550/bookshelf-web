@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { needsSetup } from "@/lib/setup";
 import { checkRateLimit, throttlingEnabled, DEFAULT_LIMITS } from "@/lib/rate-limit";
+import { getAppConfig } from "@/lib/app-config";
 
 async function clientIp(): Promise<string> {
   const h = await headers();
@@ -35,6 +36,10 @@ export async function registerUser(input: { email: string; password: string; nam
   if (existing) return { error: "Email already registered" };
 
   const passwordHash = await bcrypt.hash(password, 12);
-  await db.user.create({ data: { email, name, passwordHash, approved: false } });
-  return { ok: true };
+  // v3.5.2 — auth.selfApprove (config.yaml): skip the admin approval step and
+  // approve the account immediately. No email verification exists, so the
+  // address is approved as-is.
+  const selfApprove = (await getAppConfig()).authSelfApprove;
+  await db.user.create({ data: { email, name, passwordHash, approved: selfApprove } });
+  return { ok: true, approved: selfApprove };
 }

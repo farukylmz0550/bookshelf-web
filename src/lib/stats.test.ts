@@ -500,6 +500,14 @@ describe("defaultAppConfig + validateAppConfig", () => {
     expect(values.pagesPerReadEvent).toBe(1000);
   });
 
+  it("auth.selfApprove defaults to false and validates booleans (v3.5.2)", () => {
+    expect(defaultAppConfig().authSelfApprove).toBe(false);
+    expect(validateAppConfig({}).authSelfApprove).toBe(false);
+    expect(validateAppConfig({ auth: { selfApprove: true } }).authSelfApprove).toBe(true);
+    expect(validateAppConfig({ auth: { selfApprove: "yes" } }).authSelfApprove).toBe(false);
+    expect(validateAppConfig({ auth: { unknown: 1 } }).authSelfApprove).toBe(false);
+  });
+
   it("passes custom level names through (v3.1.0)", () => {
     const values = validateAppConfig({ xp: { levels: { names: ["Novice", "Bookworm"] } } });
     expect(values.xpLevelNames).toEqual(["Novice", "Bookworm"]);

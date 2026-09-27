@@ -35,7 +35,7 @@ vi.mock("@/lib/session", () => ({
 }));
 
 import { db } from "@/lib/db";
-import { approveUser, rejectUser, toggleAdmin, deleteUser } from "@/app/actions/admin";
+import { approveUser, rejectUser, toggleAdmin, deleteUser, adminResetPassword } from "@/app/actions/admin";
 
 const SELF_ID = "admin-self";
 const OTHER_ADMIN_ID = "admin-other";
@@ -127,5 +127,44 @@ describe("admin self-guard (v2.9.3)", () => {
     });
     // With two admins, deleting the other one is fine again.
     await expect(deleteUser(tempAdmin.id)).resolves.toEqual({ ok: true });
+  });
+});
+
+// v3.5.2 — self password reset: an admin can reset their own account (TOTP
+// off in these fixtures, so no code is required); resetting another admin is
+// still refused.
+describe("adminResetPassword self-reset (v3.5.2)", () => {
+  it("allows the admin to reset their own password", async () => {
+    const res = await adminResetPassword(SELF_ID);
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.password.length).toBeGreaterThanOrEqual(8);
+      const user = await db.user.findUnique({ where: { id: SELF_ID } });
+      expect(user?.mustChangePassword).toBe(true);
+      // The stored hash must now verify against the returned password.
+      const { default: bcrypt } = await import("bcryptjs");
+      expect(bcrypt.compare(res.password, user?.passwordHash ?? "")).resolves.toBe(true);
+    }
+  });
+
+  it("still refuses to reset another admin", async () => {
+    await db.user.create({
+      data: {
+        id: "admin-other2",
+        email: "other2@bookshelf.test",
+        passwordHash: "x",
+        name: "Other",
+        isAdmin: true,
+        approved: true,
+      },
+    });
+    const res = await adminResetPassword("admin-other2");
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.error).toBe("ADMIN_TARGET");
+  });
+
+  it("works on plain users as before", async () => {
+    const res = await adminResetPassword(PENDING_USER_ID);
+    expect(res.ok).toBe(true);
   });
 });

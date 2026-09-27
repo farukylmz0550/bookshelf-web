@@ -50,7 +50,8 @@
     "totpCode": "Verification code",
     "totpRequired": "Two-factor authentication is enabled — enter your 6-digit code.",
     "invalidTotp": "Invalid code — try again.",
-    "forgotPassword": "Forgot your password? Contact your administrator."
+    "forgotPassword": "Forgot your password? Contact your administrator.",
+    "accountReady": "Your account is approved — you can log in right away."
   },
   "filter": {
     "search": "Search...",
@@ -408,7 +409,11 @@
     "minPagesLabel": "Minimum pages",
     "minPagesDisabled": "Off (0)",
     "minPagesSaved": "Minimum set to {min} pages.",
-    "minPagesInvalid": "Enter a number between 0 and {max}"
+    "minPagesInvalid": "Enter a number between 0 and {max}",
+    "selfResetTitle": "Reset your own password",
+    "selfResetDesc": "Confirm with a fresh TOTP code; a new random password will be generated and you must change it at next login.",
+    "selfResetConfirm": "Your password will be replaced with a random one and you must change it at next login. Continue?",
+    "selfResetInvalidCode": "Invalid TOTP code"
   },
   "licenses": {
     "title": "Licenses & Attributions",

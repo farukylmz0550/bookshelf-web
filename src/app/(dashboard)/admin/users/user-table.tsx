@@ -24,15 +24,21 @@ export function UserTable({
   users,
   dict,
   currentUserId,
+  selfTotpEnabled,
 }: {
   users: User[];
   dict: Record<string, string>;
   currentUserId: string;
+  selfTotpEnabled: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   // v2.10.0 — admin-assigned random password, shown exactly once.
   const [resetPassword, setResetPassword] = useState<string | null>(null);
+  // v3.5.2 — self password reset: TOTP-protected admins confirm with a fresh
+  // code; the same random-password dialog follows.
+  const [selfResetTotp, setSelfResetTotp] = useState("");
+  const [selfResetOpen, setSelfResetOpen] = useState(false);
 
   function handleApprove(id: string) {
     startTransition(async () => {
@@ -64,13 +70,35 @@ export function UserTable({
   }
 
   async function handleResetPassword(id: string) {
+    if (id === currentUserId) {
+      if (selfTotpEnabled) {
+        setSelfResetTotp("");
+        setSelfResetOpen(true);
+        return;
+      }
+      if (!confirm(dict.selfResetConfirm)) return;
+    }
     const res = await adminResetPassword(id);
     if (res.ok) {
       setResetPassword(res.password);
       router.refresh();
     } else {
-      toast.error(dict.resetPasswordDesc);
+      toast.error(res.error === "INVALID_TOTP" ? dict.selfResetInvalidCode : dict.resetPasswordDesc);
     }
+  }
+
+  function confirmSelfReset() {
+    if (selfResetTotp.length !== 6) return;
+    setSelfResetOpen(false);
+    startTransition(async () => {
+      const res = await adminResetPassword(currentUserId, selfResetTotp);
+      if (res.ok) {
+        setResetPassword(res.password);
+        router.refresh();
+      } else {
+        toast.error(res.error === "INVALID_TOTP" ? dict.selfResetInvalidCode : dict.resetPasswordDesc);
+      }
+    });
   }
 
   return (
@@ -143,8 +171,8 @@ export function UserTable({
               )}
               <button
                 onClick={() => handleResetPassword(user.id)}
-                disabled={pending || isSelf || user.isAdmin}
-                title={user.isAdmin ? undefined : dict.resetPasswordDesc}
+                disabled={pending || (user.isAdmin && !isSelf)}
+                title={isSelf ? dict.selfResetTitle : user.isAdmin ? undefined : dict.resetPasswordDesc}
                 className="rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <KeyRound size={10} className="inline" />
@@ -161,6 +189,39 @@ export function UserTable({
           </div>
         );
       })}
+
+      {selfResetOpen && (
+        <Dialog open onOpenChange={(open) => !open && setSelfResetOpen(false)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{dict.selfResetTitle}</DialogTitle>
+              <DialogDescription>{dict.selfResetDesc}</DialogDescription>
+            </DialogHeader>
+            <input
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              autoFocus
+              maxLength={6}
+              value={selfResetTotp}
+              onChange={(e) => setSelfResetTotp(e.target.value.replace(/\D/g, ""))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") confirmSelfReset();
+              }}
+              placeholder="000000"
+              aria-label={dict.selfResetTitle}
+              className="w-full rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 text-center font-mono text-lg tracking-[0.4em] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+            />
+            <div className="flex gap-2">
+              <Button onClick={confirmSelfReset} disabled={selfResetTotp.length !== 6 || pending}>
+                {dict.resetPasswordCta}
+              </Button>
+              <Button variant="outline" onClick={() => setSelfResetOpen(false)}>
+                {dict.cancel}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {resetPassword && (
         <Dialog open onOpenChange={(open) => !open && setResetPassword(null)}>

@@ -8,6 +8,7 @@ import { registerUser } from "@/app/actions/auth";
 export default function RegisterForm({ dict }: { dict: Record<string, string> }) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [approved, setApproved] = useState(false);
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -27,6 +28,9 @@ export default function RegisterForm({ dict }: { dict: Record<string, string> })
       setError(result.error);
       return;
     }
+    // v3.5.2 — auth.selfApprove: the account is already approved and can be
+    // used right away.
+    setApproved(result.approved === true);
     setSuccess(true);
   }
 
@@ -41,7 +45,11 @@ export default function RegisterForm({ dict }: { dict: Record<string, string> })
           </div>
           <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
             <p className="text-sm text-foreground">{dict.registrationSuccess}</p>
-            <p className="mt-2 text-xs text-muted-foreground">{dict.approvalRequired}</p>
+            {approved ? (
+              <p className="mt-2 text-xs text-muted-foreground">{dict.accountReady}</p>
+            ) : (
+              <p className="mt-2 text-xs text-muted-foreground">{dict.approvalRequired}</p>
+            )}
             <Link
               href="/login"
               className="mt-4 inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground"

@@ -12,6 +12,8 @@ import { z } from "zod";
 export type AppConfigValues = {
   /** Pages credited by one "I read N pages" click. */
   pagesPerReadEvent: number;
+  /** v3.5.2 — when true, every registration is approved automatically. */
+  authSelfApprove: boolean;
   xpBookAdded: number;
   xpBookFinishedBase: number;
   xpPagesPer10: number;
@@ -68,11 +70,17 @@ const koboSchema = z.object({
   kepubify: z.boolean().default(false),
 });
 
+// v3.5.2 — self-approve registrations (no admin approval step).
+const authSchema = z.object({
+  selfApprove: z.boolean().default(false),
+});
+
 const configSchema = z.object({
   xp: xpSchema.optional(),
   backfill: backfillSchema.optional(),
   challenges: challengesSchema.optional(),
   kobo: koboSchema.optional(),
+  auth: authSchema.optional(),
 });
 
 function intInRange(min: number, max: number) {
@@ -86,6 +94,7 @@ function intInRange(min: number, max: number) {
 export function defaultAppConfig(): AppConfigValues {
   return {
     pagesPerReadEvent: 20,
+    authSelfApprove: false,
     xpBookAdded: 5,
     xpBookFinishedBase: 50,
     xpPagesPer10: 3,
@@ -112,6 +121,7 @@ export function validateAppConfig(doc: unknown): AppConfigValues {
   const data = parsed.success ? parsed.data : {};
   return {
     pagesPerReadEvent: data.xp?.pagesPerReadEvent ?? defaults.pagesPerReadEvent,
+    authSelfApprove: data.auth?.selfApprove ?? defaults.authSelfApprove,
     xpBookAdded: data.xp?.bookAdded ?? defaults.xpBookAdded,
     xpBookFinishedBase: data.xp?.bookFinishedBase ?? defaults.xpBookFinishedBase,
     xpPagesPer10: data.xp?.pagesPer10 ?? defaults.xpPagesPer10,

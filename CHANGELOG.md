@@ -4,6 +4,28 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.6.0 — 2026-09-27
+
+### Added
+
+- **Self-approve registrations (`auth.selfApprove`)** — new config.yaml
+  `auth.selfApprove` (default `false`). When `true`, every new registration
+  is approved automatically — no admin approval step. There is no email
+  verification, so addresses are approved as-is. The register screen shows
+  "you can log in right away" instead of the approval-pending notice (6
+  languages). Only affects new registrations; the /admin approve flow keeps
+  working either way.
+- **Admin self password reset** — admins can reset their own password from
+  the Admin panel (random password, shown once, `mustChangePassword` at
+  next login). Other admins remain off-limits; TOTP-protected admins confirm
+  with a fresh code in a small dialog; rate-limited 5/5min.
+
+### Changed
+
+- **Barcode scanner opens the rear camera by default**
+  (`videoConstraints.facingMode: "environment"`); other cameras remain
+  selectable from the scanner UI.
+
 ## 3.5.1 — 2026-09-27
 
 ### Added

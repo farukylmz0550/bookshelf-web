@@ -50,7 +50,8 @@
     "totpCode": "Doğrulama kodu",
     "totpRequired": "İki adımlı doğrulama etkin — 6 haneli kodunuzu girin.",
     "invalidTotp": "Geçersiz kod — tekrar deneyin.",
-    "forgotPassword": "Şifrenizi mi unuttunuz? Yöneticinizle iletişime geçin."
+    "forgotPassword": "Şifrenizi mi unuttunuz? Yöneticinizle iletişime geçin.",
+    "accountReady": "Hesabın onaylandı — hemen giriş yapabilirsin."
   },
   "filter": {
     "search": "Ara...",
@@ -408,7 +409,11 @@
     "minPagesLabel": "Minimum sayfa",
     "minPagesDisabled": "Kapalı (0)",
     "minPagesSaved": "Minimum {min} sayfa olarak kaydedildi.",
-    "minPagesInvalid": "0–{max} arasında bir sayı girin"
+    "minPagesInvalid": "0–{max} arasında bir sayı girin",
+    "selfResetTitle": "Kendi şifreni sıfırla",
+    "selfResetDesc": "TOTP doğrulamanı girin; yeni rastgele şifre oluşturulacak ve bir sonraki girişte değiştirmeniz istenecek.",
+    "selfResetConfirm": "Şifreniz rastgele yeni bir değerle değiştirilecek ve bir sonraki girişte değiştirmeniz istenecek. Devam edilsin mi?",
+    "selfResetInvalidCode": "Geçersiz TOTP kodu"
   },
   "licenses": {
     "title": "Lisanslar & Atıflar",

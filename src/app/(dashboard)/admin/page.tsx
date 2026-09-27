@@ -7,16 +7,23 @@ import { UserTable } from "./users/user-table";
 import { DangerZoneCard } from "./danger-zone-card";
 import { MinPagesCard } from "./min-pages-card";
 import { getMinPagesPerReadEvent } from "@/lib/reading-settings";
+import { db } from "@/lib/db";
 
 export default async function AdminPage() {
   const currentUserId = await requireAdminPage();
   const dict = await getDictionary();
-  const users = await getUsers();
-  const coverStats = await getCoverStats();
+  const [users, coverStats, me] = await Promise.all([
+    getUsers(),
+    getCoverStats(),
+    // v3.5.2 — self password reset shows a TOTP prompt only when the caller
+    // has TOTP enabled.
+    db.user.findUnique({ where: { id: currentUserId }, select: { totpEnabled: true } }),
+  ]);
+  const selfTotpEnabled = me?.totpEnabled ?? false;
 
   const pending = users.filter((u) => !u.approved);
   const approved = users.filter((u) => u.approved);
-  const tableDict = { ...dict.common, ...dict.admin, ...dict.filter };
+  const tableDict = { ...dict.common, ...dict.admin, ...dict.filter, cancel: dict.facts.cancel };
   const minPages = await getMinPagesPerReadEvent();
 
   return (
@@ -40,14 +47,24 @@ export default async function AdminPage() {
             <h3 className="text-sm font-medium text-foreground">
               {dict.admin.pendingApproval} ({pending.length})
             </h3>
-            <UserTable users={pending} dict={tableDict} currentUserId={currentUserId} />
+            <UserTable
+              users={pending}
+              dict={tableDict}
+              currentUserId={currentUserId}
+              selfTotpEnabled={selfTotpEnabled}
+            />
           </div>
         )}
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-foreground">
             {dict.admin.approvedUsers} ({approved.length})
           </h3>
-          <UserTable users={approved} dict={tableDict} currentUserId={currentUserId} />
+          <UserTable
+            users={approved}
+            dict={tableDict}
+            currentUserId={currentUserId}
+            selfTotpEnabled={selfTotpEnabled}
+          />
         </div>
       </section>
 

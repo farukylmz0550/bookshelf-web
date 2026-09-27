@@ -43,6 +43,12 @@ challenges:
   # v3.3.0 — XP awarded once when a seasonal challenge is completed.
   completionXp: 25
 
+auth:
+  # When true, every new registration is approved automatically — no admin
+  # approval step. There is no email verification, so addresses are approved
+  # as-is (typos included). Default: false (admin approves in /admin).
+  selfApprove: false
+
 kobo:
   # Kobo eReader sync (Settings → Kobo Sync). The device pulls books straight
   # from this server via a per-user api_endpoint URL.

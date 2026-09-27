@@ -50,7 +50,8 @@
     "totpCode": "Código de verificación",
     "totpRequired": "La verificación en dos pasos está activada — introduce tu código de 6 dígitos.",
     "invalidTotp": "Código no válido — inténtalo de nuevo.",
-    "forgotPassword": "¿Olvidaste tu contraseña? Contacta con tu administrador."
+    "forgotPassword": "¿Olvidaste tu contraseña? Contacta con tu administrador.",
+    "accountReady": "Tu cuenta está aprobada — puedes iniciar sesión ahora mismo."
   },
   "filter": {
     "search": "Buscar...",
@@ -408,7 +409,11 @@
     "minPagesLabel": "Páginas mínimas",
     "minPagesDisabled": "Desactivado (0)",
     "minPagesSaved": "Mínimo fijado en {min} páginas.",
-    "minPagesInvalid": "Introduce un número entre 0 y {max}"
+    "minPagesInvalid": "Introduce un número entre 0 y {max}",
+    "selfResetTitle": "Restablecer tu propia contraseña",
+    "selfResetDesc": "Introduce un código TOTP fresco; se generará una nueva contraseña aleatoria y deberás cambiarla en el próximo inicio de sesión.",
+    "selfResetConfirm": "Tu contraseña será reemplazada por una aleatoria y deberás cambiarla en el próximo inicio de sesión. ¿Continuar?",
+    "selfResetInvalidCode": "Código TOTP inválido"
   },
   "licenses": {
     "title": "Licencias y Atribuciones",

@@ -110,12 +110,28 @@ function generateRandomPassword(length = 12): string {
 
 export async function adminResetPassword(
   userId: string,
+  totpToken?: string,
 ): Promise<{ ok: true; password: string } | { ok: false; error: string }> {
   const adminId = await requireAdmin();
-  if (userId === adminId) return { ok: false, error: "SELF" };
   const target = await db.user.findUnique({ where: { id: userId }, select: { id: true, isAdmin: true } });
   if (!target) return { ok: false, error: "NOT_FOUND" };
-  if (target.isAdmin) return { ok: false, error: "ADMIN_TARGET" };
+  // Other admins stay off-limits (no admin can reset another admin here);
+  // resetting one's own account is allowed — the caller is an authenticated
+  // admin, and TOTP-protected admins must supply a fresh code (v3.5.2).
+  if (target.isAdmin && userId !== adminId) return { ok: false, error: "ADMIN_TARGET" };
+
+  if (userId === adminId) {
+    if (throttlingEnabled() && !checkRateLimit(`admin-self-reset:${adminId}`, { max: 5, windowMs: 5 * 60 * 1000 })) {
+      return { ok: false, error: "RATE_LIMITED" };
+    }
+    const admin = await db.user.findUnique({
+      where: { id: adminId },
+      select: { totpSecret: true, totpEnabled: true },
+    });
+    if (admin?.totpEnabled && admin.totpSecret && verifyTotpCode(admin.totpSecret, totpToken ?? "") !== "VALID") {
+      return { ok: false, error: "INVALID_TOTP" };
+    }
+  }
 
   const password = generateRandomPassword();
   const passwordHash = await bcrypt.hash(password, 12);
