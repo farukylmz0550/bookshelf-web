@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 import { pickSelectOption, setBookStatusUI } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup } from "./helpers/auth";
+import { createPerson } from "./helpers/people";
 
 test.describe("verify admin@admin.admin GUI", () => {
   test("login as existing admin and exercise core flows", async ({ page }) => {
@@ -37,11 +38,12 @@ test.describe("verify admin@admin.admin GUI", () => {
     await setBookStatusUI(page, "Finished");
     await page.screenshot({ path: "e2e/screenshots/verify-03-finished.png", fullPage: true });
 
+    await createPerson(page, "Verify Friend");
     await page.goto("/lending");
     await pickSelectOption(page, page.getByRole("combobox", { name: "Book" }), { index: 0 });
-    await page.getByPlaceholder("Name").fill("Verify Friend");
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Borrower" }), { label: "Verify Friend" });
     await page.getByRole("button", { name: /^lend$/i }).click();
-    await expect(page.getByText("Verify Friend")).toBeVisible();
+    await expect(page.getByText("Verify Friend").first()).toBeVisible();
 
     await page.goto("/people");
     await expect(page.getByText("Verify Friend")).toBeVisible();

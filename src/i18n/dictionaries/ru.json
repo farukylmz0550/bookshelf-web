@@ -213,7 +213,9 @@
     "returned": "возвращено",
     "outLabel": "на руках",
     "takeBack": "Вернуть",
-    "dueDate": "Срок возврата"
+    "dueDate": "Срок возврата",
+    "noPeople": "Пока нет людей",
+    "addPeople": "Добавить на странице «Люди»"
   },
   "lending": {
     "title": "Выдачи",
@@ -229,7 +231,9 @@
     "dueDate": "Срок возврата",
     "dueDateOptional": "необязательно",
     "overdues": "Просрочено",
-    "dueLabel": "До"
+    "dueLabel": "До",
+    "noPeople": "Пока нет людей",
+    "addPeople": "Добавить на странице «Люди»"
   },
   "people": {
     "title": "Люди",
@@ -398,7 +402,13 @@
     "resetPasswordDone": "Пароль назначен — сообщите его пользователю.",
     "resetPasswordTitle": "Новый пароль",
     "copyLabel": "Копировать",
-    "copiedToast": "Скопировано"
+    "copiedToast": "Скопировано",
+    "minPagesTitle": "Минимум шага чтения",
+    "minPagesDesc": "Общий минимум для шага «Прочитай N страниц». 0 = выключено; каждый выбирает свой шаг. Если задано, шаг всех пользователей поднимается как минимум до этого значения.",
+    "minPagesLabel": "Минимум страниц",
+    "minPagesDisabled": "Выключено (0)",
+    "minPagesSaved": "Минимум установлен: {min} страниц.",
+    "minPagesInvalid": "Введите число от 0 до {max}"
   },
   "licenses": {
     "title": "Лицензии и Атрибуции",
@@ -489,7 +499,12 @@
     "pageBackfillDesc": "Ищет на Open Library книги без числа страниц и заполняет недостающие (только книги с ISBN). Нажимай снова, пока остаются книги.",
     "pageBackfillRun": "Заполнить недостающие страницы",
     "pageBackfillRunning": "Поиск…",
-    "pageBackfillDone": "Добавлено в {filled} книг · {missing} не найдено"
+    "pageBackfillDone": "Добавлено в {filled} книг · {missing} не найдено",
+    "readingStepTitle": "Шаг чтения",
+    "readingStepDesc": "Количество страниц за одно нажатие «Прочитай N страниц».",
+    "readingStepLabel": "Страницы",
+    "readingStepFloorHint": "Администратор установил минимум {min} страниц.",
+    "readingStepInvalid": "Введите число от {min} до {max}"
   },
   "notify": {
     "goalMonthStart": "Начался новый месяц. Твоя цель по чтению на этот месяц — {target} книг.",

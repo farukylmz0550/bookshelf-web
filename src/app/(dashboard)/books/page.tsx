@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { getAppConfig } from "@/lib/app-config";
+import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { BooksAddSection } from "./books-add-section";
 import { BooksGrid } from "./books-grid";
 import { ExcelActions } from "./excel-actions";
@@ -11,9 +11,8 @@ import { PageLogCta } from "./page-log-cta";
 export default async function BooksPage() {
   const userId = await requireUserId();
   const dict = await getDictionary();
-  const [books, settings, groups, memberships] = await Promise.all([
+  const [books, groups, memberships, pagesPerReadEvent] = await Promise.all([
     db.book.findMany({ where: { userId }, orderBy: { addedAt: "desc" } }),
-    getAppConfig(),
     db.bookGroup.findMany({
       where: { userId },
       orderBy: [{ order: "asc" }, { createdAt: "asc" }],
@@ -24,6 +23,8 @@ export default async function BooksPage() {
       where: { group: { userId } },
       select: { bookId: true, groupId: true },
     }),
+    // v3.5.1 — per-user "Read N pages" step (user setting → admin floor → site default).
+    getPagesPerReadEventFor(userId),
   ]);
   const groupsByBook = new Map<string, string[]>();
   memberships.forEach((m) => {
@@ -43,8 +44,8 @@ export default async function BooksPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-2">
-        <div className="space-y-1">
+      <header className="space-y-1">
+        <div>
           <h1 className="font-[var(--font-serif)] text-2xl font-semibold tracking-tight text-foreground">
             {dict.books.title}
           </h1>
@@ -52,13 +53,21 @@ export default async function BooksPage() {
             {books.length} {dict.common.books} · {dict.books.addBook}
           </p>
         </div>
-        {/* v2.11.0 — page-log CTA visible on first open so the reading flow
-            doesn't depend on finding the small card button */}
+      </header>
+      <BooksAddSection
+        dict={dict.books as never}
+        excel={<ExcelActions dict={dict.excel} goodreadsDict={dict.goodreads as never} />}
+      />
+      {/* v3.5.1 — page-log CTA moved out of the header into the content flow,
+          between the add panel and the list toolbar, styled like the row's
+          outline buttons so the reading flow is discoverable without
+          competing with the page title (UI Design Language §10, §16). */}
+      <div className="flex justify-end">
         <PageLogCta
           books={books
             .filter((b) => b.status === "READING")
             .map((b) => ({ id: b.id, title: b.title, numberOfPages: b.numberOfPages, currentPage: b.currentPage }))}
-          pagesPerReadEvent={settings.pagesPerReadEvent}
+          pagesPerReadEvent={pagesPerReadEvent}
           dict={{
             label: dict.books.logPagesButton,
             logPagesToast: dict.books.logPagesToast,
@@ -71,11 +80,7 @@ export default async function BooksPage() {
             cancel: dict.facts.cancel,
           }}
         />
-      </header>
-      <BooksAddSection
-        dict={dict.books as never}
-        excel={<ExcelActions dict={dict.excel} goodreadsDict={dict.goodreads as never} />}
-      />
+      </div>
       <BooksGrid
         books={booksWithGroups as never}
         lentMap={lentMap}
@@ -88,7 +93,7 @@ export default async function BooksPage() {
             filter: dict.filter,
           } as never
         }
-        pagesPerReadEvent={settings.pagesPerReadEvent}
+        pagesPerReadEvent={pagesPerReadEvent}
         groups={groups}
         cardDict={{
           logPagesButton: dict.books.logPagesButton,

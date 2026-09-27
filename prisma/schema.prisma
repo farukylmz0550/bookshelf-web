@@ -311,6 +311,10 @@ model UserSettings {
   goalReminders         Boolean @default(true)
   // Per-user locale for localized push notifications (synced from the cookie)
   locale                String?
+  // v3.5.1 — per-user "I read N pages" step. NULL = follow the site-wide
+  // config.yaml pagesPerReadEvent. Clamped by the admin's minPagesPerReadEvent
+  // floor (see lib/reading-settings.ts).
+  pagesPerReadEvent     Int?
 
   @@index([userId])
 }
@@ -325,6 +329,14 @@ model PushSubscription {
 
   @@unique([userId, endpoint])
   @@index([userId])
+}
+
+// v3.5.1 — site-wide admin-controlled values that must live in the DB (the
+// admin panel edits them at runtime, unlike the config.yaml AppConfig).
+// Singleton row. minPagesPerReadEvent = 0 disables the floor.
+model SiteSettings {
+  id                   String @id @default("site")
+  minPagesPerReadEvent Int    @default(0)
 }
 
 // v3.0.0 — the AppSettings table was removed: site-wide values moved to

@@ -213,7 +213,9 @@
     "returned": "rendu",
     "outLabel": "emprunté",
     "takeBack": "Récupérer",
-    "dueDate": "Date de retour"
+    "dueDate": "Date de retour",
+    "noPeople": "Aucune personne pour le moment",
+    "addPeople": "Ajouter depuis la page Personnes"
   },
   "lending": {
     "title": "Prêts",
@@ -229,7 +231,9 @@
     "dueDate": "Date de retour",
     "dueDateOptional": "facultatif",
     "overdues": "En retard",
-    "dueLabel": "Retour le"
+    "dueLabel": "Retour le",
+    "noPeople": "Aucune personne pour le moment",
+    "addPeople": "Ajouter depuis la page Personnes"
   },
   "people": {
     "title": "Personnes",
@@ -398,7 +402,13 @@
     "resetPasswordDone": "Mot de passe attribué — communiquez-le à l'utilisateur.",
     "resetPasswordTitle": "Nouveau mot de passe",
     "copyLabel": "Copier",
-    "copiedToast": "Copié"
+    "copiedToast": "Copié",
+    "minPagesTitle": "Minimum du pas de lecture",
+    "minPagesDesc": "Plancher global pour le pas « Lis N pages ». 0 = désactivé ; chaque utilisateur choisit son pas. S’il est défini, le pas de chacun est relevé à au moins cette valeur.",
+    "minPagesLabel": "Pages minimales",
+    "minPagesDisabled": "Désactivé (0)",
+    "minPagesSaved": "Minimum fixé à {min} pages.",
+    "minPagesInvalid": "Saisissez un nombre entre 0 et {max}"
   },
   "licenses": {
     "title": "Licences et Attributions",
@@ -489,7 +499,12 @@
     "pageBackfillDesc": "Recherche sur Open Library les livres sans nombre de pages et complète les pages manquantes (livres avec ISBN uniquement). Rappuie tant qu'il reste des livres.",
     "pageBackfillRun": "Compléter les pages manquantes",
     "pageBackfillRunning": "Recherche…",
-    "pageBackfillDone": "Ajouté à {filled} livres · {missing} introuvables"
+    "pageBackfillDone": "Ajouté à {filled} livres · {missing} introuvables",
+    "readingStepTitle": "Pas de lecture",
+    "readingStepDesc": "Nombre de pages comptabilisé par tap sur « Lis N pages ».",
+    "readingStepLabel": "Pages",
+    "readingStepFloorHint": "Votre administrateur a fixé un minimum de {min} pages.",
+    "readingStepInvalid": "Saisissez un nombre entre {min} et {max}"
   },
   "notify": {
     "goalMonthStart": "Un nouveau mois commence. Ton objectif de lecture ce mois-ci : {target} livres.",

@@ -2,6 +2,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/session";
 import { checkRateLimit, throttlingEnabled } from "@/lib/rate-limit";
@@ -22,6 +23,32 @@ export async function getUsers() {
     },
     orderBy: { createdAt: "desc" },
   });
+}
+
+// v3.5.1 — site-wide floor for the "I read N pages" step. 0 disables the
+// floor; anything else lifts every user's effective step to at least this
+// value (see src/lib/reading-settings.ts).
+export async function getMinPagesPerReadEvent(): Promise<number> {
+  await requireAdmin();
+  const row = await db.siteSettings.findUnique({ where: { id: "site" } });
+  return row?.minPagesPerReadEvent ?? 0;
+}
+
+export async function updateMinPagesPerReadEvent(value: number): Promise<{ ok: boolean; error?: string }> {
+  await requireAdmin();
+  const parsed = Math.floor(Number(value));
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1000) {
+    return { ok: false, error: "invalid" };
+  }
+  await db.siteSettings.upsert({
+    where: { id: "site" },
+    update: { minPagesPerReadEvent: parsed },
+    create: { id: "site", minPagesPerReadEvent: parsed },
+  });
+  revalidatePath("/admin");
+  revalidatePath("/settings");
+  revalidatePath("/books");
+  return { ok: true };
 }
 
 export async function approveUser(userId: string) {

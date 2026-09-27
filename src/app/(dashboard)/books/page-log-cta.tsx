@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 "use client";
 
-// v2.11.0 — page-level "Read N pages" CTA for /books: always visible near the
-// top of the page while the user has a READING book, so the logging flow
-// doesn't depend on spotting the small card button. Single reading book logs
-// in one tap; multiple books open a picker; page-less books get the same
-// page-count prompt as the card button.
+// v3.5.1 — page-level "Read N pages" CTA for /books, placed in the content
+// flow between the add panel and the list toolbar (moved out of the page
+// header). Styled with the same outline treatment as the neighboring action
+// row so it reads as part of that toolbar (UI Design Language §10, §16).
+// Single reading book logs in one tap; multiple books open a picker;
+// page-less books get the same page-count prompt as the card button.
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -124,6 +125,7 @@ export function PageLogCta({
     <>
       <Button
         size="sm"
+        variant="outline"
         onClick={() => (books.length === 1 ? logFor(books[0]) : setPickerOpen(true))}
         disabled={pending}
       >

@@ -213,7 +213,9 @@
     "returned": "returned",
     "outLabel": "out",
     "takeBack": "Take back",
-    "dueDate": "Due date"
+    "dueDate": "Due date",
+    "noPeople": "No people yet",
+    "addPeople": "Add from People page"
   },
   "lending": {
     "title": "Lending",
@@ -229,7 +231,9 @@
     "dueDate": "Due date",
     "dueDateOptional": "optional",
     "overdues": "Overdue",
-    "dueLabel": "Due"
+    "dueLabel": "Due",
+    "noPeople": "No people yet",
+    "addPeople": "Add from People page"
   },
   "people": {
     "title": "People",
@@ -398,7 +402,13 @@
     "resetPasswordDone": "Password assigned — show it to the user now.",
     "resetPasswordTitle": "New password",
     "copyLabel": "Copy",
-    "copiedToast": "Copied"
+    "copiedToast": "Copied",
+    "minPagesTitle": "Reading Step Minimum",
+    "minPagesDesc": "Site-wide floor for the “Read N pages” step. 0 = off; users pick their own step. When set, every user’s step is lifted to at least this value.",
+    "minPagesLabel": "Minimum pages",
+    "minPagesDisabled": "Off (0)",
+    "minPagesSaved": "Minimum set to {min} pages.",
+    "minPagesInvalid": "Enter a number between 0 and {max}"
   },
   "licenses": {
     "title": "Licenses & Attributions",
@@ -489,7 +499,12 @@
     "pageBackfillDesc": "Looks up books without a page count on Open Library and fills the missing page numbers (only for books with an ISBN). Press again while books remain.",
     "pageBackfillRun": "Fill missing page counts",
     "pageBackfillRunning": "Looking up…",
-    "pageBackfillDone": "Added to {filled} books · {missing} not found"
+    "pageBackfillDone": "Added to {filled} books · {missing} not found",
+    "readingStepTitle": "Reading step",
+    "readingStepDesc": "Number of pages counted per “Read N pages” tap.",
+    "readingStepLabel": "Pages",
+    "readingStepFloorHint": "Your administrator set a minimum of {min} pages.",
+    "readingStepInvalid": "Enter a number between {min} and {max}"
   },
   "notify": {
     "goalMonthStart": "New month started. Your reading goal this month is {target} books.",

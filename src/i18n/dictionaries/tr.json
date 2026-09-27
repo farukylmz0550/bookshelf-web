@@ -213,7 +213,9 @@
     "returned": "iade edildi",
     "outLabel": "dışarıda",
     "takeBack": "Geri al",
-    "dueDate": "Bitiş tarihi"
+    "dueDate": "Bitiş tarihi",
+    "noPeople": "Henüz kişi yok",
+    "addPeople": "Kişiler sayfasından ekle"
   },
   "lending": {
     "title": "Ödünç Verme",
@@ -229,7 +231,9 @@
     "dueDate": "Son tarih",
     "dueDateOptional": "opsiyonel",
     "overdues": "Gecikmiş",
-    "dueLabel": "Bitiş"
+    "dueLabel": "Bitiş",
+    "noPeople": "Henüz kişi yok",
+    "addPeople": "Kişiler sayfasından ekle"
   },
   "people": {
     "title": "Kişiler",
@@ -398,7 +402,13 @@
     "resetPasswordDone": "Şifre atandı — şimdi kullanıcıya iletin.",
     "resetPasswordTitle": "Yeni şifre",
     "copyLabel": "Kopyala",
-    "copiedToast": "Kopyalandı"
+    "copiedToast": "Kopyalandı",
+    "minPagesTitle": "Okuma Adımı Minimumu",
+    "minPagesDesc": "“N sayfa oku” adımı için site geneli alt sınır. 0 = kapalı; kullanıcılar kendi adımlarını seçebilir. Bir değer girildiğinde herkesin adımı en az bu sayfaya yükseltilir.",
+    "minPagesLabel": "Minimum sayfa",
+    "minPagesDisabled": "Kapalı (0)",
+    "minPagesSaved": "Minimum {min} sayfa olarak kaydedildi.",
+    "minPagesInvalid": "0–{max} arasında bir sayı girin"
   },
   "licenses": {
     "title": "Lisanslar & Atıflar",
@@ -489,7 +499,12 @@
     "pageBackfillDesc": "Sayfa sayısı olmayan kitapları Open Library'de arar ve eksik sayfa sayılarını doldurur (yalnızca ISBN'li kitaplar). Kitap kaldıkça tekrar basabilirsin.",
     "pageBackfillRun": "Eksik sayfa sayılarını doldur",
     "pageBackfillRunning": "Sorgulanıyor…",
-    "pageBackfillDone": "{filled} kitaba eklendi · {missing} bulunamadı"
+    "pageBackfillDone": "{filled} kitaba eklendi · {missing} bulunamadı",
+    "readingStepTitle": "Okuma adımı",
+    "readingStepDesc": "“N sayfa oku” butonuna basıldığında sayılan sayfa sayısı.",
+    "readingStepLabel": "Sayfa sayısı",
+    "readingStepFloorHint": "Yönetici minimum sayfa sayısını {min} olarak belirledi.",
+    "readingStepInvalid": "{min}–{max} arasında bir sayı girin"
   },
   "notify": {
     "goalMonthStart": "Yeni ay başladı. Bu ayki okuma hedefin {target} kitap.",

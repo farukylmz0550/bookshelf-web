@@ -4,7 +4,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { getAppConfig } from "@/lib/app-config";
+import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { BooksGrid } from "@/app/(dashboard)/books/books-grid";
 import { ShelfBookPicker } from "../shelf-book-picker";
 
@@ -22,7 +22,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
 
   // The group is the implicit primary filter; memberships constrain the query
   // to the caller's own books in a single indexed lookup.
-  const [books, lentRecords, settings] = await Promise.all([
+  const [books, lentRecords, pagesPerReadEvent] = await Promise.all([
     db.book.findMany({
       where: { userId, groupMemberships: { some: { groupId: id } } },
       orderBy: { addedAt: "desc" },
@@ -31,7 +31,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
       where: { book: { userId }, returnedAt: null },
       select: { bookId: true },
     }),
-    getAppConfig(),
+    getPagesPerReadEventFor(userId),
   ]);
   const lentMap: Record<string, boolean> = {};
   books.forEach((b) => (lentMap[b.id] = lentRecords.some((r) => r.bookId === b.id)));
@@ -74,7 +74,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
             empty: dict.groups.emptyShelf,
           } as never
         }
-        pagesPerReadEvent={settings.pagesPerReadEvent}
+        pagesPerReadEvent={pagesPerReadEvent}
         cardDict={{
           logPagesButton: dict.books.logPagesButton,
           logPagesToast: dict.books.logPagesToast,

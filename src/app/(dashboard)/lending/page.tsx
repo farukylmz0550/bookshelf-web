@@ -9,8 +9,10 @@ export default async function LendingPage() {
   const userId = await requireUserId();
   const dict = await getDictionary();
 
-  const [books, records] = await Promise.all([
+  const [books, people, records] = await Promise.all([
     db.book.findMany({ where: { userId }, select: { id: true, title: true }, orderBy: { title: "asc" } }),
+    // v3.5.1 — borrowers come from /people; create people there, not here.
+    db.person.findMany({ where: { userId }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
     db.lendingRecord.findMany({
       where: { book: { userId } },
       include: { book: { select: { title: true } } },
@@ -32,7 +34,15 @@ export default async function LendingPage() {
         </p>
       </header>
       <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
-        <LendingForm books={books} dict={dict.lending} />
+        <LendingForm
+          books={books}
+          people={people}
+          dict={{
+            ...dict.lending,
+            noPeople: dict.lending.noPeople ?? dict.people.empty,
+            addPeople: dict.lending.addPeople ?? dict.people.add,
+          }}
+        />
       </div>
       {records.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">{dict.lending.empty}</p>

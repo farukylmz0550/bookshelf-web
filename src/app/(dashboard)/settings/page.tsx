@@ -9,6 +9,8 @@ import { SecuritySettings } from "@/components/settings/security-settings";
 import type { SecurityDict } from "@/components/settings/security-settings";
 import { getKoboSyncState } from "@/app/actions/kobo";
 import { getAppConfig } from "@/lib/app-config";
+import { getMinPagesPerReadEvent } from "@/lib/reading-settings";
+import { ReadingStepCard } from "@/components/settings/reading-step-card";
 
 export default async function SettingsPage() {
   const dict = await getDictionary();
@@ -27,6 +29,9 @@ export default async function SettingsPage() {
     ? await getKoboSyncState()
     : { enabled: false, syncUrl: null, opdsUrl: null, fileSourceUrl: null };
 
+  // v3.5.1 — reading step card values (admin floor + site default for hints).
+  const [adminFloor, siteConfig] = await Promise.all([getMinPagesPerReadEvent(), getAppConfig()]);
+
   return (
     <div className="space-y-6">
       <header className="space-y-1">
@@ -35,6 +40,20 @@ export default async function SettingsPage() {
         </h1>
         <p className="font-[var(--font-sans)] text-sm text-muted-foreground">{dict.nav.settings}</p>
       </header>
+      <ReadingStepCard
+        initialValue={settings.pagesPerReadEvent}
+        adminFloor={adminFloor}
+        siteDefault={siteConfig.pagesPerReadEvent}
+        dict={{
+          title: dict.settings.readingStepTitle,
+          desc: dict.settings.readingStepDesc,
+          label: dict.settings.readingStepLabel,
+          floorHint: dict.settings.readingStepFloorHint,
+          save: dict.facts.save,
+          saved: dict.kobo.saved,
+          invalid: dict.settings.readingStepInvalid,
+        }}
+      />
       <SettingsForm
         settings={settings}
         currentTheme={theme}

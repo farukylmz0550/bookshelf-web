@@ -4,6 +4,38 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.5.1 — 2026-09-27
+
+### Added
+
+- **User-adjustable "Read N pages" step** — each user can now pick their own
+  step in Settings → Reading step (1–1000). Resolution order:
+  user setting → admin floor → config.yaml `xp.pagesPerReadEvent` → 20.
+  Stored per user in `UserSettings.pagesPerReadEvent` (NULL = follow the
+  site-wide value). Applied everywhere the step is used: `/books` CTA and
+  cards, author/series/group grids, `logPagesRead`, and Kobo sync progress.
+- **Admin reading-step minimum** — new Admin panel card ("Reading Step
+  Minimum") stores a site-wide floor in `SiteSettings.minPagesPerReadEvent`
+  (singleton row; 0 = off). When set, every user's effective step is lifted
+  to at least this value; the Settings card shows a hint with the floor.
+
+### Changed
+
+- **Lending is people-first** — the borrower field on `/lending` and on the
+  book detail page is now a dropdown of existing people instead of free
+  text. New people are created on `/people` only; `createLending` takes a
+  `personId` and no longer auto-creates a person from a typed name (removes
+  duplicate/misspelled people). An empty dropdown links to `/people`.
+- **`/books` page-log CTA** — the "Read N pages" button moved out of the
+  page header into the content flow between the add panel and the list
+  toolbar, styled like the neighboring outline action buttons (UI Design
+  Language §10/§16, GNOME HIG: discoverability + consistency).
+
+### Migration
+
+- `20260927193000_user_read_step_and_site_min_pages` — adds
+  `UserSettings.pagesPerReadEvent` and the `SiteSettings` singleton table.
+
 ## 3.5.0 — 2026-09-27
 
 ### Added

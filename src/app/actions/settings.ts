@@ -11,6 +11,7 @@ export type UserSettingsData = {
   streakReminders: boolean;
   weeklyDigest: boolean;
   goalReminders: boolean;
+  pagesPerReadEvent: number | null;
 };
 
 export async function getSettings(): Promise<UserSettingsData> {
@@ -24,6 +25,7 @@ export async function getSettings(): Promise<UserSettingsData> {
       streakReminders: true,
       weeklyDigest: false,
       goalReminders: true,
+      pagesPerReadEvent: null,
     };
   }
   return {
@@ -31,6 +33,7 @@ export async function getSettings(): Promise<UserSettingsData> {
     streakReminders: settings.streakReminders,
     weeklyDigest: settings.weeklyDigest,
     goalReminders: settings.goalReminders,
+    pagesPerReadEvent: settings.pagesPerReadEvent ?? null,
   };
 }
 
@@ -48,6 +51,32 @@ export async function updateSettings(data: Partial<UserSettingsData>) {
     },
   });
   revalidatePath("/settings");
+}
+
+// v3.5.1 — per-user "I read N pages" step (1–1000). Server-side clamp is
+// authoritative; the admin floor is applied at read time, not here, so a
+// lowered admin floor takes effect immediately without rewriting user rows.
+export async function updatePagesPerReadEvent(value: number): Promise<{ ok: boolean; error?: string }> {
+  const userId = await requireUserId();
+  const parsed = Math.floor(Number(value));
+  if (!Number.isFinite(parsed) || parsed < 1 || parsed > 1000) {
+    return { ok: false, error: "invalid" };
+  }
+  await db.userSettings.upsert({
+    where: { userId },
+    update: { pagesPerReadEvent: parsed },
+    create: {
+      userId,
+      notificationsEnabled: true,
+      streakReminders: true,
+      weeklyDigest: false,
+      goalReminders: true,
+      pagesPerReadEvent: parsed,
+    },
+  });
+  revalidatePath("/settings");
+  revalidatePath("/books");
+  return { ok: true };
 }
 
 export async function sendTestPush(): Promise<{ ok: boolean; error?: string }> {

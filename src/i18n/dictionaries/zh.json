@@ -213,7 +213,9 @@
     "returned": "已归还",
     "outLabel": "借出",
     "takeBack": "收回",
-    "dueDate": "应还日期"
+    "dueDate": "应还日期",
+    "noPeople": "还没有联系人",
+    "addPeople": "从联系人页面添加"
   },
   "lending": {
     "title": "借阅",
@@ -229,7 +231,9 @@
     "dueDate": "应还日期",
     "dueDateOptional": "可选",
     "overdues": "已逾期",
-    "dueLabel": "应还"
+    "dueLabel": "应还",
+    "noPeople": "还没有联系人",
+    "addPeople": "从联系人页面添加"
   },
   "people": {
     "title": "人物",
@@ -398,7 +402,13 @@
     "resetPasswordDone": "已分配密码 — 请立即告知该用户。",
     "resetPasswordTitle": "新密码",
     "copyLabel": "复制",
-    "copiedToast": "已复制"
+    "copiedToast": "已复制",
+    "minPagesTitle": "阅读步长最小值",
+    "minPagesDesc": "“读 N 页”步长的全站下限。0 = 关闭；用户可自选步长。设置后，所有用户的步长至少提升到该值。",
+    "minPagesLabel": "最小页数",
+    "minPagesDisabled": "关闭 (0)",
+    "minPagesSaved": "最小值已设为 {min} 页。",
+    "minPagesInvalid": "请输入 0 到 {max} 之间的数字"
   },
   "licenses": {
     "title": "许可证与致谢",
@@ -489,7 +499,12 @@
     "pageBackfillDesc": "在 Open Library 上查找没有页数的图书并补全缺失页数（仅限有 ISBN 的图书）。仍有图书时可以再次点击。",
     "pageBackfillRun": "补全缺失页数",
     "pageBackfillRunning": "查询中…",
-    "pageBackfillDone": "已为 {filled} 本图书添加 · {missing} 本未找到"
+    "pageBackfillDone": "已为 {filled} 本图书添加 · {missing} 本未找到",
+    "readingStepTitle": "阅读步长",
+    "readingStepDesc": "每次点击“读 N 页”计入的页数。",
+    "readingStepLabel": "页数",
+    "readingStepFloorHint": "管理员设定的最小页数为 {min}。",
+    "readingStepInvalid": "请输入 {min} 到 {max} 之间的数字"
   },
   "notify": {
     "goalMonthStart": "新的一月开始。你本月的阅读目标是 {target} 本书。",

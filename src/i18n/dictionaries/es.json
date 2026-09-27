@@ -213,7 +213,9 @@
     "returned": "devuelto",
     "outLabel": "prestado",
     "takeBack": "Recuperar",
-    "dueDate": "Fecha de devolución"
+    "dueDate": "Fecha de devolución",
+    "noPeople": "Aún no hay personas",
+    "addPeople": "Añadir desde la página Personas"
   },
   "lending": {
     "title": "Préstamos",
@@ -229,7 +231,9 @@
     "dueDate": "Fecha de devolución",
     "dueDateOptional": "opcional",
     "overdues": "Atrasado",
-    "dueLabel": "Devolver el"
+    "dueLabel": "Devolver el",
+    "noPeople": "Aún no hay personas",
+    "addPeople": "Añadir desde la página Personas"
   },
   "people": {
     "title": "Personas",
@@ -398,7 +402,13 @@
     "resetPasswordDone": "Contraseña asignada — muéstrasela al usuario ahora.",
     "resetPasswordTitle": "Nueva contraseña",
     "copyLabel": "Copiar",
-    "copiedToast": "Copiado"
+    "copiedToast": "Copiado",
+    "minPagesTitle": "Mínimo del paso de lectura",
+    "minPagesDesc": "Mínimo global para el paso “Lee N páginas”. 0 = desactivado; cada usuario elige su paso. Al fijarlo, el paso de todos sube al menos a este valor.",
+    "minPagesLabel": "Páginas mínimas",
+    "minPagesDisabled": "Desactivado (0)",
+    "minPagesSaved": "Mínimo fijado en {min} páginas.",
+    "minPagesInvalid": "Introduce un número entre 0 y {max}"
   },
   "licenses": {
     "title": "Licencias y Atribuciones",
@@ -489,7 +499,12 @@
     "pageBackfillDesc": "Busca en Open Library los libros sin número de páginas y rellena las que falten (solo libros con ISBN). Vuelve a pulsar mientras queden libros.",
     "pageBackfillRun": "Rellenar páginas que faltan",
     "pageBackfillRunning": "Buscando…",
-    "pageBackfillDone": "Añadido a {filled} libros · {missing} no encontrados"
+    "pageBackfillDone": "Añadido a {filled} libros · {missing} no encontrados",
+    "readingStepTitle": "Paso de lectura",
+    "readingStepDesc": "Número de páginas contadas por toque en “Lee N páginas”.",
+    "readingStepLabel": "Páginas",
+    "readingStepFloorHint": "Tu administrador fijó un mínimo de {min} páginas.",
+    "readingStepInvalid": "Introduce un número entre {min} y {max}"
   },
   "notify": {
     "goalMonthStart": "Comenzó un nuevo mes. Tu objetivo de lectura este mes es de {target} libros.",

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { test, expect } from "@playwright/test";
-import { setBookStatusUI } from "./helpers/ui-select";
+import { pickSelectOption, setBookStatusUI } from "./helpers/ui-select";
+import { createPerson } from "./helpers/people";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login, dismissCookieConsent, clickSetting } from "./helpers/auth";
 
@@ -52,8 +53,10 @@ test.describe("stats / gamification / achievements / leaderboard / excel / i18n 
     await page.goto("/achievements");
     await expect(page.getByText("Bookworm Beginnings")).toBeVisible();
 
+    await createPerson(page, "Test Friend");
     await page.goto("/lending");
-    await page.getByPlaceholder("Name").fill("Test Friend");
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Book" }), { index: 0 });
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Borrower" }), { label: "Test Friend" });
     await page.getByRole("button", { name: /^lend$/i }).click();
     await page.goto("/achievements");
     await expect(page.getByText("Generous Reader")).toBeVisible();

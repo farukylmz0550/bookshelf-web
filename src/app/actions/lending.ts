@@ -2,50 +2,43 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppConfig } from "@/lib/app-config";
-import { normalizeName } from "@/lib/person";
 import { parseDueDate } from "@/lib/lending-due";
 
-const borrowerNameSchema = z.string().min(1).max(200);
+// v3.5.1 — borrowers must exist as people (created on /people). The old
+// free-text name entry with implicit person creation is gone: lending to a
+// borrower now requires the id of a person owned by this user, which keeps
+// lender history consistent and avoids duplicate/misspelled people.
 
-export async function createLending(bookId: string, borrowerName: string, dueDate?: string | null) {
+export async function createLending(bookId: string, personId: string, dueDate?: string | null) {
   const userId = await requireUserId();
   // Authoritative server-side validation — the due date must resolve before
   // any record is created. Clients cannot bypass it.
   const normalizedDueDate = parseDueDate(dueDate);
 
-  const book = await db.book.findFirst({ where: { id: bookId, userId } });
+  const [book, person] = await Promise.all([
+    db.book.findFirst({ where: { id: bookId, userId } }),
+    db.person.findFirst({ where: { id: personId, userId }, select: { id: true, name: true } }),
+  ]);
   if (!book) throw new Error("Not found");
+  if (!person) throw new Error("Not found");
 
-  const parsed = borrowerNameSchema.safeParse(borrowerName.trim());
-  if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Invalid borrower name");
-
-  const nameTrimmed = parsed.data;
-
-  // Find or create Person + copy-aware guard, atomically (check-then-act race)
-  const normalized = normalizeName(nameTrimmed);
+  // Copy-aware guard, atomically (check-then-act race)
   const copies = (book as unknown as { copies?: number }).copies ?? 1;
 
   await db.$transaction(async (tx) => {
-    const persons = await tx.person.findMany({ where: { userId }, select: { id: true, name: true } });
-    let person = persons.find((p) => normalizeName(p.name) === normalized);
-    if (!person) {
-      person = await tx.person.create({ data: { userId, name: nameTrimmed } });
-    }
-
     const outCount = await tx.lendingRecord.count({ where: { bookId, returnedAt: null } });
     if (outCount >= copies) throw new Error("All copies are out");
 
     await tx.lendingRecord.create({
       data: {
         bookId,
-        borrowerName: nameTrimmed,
+        borrowerName: person.name,
         personId: person.id,
-        personName: nameTrimmed,
+        personName: person.name,
         bookTitle: book.title,
         dueDate: normalizedDueDate,
       },

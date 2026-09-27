@@ -3,8 +3,10 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createLending, returnLending } from "@/app/actions/lending";
 import { updateBook } from "@/app/actions/books";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Book = { id: string; copies: number | null; title: string };
 type Lending = {
@@ -25,10 +27,10 @@ export function BookLending({
   book: Book;
   lendings: Lending[];
   persons: Person[];
-  dict: Record<string, string>;
+  dict: Record<string, string> & { noPeople: string; addPeople: string };
 }) {
   const [copies, setCopies] = useState(String(book.copies ?? 1));
-  const [borrower, setBorrower] = useState("");
+  const [personId, setPersonId] = useState(persons[0]?.id ?? "");
   const [dueDate, setDueDate] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -51,13 +53,14 @@ export function BookLending({
 
   function onLend(e: React.FormEvent) {
     e.preventDefault();
-    if (!borrower.trim()) return;
+    if (!personId) return;
     const due = dueDate || null;
     if (due && isNaN(new Date(due).getTime())) return; // client-side UX guard; server is authoritative
     startTransition(async () => {
       try {
-        await createLending(book.id, borrower.trim(), due);
-        setBorrower("");
+        // v3.5.1 — lend to an existing person (dropdown); new people are
+        // created on /people only.
+        await createLending(book.id, personId, due);
         setDueDate("");
         router.refresh();
       } catch (err) {
@@ -100,14 +103,35 @@ export function BookLending({
         </span>
       </div>
 
-      <form onSubmit={onLend} className="flex flex-wrap gap-2">
-        <input
-          list="persons"
-          value={borrower}
-          onChange={(e) => setBorrower(e.target.value)}
-          placeholder={dict.borrowerPlaceholder}
-          className="flex-1 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-        />
+      <form onSubmit={onLend} className="flex flex-wrap items-end gap-2">
+        {/* v3.5.1 — borrower dropdown from /people (was free text + datalist) */}
+        {persons.length === 0 ? (
+          <div className="space-y-1" role="status">
+            <p className="text-sm text-muted-foreground">{dict.noPeople}</p>
+            <Link
+              href="/people"
+              className="inline-flex items-center gap-1.5 rounded-[8px] border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              {dict.addPeople}
+            </Link>
+          </div>
+        ) : (
+          <Select value={personId} onValueChange={(v) => setPersonId(v ?? "")}>
+            <SelectTrigger
+              className="w-[180px] rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)]"
+              aria-label={dict.borrowerPlaceholder}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent aria-label={dict.borrowerPlaceholder}>
+              {persons.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <input
           type="date"
           value={dueDate}
@@ -116,14 +140,9 @@ export function BookLending({
           aria-label={dict.dueDate}
           className="w-[140px] rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
         />
-        <datalist id="persons">
-          {persons.map((p) => (
-            <option key={p.id} value={p.name} />
-          ))}
-        </datalist>
         <button
           type="submit"
-          disabled={pending || !borrower.trim()}
+          disabled={pending || !personId}
           className="rounded-[8px] bg-[var(--primary)] px-4 py-1.5 text-sm text-[var(--primary-foreground)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
         >
           {dict.lend}

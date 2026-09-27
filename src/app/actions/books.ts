@@ -8,6 +8,7 @@ import { requireUserId } from "@/lib/session";
 import { lookupIsbn, lookupIsbns, type IsbnLookupResult } from "@/lib/isbn";
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppConfig } from "@/lib/app-config";
+import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 
 const addBookSchema = z.object({
   isbn: z
@@ -261,7 +262,10 @@ export async function logPagesRead(
   if (!book) return { ok: false, error: "Not found" };
 
   const settings = await getAppConfig();
-  const pagesLogged = Math.max(1, Math.min(5000, Math.floor(pages ?? settings.pagesPerReadEvent)));
+  // v3.5.1 — effective step is per-user: user setting → admin floor → site
+  // default. The 1..5000 absolute guard stays as the last line of defense.
+  const effectiveStep = await getPagesPerReadEventFor(userId);
+  const pagesLogged = Math.max(1, Math.min(5000, Math.floor(pages ?? effectiveStep)));
   const totalPages = book.numberOfPages ? parseInt(book.numberOfPages, 10) : null;
   const knownPages = totalPages !== null && !isNaN(totalPages) && totalPages > 0;
   const current = book.currentPage ?? 0;

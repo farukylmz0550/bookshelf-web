@@ -20,6 +20,7 @@
 
 import { db } from "@/lib/db";
 import { getAppConfig } from "@/lib/app-config";
+import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import {
   applyKoboProgress,
   koboSyncHeaders,
@@ -454,6 +455,8 @@ export async function POST(request: Request, ctx: Ctx) {
       const percent = state?.CurrentBookmark?.ProgressPercent;
       const locationValue = state?.CurrentBookmark?.Location?.Value;
       const config = await getAppConfig();
+      // v3.5.1 — Kobo sync progress applies the same per-user step as the app.
+      const pagesPerReadEvent = await getPagesPerReadEventFor(auth.userId);
       const result = await applyKoboProgress(
         book,
         {
@@ -462,7 +465,7 @@ export async function POST(request: Request, ctx: Ctx) {
           spentReadingMinutes: state?.Statistics?.SpentReadingMinutes ?? undefined,
           remainingTimeMinutes: state?.Statistics?.RemainingTimeMinutes ?? undefined,
         },
-        { pagesPerReadEvent: config.pagesPerReadEvent, xpPagesPer10: config.xpPagesPer10 },
+        { pagesPerReadEvent, xpPagesPer10: config.xpPagesPer10 },
       );
       const now = new Date();
       const response: Record<string, unknown> = {

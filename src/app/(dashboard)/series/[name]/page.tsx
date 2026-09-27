@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { getAppConfig } from "@/lib/app-config";
+import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { BooksGrid } from "@/app/(dashboard)/books/books-grid";
 
 export default async function SeriesDetailPage({ params }: { params: Promise<{ name: string }> }) {
@@ -14,7 +14,7 @@ export default async function SeriesDetailPage({ params }: { params: Promise<{ n
   const name = decodeURIComponent(raw);
   const userId = await requireUserId();
   const dict = await getDictionary();
-  const settings = await getAppConfig();
+  const pagesPerReadEvent = await getPagesPerReadEventFor(userId);
 
   const books = await db.book.findMany({
     where: { userId, series: { not: null } },
@@ -53,7 +53,7 @@ export default async function SeriesDetailPage({ params }: { params: Promise<{ n
             empty: dict.series.emptyShelf,
           } as never
         }
-        pagesPerReadEvent={settings.pagesPerReadEvent}
+        pagesPerReadEvent={pagesPerReadEvent}
         cardDict={{
           logPagesButton: dict.books.logPagesButton,
           logPagesToast: dict.books.logPagesToast,

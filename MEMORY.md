@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
 > Last updated: 2026-09-27
-> Version: 3.5.0
+> Version: 3.5.1
 > Branch: main
 
 ---
@@ -120,12 +120,13 @@ User ──────┬── Book ──────── LendingRecord
 |-------|------------|
 | **User** | email, passwordHash, name, isAdmin, approved, xp, currentStreak, longestStreak, lastActiveDate, streakShieldCount |
 | **Book** | isbn, title, author, coverUrl, status, rating, tags, copies, subtitle, publishers, publishDate, publishPlaces, numberOfPages, languages, isbn10/13, subjects, 17 legacy fields |
-| **Person** | name (unique per user), auto-created on lending |
+| **Person** | name (unique per user); created on /people only (v3.5.1: lending takes a personId, no auto-create) |
 | **LendingRecord** | book, borrower, lentAt, returnedAt, denormalized bookTitle, personId |
 | **Goal** | yearly, monthly targets per user |
 | **Achievement** | key, titleKey/descriptionKey/iconKey (i18n), recurrence (NONE = permanent / MONTHLY, v2.11.0) — 21 achievements |
 | **UserAchievement** | user + achievement link with unlock date + periodKey ("" = permanent, "YYYY-MM" = monthly period; unique per user+achievement+period) |
-| **DailyActivity / StreakShield / UserSettings / PushSubscription** | streak & notification tracking |
+| **DailyActivity / StreakShield / UserSettings / PushSubscription** | streak & notification tracking; UserSettings.pagesPerReadEvent (v3.5.1: per-user "Read N pages" step, NULL = site default) |
+| **SiteSettings (v3.5.1)** | singleton row (`id="site"`): minPagesPerReadEvent floor (0 = off) for the read step, edited from the Admin panel |
 | **Challenge (v3.3.0)** | title, target (1–1000), startAt/endAt (≤366d), completedAt; progress = BookReadEvent.readAt inside window; completion exactly-once + config `challenges.completionXp` (default 25) |
 | **Quote (v3.4.0)** | text (≤2000), page (optional), bookTitle snapshot; CASCADE on user/book delete; book-detail section |
 
@@ -137,7 +138,7 @@ User ──────┬── Book ──────── LendingRecord
 |-------|------------|
 | `auth.ts` | register (approved=false) |
 | `books.ts` | add (full metadata, one-click ISBN), update, set status, log pages, re-read, lookupIsbn, admin page-count backfill |
-| `lending.ts` | create, return |
+| `lending.ts` | create (personId — people are created on /people), return |
 | `people.ts` | create, remove |
 | `goals.ts` | set yearly/monthly |
 | `excel.ts` | export, template, import |

@@ -5,6 +5,8 @@ import { getUsers } from "@/app/actions/admin";
 import { getCoverStats, clearCoverCache } from "@/app/actions/covers";
 import { UserTable } from "./users/user-table";
 import { DangerZoneCard } from "./danger-zone-card";
+import { MinPagesCard } from "./min-pages-card";
+import { getMinPagesPerReadEvent } from "@/lib/reading-settings";
 
 export default async function AdminPage() {
   const currentUserId = await requireAdminPage();
@@ -15,6 +17,7 @@ export default async function AdminPage() {
   const pending = users.filter((u) => !u.approved);
   const approved = users.filter((u) => u.approved);
   const tableDict = { ...dict.common, ...dict.admin, ...dict.filter };
+  const minPages = await getMinPagesPerReadEvent();
 
   return (
     <div className="space-y-6">
@@ -76,6 +79,25 @@ export default async function AdminPage() {
           </form>
         </div>
       </section>
+      {/* v3.5.1 — site-wide minimum for the "I read N pages" step */}
+      <section className="space-y-3">
+        <h2 className="font-[var(--font-serif)] text-lg font-semibold tracking-tight text-foreground">
+          {dict.admin.minPagesTitle}
+        </h2>
+        <MinPagesCard
+          initialValue={minPages}
+          dict={{
+            title: dict.admin.minPagesTitle,
+            desc: dict.admin.minPagesDesc,
+            label: dict.admin.minPagesLabel,
+            disabledLabel: dict.admin.minPagesDisabled,
+            save: dict.facts.save,
+            saved: dict.admin.minPagesSaved,
+            invalid: dict.admin.minPagesInvalid,
+          }}
+        />
+      </section>
+
       {/* v3.0.0 — Reading settings moved to config.yaml; page-count backfill
           moved to Settings → Book data (user-scoped, not an admin power). */}
       {/* Danger zone (v2.10.0) */}

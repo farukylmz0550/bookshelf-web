@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { dismissCookieConsent, clickSetting } from "./helpers/auth";
+import { createPerson } from "./helpers/people";
 
 test.describe("manual GUI", () => {
   test("full flow: setup → books → lending → people → stats → achievements → leaderboard → admin → i18n/theme", async ({
@@ -54,11 +55,12 @@ test.describe("manual GUI", () => {
     await expect(page.getByText("A Brief History")).toBeVisible();
     await page.screenshot({ path: "e2e/screenshots/05-book-detail.png", fullPage: true });
 
+    await createPerson(page, "Test Friend");
     await page.goto("/lending");
     await pickSelectOption(page, page.getByRole("combobox", { name: "Book" }), { index: 0 });
-    await page.getByPlaceholder("Name").fill("Test Friend");
+    await pickSelectOption(page, page.getByRole("combobox", { name: "Borrower" }), { label: "Test Friend" });
     await page.getByRole("button", { name: /^lend$/i }).click();
-    await expect(page.getByText("Test Friend")).toBeVisible();
+    await expect(page.getByText("Test Friend").first()).toBeVisible();
     await page.screenshot({ path: "e2e/screenshots/06-lending.png", fullPage: true });
 
     await page.goto("/people");
