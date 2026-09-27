@@ -183,6 +183,10 @@ then `docker compose pull && docker compose up -d` switches to exactly that
 version. Database migrations apply automatically on container start; user data
 lives in the `app-data` volume and is untouched by updates.
 
+The repo's `docker-compose.yml` carries both `image:` and `build:`, so the same
+file supports pull-based updates **and** building from source
+(`docker compose up -d --build`).
+
 ### Build from source
 
 ```bash

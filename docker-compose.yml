@@ -1,5 +1,8 @@
 services:
   app:
+    # Pulled with `docker compose pull`; `build: .` below still lets
+    # `docker compose up -d --build` build from source instead.
+    image: ghcr.io/farukylmz0550/bookshelf:latest
     build: .
     restart: unless-stopped
     environment:
@@ -23,6 +26,7 @@ services:
   # Daily streak push reminders — requires CRON_SECRET + VAPID keys.
   # Uses the same image; node fetch loop (no extra tooling needed).
   cron:
+    image: ghcr.io/farukylmz0550/bookshelf:latest
     build: .
     restart: unless-stopped
     depends_on:
