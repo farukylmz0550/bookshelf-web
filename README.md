@@ -170,6 +170,19 @@ docker compose up -d
 # → http://localhost:1024
 ```
 
+### Update
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+`latest` follows the newest release automatically; to pin a version, set the
+tag explicitly in `docker-compose.yml` (e.g. `image: ghcr.io/farukylmz0550/bookshelf:3.5.1`) —
+then `docker compose pull && docker compose up -d` switches to exactly that
+version. Database migrations apply automatically on container start; user data
+lives in the `app-data` volume and is untouched by updates.
+
 ### Build from source
 
 ```bash
