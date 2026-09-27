@@ -141,6 +141,51 @@ src/
 
 ## Git Workflow
 
+### Commit Signing (required)
+
+**Every commit and every tag must be signed.** Unsigned history is not
+accepted — GitHub marks signed commits with a "Verified" badge, and PRs
+containing unsigned commits get a change request before merge.
+
+**Setup — SSH signing (recommended; no GPG tooling needed):**
+
+```bash
+ssh-keygen -t ed25519 -C "you@example.com" -f ~/.ssh/id_ed25519
+git config --global gpg.format ssh
+git config --global user.signingkey ~/.ssh/id_ed25519.pub
+git config --global commit.gpgsign true   # sign every commit automatically
+git config --global tag.gpgSign true      # sign tags
+```
+
+Upload the key as a **signing key** (not an auth key) on GitHub:
+*Settings → SSH and GPG keys → New SSH key → Key type: Signing Key*, or:
+
+```bash
+gh api user/ssh-signing-keys -f title="bookshelf signing" -f key="$(cat ~/.ssh/id_ed25519.pub)"
+```
+
+**Setup — GPG (alternative):**
+
+```bash
+git config --global user.signingkey <GPG-KEY-ID>
+git config --global commit.gpgsign true
+git config --global tag.gpgSign true
+```
+
+**Verify before pushing:**
+
+```bash
+git log --show-signature -1
+```
+
+**Rules:**
+
+- Local `commit.gpgsign` must be on — unsigned local commits block the push
+- Release tags are always signed (maintainer; see `MEMORY.md §10.1`)
+- `git push --signed` (push certificates, GPG-based setups only) is expected
+  for direct pushes to `main`
+- A PR whose commits show "Unverified" on GitHub is not merged
+
 ### Commit Messages
 
 Follow **Conventional Commits**:
@@ -148,7 +193,6 @@ Follow **Conventional Commits**:
 ```
 type(scope): short description
 ```
-
 | Type | When to use |
 |------|------------|
 | `feat` | New feature |

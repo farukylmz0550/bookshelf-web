@@ -278,6 +278,7 @@ npm run format:check  # prettier
   5. `gh release create {version} --title "{version}" --notes-file <notes.md>` — notes follow the 2.5.1 template: what changed + **QA** line (tsc/lint/format/unit/e2e/build counts) + Docker line
 - Monitor with `gh run list` and `gh release view {version}`.
 - **Standing approval (2026-09-18):** for the APPROVED 4-phase roadmap only (MEMORY §14 — 3.1.0/3.2.0/3.3.0/3.4.0 and any later phases of that roadmap), the user granted a standing release approval: after each phase's full QA set passes, commit/push/tag/dispatch/release WITHOUT asking again. Anything outside that roadmap still requires explicit approval.
+- **Commit signing (v3.5.1, mandatory):** every commit and release tag is signed — `commit.gpgsign` + `tag.gpgSign` stay on, `git push --signed` for direct `main` pushes, GitHub must show "Verified". Setup: `CONTRIBUTING.md → Commit Signing`. Unsigned history blocks the release.
 
 ---
 

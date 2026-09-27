@@ -402,7 +402,7 @@ npm run format:check
 
 ## 🤝 Contributing
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) — TypeScript strict, Prettier 120 width, Conventional Commits, `npm run lint && npm run format:check && npm test` before push.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) — TypeScript strict, Prettier 120 width, Conventional Commits, **signed commits required** (`commit.gpgsign` + a GitHub Signing Key; see [Commit Signing](CONTRIBUTING.md#commit-signing-required)), `npm run lint && npm run format:check && npm test` before push.
 
 ---
 

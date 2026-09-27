@@ -12,6 +12,10 @@ These rules complement:
 
 The purpose of this document is to preserve the integrity of the existing project while allowing Bookshelf to evolve in a controlled and maintainable way.
 
+**Git integrity rule:** every commit and tag must be signed (SSH or GPG; see
+`CONTRIBUTING.md → Commit Signing`). Unsigned commits and unsigned release
+tags are not accepted into `main`.
+
 ---
 
 ## 1. Respect the Existing Technology Stack
