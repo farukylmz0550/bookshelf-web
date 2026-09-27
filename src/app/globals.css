@@ -62,7 +62,7 @@
   --secondary-foreground: #6f6666;
   --muted: #f2edec;
   --muted-foreground: #8a8584;
-  --accent: #b56f76;
+  --accent: #bb4f35;
   --accent-foreground: #ffffff;
   --destructive: #b9484e;
   --border: #ded8d2;
@@ -73,7 +73,7 @@
   --chart-3: #cb9d06;
   --chart-4: #8093a4;
   --chart-5: #b56f76;
-  --radius: 0.875rem;
+  --radius: 0.75rem; /* v3.7.0 — §9: controlled radius family 4/8/12; base 12px */
   --sidebar: #f2edec;
   --sidebar-foreground: #2b2727;
   --sidebar-primary: #bb4f35;

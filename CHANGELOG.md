@@ -4,6 +4,37 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.7.0 — 2026-09-27
+
+### Added
+
+- **`UI_Improvement_Plan.md`** — phased UI roadmap (19 sections): collection
+  first, management secondary; card simplification, filter-bar simplification,
+  sidebar grouping, quieter active states, accent/radius unification. Phase 1
+  ships in this release; Phases 2–5 follow as minor releases.
+- **Settings → Account card** — user name + email and the logout action now
+  live in Settings (UI plan §6); the sidebar footer and the mobile header ⏻
+  button are gone. Logout asks a localized confirm.
+
+### Changed
+
+- **Full Turkish (and other locales) coverage** — notification settings
+  ("Enable notifications", "Streak reminders", "Weekly digest", "Goal
+  progress reminders", "Send test push" + toasts), "On Loan" badges
+  (grid + card), view-switch aria labels, "Create account", "About" /
+  "Licenses" and the logout confirm are localized in all 6 dictionaries.
+- **"N pages read" CTA centered** on `/books` between the add panel and the
+  list toolbar (desktop placement).
+- **Select dropdowns no longer show raw IDs after refresh** — closed
+  triggers now always resolve the selected item's label (book title, person
+  name, shelf name, year); fixes cuid text appearing in the /lending form
+  after navigation/refresh.
+- **Phase 1 — visual consistency:** light-theme `--accent` unified to the
+  design-language accent `#BB4F35` (was a competing `#B56F76`); base radius
+  lowered to 12px (§9 family 4/8/12/pill); sidebar active state is now a
+  soft accent background + accent text/icon instead of a filled pill;
+  mobile bottom navigation shows icon + localized label.
+
 ## 3.6.0 — 2026-09-27
 
 ### Added

@@ -68,6 +68,10 @@ export async function register(page: Page, user: { name: string; email: string; 
 }
 
 export async function logout(page: Page) {
+  // v3.7.0 — logout lives in Settings → Account card (sidebar/mobile header
+  // buttons are gone). The logout confirm dialog is auto-accepted.
+  await page.goto("/settings");
+  page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: /log out/i }).click();
   await expect(page).toHaveURL(/\/login/);
 }

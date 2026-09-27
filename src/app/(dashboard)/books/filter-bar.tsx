@@ -128,7 +128,7 @@ export function FilterBar({
           {groups && groups.length > 0 && (
             <Select value={filters.groupId} onValueChange={(v) => update({ groupId: v ?? "any" })}>
               <SelectTrigger className={TRIGGER_CLS} aria-label={dict.group}>
-                <SelectValue />
+                <SelectValue>{groups.find((g) => g.id === filters.groupId)?.name ?? dict.allGroups}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">{dict.allGroups}</SelectItem>

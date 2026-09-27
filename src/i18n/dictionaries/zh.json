@@ -51,7 +51,8 @@
     "totpRequired": "已启用两步验证 — 请输入您的 6 位验证码。",
     "invalidTotp": "验证码无效 — 请重试。",
     "forgotPassword": "忘记密码？请联系管理员重置。",
-    "accountReady": "账号已批准——你可以立即登录。"
+    "accountReady": "账号已批准——你可以立即登录。",
+    "registerSubtitle": "创建账号"
   },
   "filter": {
     "search": "搜索...",
@@ -509,7 +510,18 @@
     "readingStepDesc": "每次点击“读 N 页”计入的页数。",
     "readingStepLabel": "页数",
     "readingStepFloorHint": "管理员设定的最小页数为 {min}。",
-    "readingStepInvalid": "请输入 {min} 到 {max} 之间的数字"
+    "readingStepInvalid": "请输入 {min} 到 {max} 之间的数字",
+    "accountTitle": "账户",
+    "logoutConfirm": "确定要退出登录吗？",
+    "notifEnable": "启用通知",
+    "notifStreak": "连续阅读提醒",
+    "notifWeekly": "每周摘要",
+    "notifGoal": "目标进度提醒",
+    "notifTestPush": "发送测试推送",
+    "notifTestOk": "测试推送已发送",
+    "notifTestFail": "测试推送失败",
+    "aboutTitle": "关于",
+    "licensesLink": "许可证"
   },
   "notify": {
     "goalMonthStart": "新的一月开始。你本月的阅读目标是 {target} 本书。",

@@ -51,7 +51,8 @@
     "totpRequired": "L'authentification à deux facteurs est activée — saisissez votre code à 6 chiffres.",
     "invalidTotp": "Code invalide — réessayez.",
     "forgotPassword": "Mot de passe oublié ? Contactez votre administrateur.",
-    "accountReady": "Votre compte est approuvé — vous pouvez vous connecter immédiatement."
+    "accountReady": "Votre compte est approuvé — vous pouvez vous connecter immédiatement.",
+    "registerSubtitle": "Créer un compte"
   },
   "filter": {
     "search": "Rechercher...",
@@ -509,7 +510,18 @@
     "readingStepDesc": "Nombre de pages comptabilisé par tap sur « Lis N pages ».",
     "readingStepLabel": "Pages",
     "readingStepFloorHint": "Votre administrateur a fixé un minimum de {min} pages.",
-    "readingStepInvalid": "Saisissez un nombre entre {min} et {max}"
+    "readingStepInvalid": "Saisissez un nombre entre {min} et {max}",
+    "accountTitle": "Compte",
+    "logoutConfirm": "Voulez-vous vraiment vous déconnecter ?",
+    "notifEnable": "Activer les notifications",
+    "notifStreak": "Rappels de série",
+    "notifWeekly": "Résumé hebdomadaire",
+    "notifGoal": "Rappels de progression d'objectif",
+    "notifTestPush": "Envoyer un push de test",
+    "notifTestOk": "Push de test envoyé",
+    "notifTestFail": "Échec du push de test",
+    "aboutTitle": "À propos",
+    "licensesLink": "Licences"
   },
   "notify": {
     "goalMonthStart": "Un nouveau mois commence. Ton objectif de lecture ce mois-ci : {target} livres.",

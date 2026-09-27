@@ -51,7 +51,8 @@
     "totpRequired": "İki adımlı doğrulama etkin — 6 haneli kodunuzu girin.",
     "invalidTotp": "Geçersiz kod — tekrar deneyin.",
     "forgotPassword": "Şifrenizi mi unuttunuz? Yöneticinizle iletişime geçin.",
-    "accountReady": "Hesabın onaylandı — hemen giriş yapabilirsin."
+    "accountReady": "Hesabın onaylandı — hemen giriş yapabilirsin.",
+    "registerSubtitle": "Hesap oluştur"
   },
   "filter": {
     "search": "Ara...",
@@ -509,7 +510,18 @@
     "readingStepDesc": "“N sayfa oku” butonuna basıldığında sayılan sayfa sayısı.",
     "readingStepLabel": "Sayfa sayısı",
     "readingStepFloorHint": "Yönetici minimum sayfa sayısını {min} olarak belirledi.",
-    "readingStepInvalid": "{min}–{max} arasında bir sayı girin"
+    "readingStepInvalid": "{min}–{max} arasında bir sayı girin",
+    "accountTitle": "Hesap",
+    "logoutConfirm": "Çıkmak istediğine emin misin?",
+    "notifEnable": "Bildirimleri etkinleştir",
+    "notifStreak": "Seri hatırlatıcıları",
+    "notifWeekly": "Haftalık özet",
+    "notifGoal": "Hedef ilerleme hatırlatıcıları",
+    "notifTestPush": "Test bildirimi gönder",
+    "notifTestOk": "Test bildirimi gönderildi",
+    "notifTestFail": "Test bildirimi başarısız",
+    "aboutTitle": "Hakkında",
+    "licensesLink": "Lisanslar"
   },
   "notify": {
     "goalMonthStart": "Yeni ay başladı. Bu ayki okuma hedefin {target} kitap.",

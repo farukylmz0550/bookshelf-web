@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect } from "react";
 import {
   BookOpen,
   Library,
@@ -20,10 +20,8 @@ import {
   Shield,
   PanelLeftClose,
   PanelLeftOpen,
-  LogOut,
 } from "lucide-react";
 import { setSidebarCookie } from "@/lib/sidebar-cookie";
-import { logoutAction } from "@/app/actions/logout";
 import { NavLink } from "@/components/nav-link";
 import type { NavItem } from "@/lib/nav";
 
@@ -57,7 +55,6 @@ const ADMIN_NAV: NavItem[] = [{ href: "/admin", label: "admin", icon: Shield, ad
 export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
-  const [pending, startTransition] = useTransition();
 
   useEffect(() => {
     try {
@@ -143,23 +140,13 @@ export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarPr
         </div>
       </nav>
 
-      {/* Footer — only logout, theme/locale via Settings */}
-      <div className="border-t border-[var(--border)] p-2 space-y-1">
+      {/* Footer — user name only; logout lives in Settings → Account (v3.7.0) */}
+      <div className="border-t border-[var(--border)] p-2">
         {!collapsed && userName && (
           <p className="px-2 py-1 font-[var(--font-sans)] text-xs text-muted-foreground truncate" title={userName}>
             {userName}
           </p>
         )}
-        <button
-          type="button"
-          disabled={pending}
-          onClick={() => startTransition(() => logoutAction())}
-          title={dict.logout ?? "Logout"}
-          className="flex h-8 w-full items-center justify-center gap-2 rounded-[8px] text-muted-foreground hover:bg-accent hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-50"
-        >
-          <LogOut size={14} />
-          {!collapsed && <span className="font-[var(--font-sans)] text-xs">{dict.logout ?? "Logout"}</span>}
-        </button>
       </div>
     </aside>
   );

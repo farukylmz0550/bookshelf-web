@@ -51,7 +51,8 @@
     "totpRequired": "Two-factor authentication is enabled — enter your 6-digit code.",
     "invalidTotp": "Invalid code — try again.",
     "forgotPassword": "Forgot your password? Contact your administrator.",
-    "accountReady": "Your account is approved — you can log in right away."
+    "accountReady": "Your account is approved — you can log in right away.",
+    "registerSubtitle": "Create account"
   },
   "filter": {
     "search": "Search...",
@@ -509,7 +510,18 @@
     "readingStepDesc": "Number of pages counted per “Read N pages” tap.",
     "readingStepLabel": "Pages",
     "readingStepFloorHint": "Your administrator set a minimum of {min} pages.",
-    "readingStepInvalid": "Enter a number between {min} and {max}"
+    "readingStepInvalid": "Enter a number between {min} and {max}",
+    "accountTitle": "Account",
+    "logoutConfirm": "Are you sure you want to log out?",
+    "notifEnable": "Enable notifications",
+    "notifStreak": "Streak reminders",
+    "notifWeekly": "Weekly digest",
+    "notifGoal": "Goal progress reminders",
+    "notifTestPush": "Send test push",
+    "notifTestOk": "Test push sent",
+    "notifTestFail": "Test push failed",
+    "aboutTitle": "About",
+    "licensesLink": "Licenses"
   },
   "notify": {
     "goalMonthStart": "New month started. Your reading goal this month is {target} books.",

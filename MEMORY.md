@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
 > Last updated: 2026-09-27
-> Version: 3.6.0
+> Version: 3.7.0
 > Branch: main
 
 ---
@@ -204,6 +204,7 @@ npm run format:check  # prettier
 
 | Date | Commit | Description |
 |-------|--------|----------|
+| 2026-09-27 | `3.7.0` | **UI faz 1 + seçim etiketi fix + çıkış→Settings**: `UI_Improvement_Plan.md` repoya (19 bölüm, faz 1–5; README doküman tablosu + MEMORY §14 bağlantısı); çıkış sidebar footer + mobil header'dan Settings → Account kartına taşındı (yerelleştirilmiş confirm, `account-card.tsx`); i18n tam kapsama: notification etiketleri+toast'lar, "On Loan" rozetleri (grid+card `lentOut` CardDict'e eklendi), "Card view"/"List view" aria, "Create account", "About"/"Licenses", logout confirm (6 dil); /books CTA ortalı (`justify-center`); SelectValue cuid fix (5 dosya — kapalı tetik artık çözümlenmiş label gösterir); Faz 1: light `--accent` → `#BB4F35` (yarışan `#B56F76` gitti), `--radius` 12px (§9 4/8/12), sidebar aktif durum soft accent (`--accent-soft` + accent text), mobil bottom-nav ikon+yazı; README e2e ekran görüntüleri yenilendi |
 | 2026-09-27 | `540f08a` | `3.6.0` — **self-approve + admin self-reset + rear-camera default**: config.yaml `auth.selfApprove` (default false; true = registrations approved automatically, register screen "log in right away", 6 langs); admin can reset their OWN password (random + `mustChangePassword`; other admins still off-limits; TOTP fresh-code dialog when enabled; rate-limit 5/5min; `adminResetPassword` SELF guard removed); barcode scanner opens the rear camera (`videoConstraints.facingMode: "environment"`); tests for self-reset/ADMIN_TARGET/validateAppConfig auth cases; unit 279/279. Deployment: VAPID keys added to `.env` (web push enabled), test account `test@book.com` approved, typo account `farukylmz0550@gmil.com` deleted |
 | 2026-09-27 | `9818ded` | `3.5.0` — **Material You launcher icon (PWA, logo-only)**: `icon-512-monochrome.png` from Symbolic Master (512×512, artwork ~74%, transparent — alpha used as tint mask); manifest entry `purpose: "monochrome"` (Android launcher 13+ tints it with the wallpaper-derived palette; automatic for all apps on Android 16 QPR2+; Chrome's WebAPK monochrome gap = open crbug 40277264, noted in TROUBLESHOOTING §13); `brand/icons/` copy + brand/README regen commands; `sw.js` precache list + monochrome icon (cache `bookshelf-v5`); README badge/blurb/feature-row/structure, package.json 3.5.0. **Fixed:** Docker build (broken for everyone since 3.4.0 — `ghcr.io/pgaskin/kepubify:v4.0.4` unpublished upstream) → production stage ADDs the official `kepubify-linux-64bit` v4.0.4 from the GitHub release in a `scratch` stage, SHA-256 pinned `37d7628d…31fc5` via `ADD --checksum`; local docker build ✅ + image smoke-test (kepubify v4.0.4, icon present) + GHCR `Docker Publish` dispatch success → `bookshelf:3.5.0`/`latest` published. No in-app palette, `theme_color` or other icons touched |
 | 2026-09-19 | `5e650ff` | `3.4.0` — **Faz 4 (UX derinlik)**: in-app reading timer (`reading-timer.tsx` client: localStorage-persisted session, 1s tick, 5-min auto-flush + pause/stop/visibility flush; `actions/timer.ts` logReadingSession READING-only, ≤90 min/flush + 1440 min/day combined cap via lib/timer.ts; minutes → recordActivity → DailyActivity.minutesRead, no XP); book quotes (`Quote` model migration 20260919093000_book_quotes, lib/quotes.ts validation ≤2000 chars, actions/quotes.ts add/update/delete ownership-scoped, book-quotes.tsx section on book detail, i18n quotes block 6 dicts); kepubify (config.yaml kobo.kepubify default false + app-config 4-point; Dockerfile bundles ghcr.io/pgaskin/kepubify:v4.0.4 static binary; /download/{id}/kepub lazy-converts the fileSourceUrl EPUB via spawn kepubify -o, atomic cache /data/cache/kepub/<id>.kepub.epub, metaHash-change invalidation, KEPUB-first DownloadUrls, KEPUBIFY_PATH override); timer.test.ts 10 + quotes.test.ts 3 + kepub.test.ts 3; reading-timer e2e 2 + quotes e2e 3 + kepub disabled-path e2e 1; 269 unit + 57 e2e green |
@@ -279,6 +280,7 @@ npm run format:check  # prettier
   5. `gh release create {version} --title "{version}" --notes-file <notes.md>` — notes follow the 2.5.1 template: what changed + **QA** line (tsc/lint/format/unit/e2e/build counts) + Docker line
 - Monitor with `gh run list` and `gh release view {version}`.
 - **Standing approval (2026-09-18):** for the APPROVED 4-phase roadmap only (MEMORY §14 — 3.1.0/3.2.0/3.3.0/3.4.0 and any later phases of that roadmap), the user granted a standing release approval: after each phase's full QA set passes, commit/push/tag/dispatch/release WITHOUT asking again. Anything outside that roadmap still requires explicit approval.
+- **Standing approval (2026-09-27, supersedes the scope limit):** the user extended the standing approval to ALL releases — "release/build/package için benden izin isteme". Every release (feature, minor, patch) is built, committed, pushed, tagged, docker-published and released automatically once the QA set passes. Reference: universal todo `~/.opencode/plan/bookshelf-todo.md` §0 R1.
 - **Commit signing (v3.5.1, mandatory):** every commit and release tag is signed — `commit.gpgsign` + `tag.gpgSign` stay on, `git push --signed` for direct `main` pushes, GitHub must show "Verified". Setup: `CONTRIBUTING.md → Commit Signing`. Unsigned history blocks the release.
 
 ---
@@ -291,6 +293,11 @@ Both projects continue under GPLv3.
 ---
 
 ## 14. Feature Roadmap — 2026-09-18 (approved by user)
+
+> **v3.6.0+ güncelleme:** UI/UX yol haritası `UI_Improvement_Plan.md`'ye taşındı
+> (19 bölüm, 5 faz — görsel tutarlılık / Books hiyerarşisi / kartlar / navigasyon /
+> sayfa-bazlı rafine). Her faz kendi minor sürümü olarak çıkar; erişilebilirlik
+> (§14) ve özellik koruma (§16) kuralları fazlar için bağlayıcıdır.
 
 All items approved; **each phase ships as its own release**. Priorities set by
 value/effort + dependency order; Kobo hardware verification stays with the

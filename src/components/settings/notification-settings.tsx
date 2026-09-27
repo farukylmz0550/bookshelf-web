@@ -14,6 +14,13 @@ export function NotificationSettings({
   settings: UserSettingsData;
   dict?: {
     goalReminders?: string;
+    notifEnable?: string;
+    notifStreak?: string;
+    notifWeekly?: string;
+    notifGoal?: string;
+    notifTestPush?: string;
+    notifTestOk?: string;
+    notifTestFail?: string;
   };
 }) {
   const [isPending, startTransition] = useTransition();
@@ -29,9 +36,9 @@ export function NotificationSettings({
     startTestPush(async () => {
       const result = await sendTestPush();
       if (result.ok) {
-        toast.success("Test push sent");
+        toast.success(dict?.notifTestOk ?? "Test push sent");
       } else {
-        toast.error(result.error ?? "Test push failed");
+        toast.error(result.error ?? dict?.notifTestFail ?? "Test push failed");
       }
     });
   }
@@ -43,25 +50,25 @@ export function NotificationSettings({
       </h2>
       <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
         <ToggleRow
-          label="Enable notifications"
+          label={dict?.notifEnable ?? "Enable notifications"}
           checked={settings.notificationsEnabled}
           onChange={() => handleToggle("notificationsEnabled")}
           disabled={isPending}
         />
         <ToggleRow
-          label="Streak reminders"
+          label={dict?.notifStreak ?? "Streak reminders"}
           checked={settings.streakReminders}
           onChange={() => handleToggle("streakReminders")}
           disabled={isPending}
         />
         <ToggleRow
-          label="Weekly digest"
+          label={dict?.notifWeekly ?? "Weekly digest"}
           checked={settings.weeklyDigest}
           onChange={() => handleToggle("weeklyDigest")}
           disabled={isPending}
         />
         <ToggleRow
-          label={dict?.goalReminders ?? "Goal progress reminders"}
+          label={dict?.notifGoal ?? dict?.goalReminders ?? "Goal progress reminders"}
           checked={settings.goalReminders}
           onChange={() => handleToggle("goalReminders")}
           disabled={isPending}
@@ -74,7 +81,9 @@ export function NotificationSettings({
         >
           <div className="flex items-center gap-3">
             <BellRing size={16} className="text-muted-foreground" />
-            <span className="font-[var(--font-sans)] text-sm text-foreground">Send test push</span>
+            <span className="font-[var(--font-sans)] text-sm text-foreground">
+              {dict?.notifTestPush ?? "Send test push"}
+            </span>
           </div>
           {testPushPending ? <span className="text-xs text-muted-foreground">…</span> : null}
         </button>

@@ -76,6 +76,10 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
         }
         pagesPerReadEvent={pagesPerReadEvent}
         cardDict={{
+          lentOut:
+            ((dict.lending as Record<string, string> | undefined)?.onLoan as string) ??
+            ((dict.filter as Record<string, string> | undefined)?.onLoan as string) ??
+            "On Loan",
           logPagesButton: dict.books.logPagesButton,
           logPagesToast: dict.books.logPagesToast,
           logPagesError: dict.books.logPagesError,

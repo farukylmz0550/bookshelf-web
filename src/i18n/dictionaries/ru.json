@@ -51,7 +51,8 @@
     "totpRequired": "Включена двухфакторная аутентификация — введите 6-значный код.",
     "invalidTotp": "Неверный код — попробуйте снова.",
     "forgotPassword": "Забыли пароль? Обратитесь к администратору.",
-    "accountReady": "Аккаунт одобрен — вы можете войти прямо сейчас."
+    "accountReady": "Аккаунт одобрен — вы можете войти прямо сейчас.",
+    "registerSubtitle": "Создать аккаунт"
   },
   "filter": {
     "search": "Поиск...",
@@ -509,7 +510,18 @@
     "readingStepDesc": "Количество страниц за одно нажатие «Прочитай N страниц».",
     "readingStepLabel": "Страницы",
     "readingStepFloorHint": "Администратор установил минимум {min} страниц.",
-    "readingStepInvalid": "Введите число от {min} до {max}"
+    "readingStepInvalid": "Введите число от {min} до {max}",
+    "accountTitle": "Аккаунт",
+    "logoutConfirm": "Вы уверены, что хотите выйти?",
+    "notifEnable": "Включить уведомления",
+    "notifStreak": "Напоминания о серии",
+    "notifWeekly": "Еженедельная сводка",
+    "notifGoal": "Напоминания о прогрессе цели",
+    "notifTestPush": "Отправить тестовый push",
+    "notifTestOk": "Тестовый push отправлен",
+    "notifTestFail": "Не удалось отправить тестовый push",
+    "aboutTitle": "О программе",
+    "licensesLink": "Лицензии"
   },
   "notify": {
     "goalMonthStart": "Начался новый месяц. Твоя цель по чтению на этот месяц — {target} книг.",

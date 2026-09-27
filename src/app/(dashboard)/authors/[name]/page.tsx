@@ -55,6 +55,10 @@ export default async function AuthorDetailPage({ params }: { params: Promise<{ n
         }
         pagesPerReadEvent={pagesPerReadEvent}
         cardDict={{
+          lentOut:
+            ((dict.lending as Record<string, string> | undefined)?.onLoan as string) ??
+            ((dict.filter as Record<string, string> | undefined)?.onLoan as string) ??
+            "On Loan",
           logPagesButton: dict.books.logPagesButton,
           logPagesToast: dict.books.logPagesToast,
           logPagesError: dict.books.logPagesError,

@@ -51,7 +51,8 @@
     "totpRequired": "La verificación en dos pasos está activada — introduce tu código de 6 dígitos.",
     "invalidTotp": "Código no válido — inténtalo de nuevo.",
     "forgotPassword": "¿Olvidaste tu contraseña? Contacta con tu administrador.",
-    "accountReady": "Tu cuenta está aprobada — puedes iniciar sesión ahora mismo."
+    "accountReady": "Tu cuenta está aprobada — puedes iniciar sesión ahora mismo.",
+    "registerSubtitle": "Crear cuenta"
   },
   "filter": {
     "search": "Buscar...",
@@ -509,7 +510,18 @@
     "readingStepDesc": "Número de páginas contadas por toque en “Lee N páginas”.",
     "readingStepLabel": "Páginas",
     "readingStepFloorHint": "Tu administrador fijó un mínimo de {min} páginas.",
-    "readingStepInvalid": "Introduce un número entre {min} y {max}"
+    "readingStepInvalid": "Introduce un número entre {min} y {max}",
+    "accountTitle": "Cuenta",
+    "logoutConfirm": "¿Seguro que quieres cerrar sesión?",
+    "notifEnable": "Activar notificaciones",
+    "notifStreak": "Recordatorios de racha",
+    "notifWeekly": "Resumen semanal",
+    "notifGoal": "Recordatorios de progreso de objetivo",
+    "notifTestPush": "Enviar push de prueba",
+    "notifTestOk": "Push de prueba enviado",
+    "notifTestFail": "Push de prueba fallido",
+    "aboutTitle": "Acerca de",
+    "licensesLink": "Licencias"
   },
   "notify": {
     "goalMonthStart": "Comenzó un nuevo mes. Tu objetivo de lectura este mes es de {target} libros.",

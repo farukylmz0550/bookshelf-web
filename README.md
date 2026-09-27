@@ -71,6 +71,7 @@
 | [`SECURITY.md`](SECURITY.md) | How to report vulnerabilities, supported versions, scope |
 | [`NOTICE.md`](NOTICE.md) | License table per directory (code, brand, audio) |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Dev workflow, code style, testing before push |
+| [`UI_Improvement_Plan.md`](UI_Improvement_Plan.md) | Phased UI roadmap: collection-first hierarchy, card simplification, navigation, visual consistency |
 | [`brand/README.md`](brand/README.md) | Brand set: masters, rendered icons, regeneration, usage rules |
 | [`public/audio/annual/README.md`](public/audio/annual/README.md) | CC0 annual-summary music track list & metadata |
 | [`LICENSE-GPLV3`](LICENSE-GPLV3) / [`LICENSE-CC-BY-NC-ND`](LICENSE-CC-BY-NC-ND) / [`LICENSE-CC0`](LICENSE-CC0) | Full license texts |
@@ -104,7 +105,7 @@
 - **Typography:** Noto Serif (titles) · Noto Sans (ui) · Noto Mono (technical)
 - **Cards:** Identical geometry, `rounded-[12px]`, subtle `border-strong` + `shadow-sm` on hover — no drag-drop
 - **Brand:** `brand/` — Color & Symbolic masters + all generated icons (CC BY-NC-ND)
-- **Sources:** `UI_Design_Language.md` · `Architecture_Principles.md` · `Project_Rules.md`
+- **Sources:** `UI_Design_Language.md` · `UI_Improvement_Plan.md` (phased roadmap) · `Architecture_Principles.md` · `Project_Rules.md`
 
 ---
 
@@ -288,7 +289,7 @@ bookshelf/
 ├── e2e/  *.spec.ts  screenshots/
 ├── scripts/                       # kobo-sim.ts (device-flow simulator, v3.0.0) · render-annual-audio.mjs
 ├── public/  sw.js  manifest.json  icon.svg  icon-512-monochrome.png (v3.5.0)
-├── UI_Design_Language.md  Architecture_Principles.md  Project_Rules.md
+├── UI_Design_Language.md  Architecture_Principles.md  Project_Rules.md  UI_Improvement_Plan.md
 ├── Dockerfile  docker-compose.yml  vitest.config.ts
 ```
 

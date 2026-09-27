@@ -31,6 +31,8 @@ export function BookLending({
 }) {
   const [copies, setCopies] = useState(String(book.copies ?? 1));
   const [personId, setPersonId] = useState(persons[0]?.id ?? "");
+  // v3.7.0 — explicit SelectValue label (see lending-form).
+  const selectedPerson = persons.find((p) => p.id === personId);
   const [dueDate, setDueDate] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -121,7 +123,7 @@ export function BookLending({
               className="w-[180px] rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)]"
               aria-label={dict.borrowerPlaceholder}
             >
-              <SelectValue />
+              <SelectValue>{selectedPerson?.name ?? ""}</SelectValue>
             </SelectTrigger>
             <SelectContent aria-label={dict.borrowerPlaceholder}>
               {persons.map((p) => (

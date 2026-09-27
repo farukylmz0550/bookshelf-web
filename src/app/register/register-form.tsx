@@ -69,7 +69,7 @@ export default function RegisterForm({ dict }: { dict: Record<string, string> })
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.svg" alt="Book Shelf" className="mb-3 h-20 w-20" />
           <h1 className="text-xl font-semibold text-foreground">Book Shelf</h1>
-          <p className="mt-1 text-xs text-muted-foreground">Create account</p>
+          <p className="mt-1 text-xs text-muted-foreground">{dict.registerSubtitle}</p>
         </div>
         <form
           method="POST"

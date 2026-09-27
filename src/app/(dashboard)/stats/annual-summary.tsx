@@ -218,7 +218,7 @@ export function AnnualSummary({
                 className="rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)]"
                 aria-labelledby="annual-year-label"
               >
-                <SelectValue />
+                <SelectValue>{String(selectedYear)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {availableYears.map((year) => (

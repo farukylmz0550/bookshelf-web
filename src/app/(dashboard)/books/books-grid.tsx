@@ -30,6 +30,7 @@ type Book = {
 };
 
 type CardDict = {
+  lentOut: string;
   logPagesButton: string;
   logPagesToast: string;
   logPagesError: string;
@@ -116,7 +117,7 @@ export function BooksGrid({
           <button
             type="button"
             onClick={() => handleViewChange("card")}
-            aria-label="Card view"
+            aria-label={dict.cardView ?? "Card view"}
             aria-pressed={view === "card"}
             className={`flex h-7 w-7 items-center justify-center rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
               view === "card"
@@ -129,7 +130,7 @@ export function BooksGrid({
           <button
             type="button"
             onClick={() => handleViewChange("list")}
-            aria-label="List view"
+            aria-label={dict.listView ?? "List view"}
             aria-pressed={view === "list"}
             className={`flex h-7 w-7 items-center justify-center rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
               view === "list"
@@ -165,6 +166,7 @@ export function BooksGrid({
                 reading: statusLabels.reading,
                 finished: statusLabels.finished,
                 ...cardDict,
+                lentOut: ((dict.filter as Record<string, string> | undefined)?.onLoan as string) ?? "On Loan",
               }}
               onFinished={() => setNextBookOpen(true)}
             />
@@ -215,7 +217,7 @@ export function BooksGrid({
                 </p>
                 {lentMap[book.id] && (
                   <span className="mt-1 inline-block rounded-[4px] bg-[var(--accent)] px-1.5 py-0.5 font-[var(--font-sans)] text-[10px] text-white sm:hidden">
-                    On Loan
+                    {((dict.filter as Record<string, string> | undefined)?.onLoan as string) ?? "On Loan"}
                   </span>
                 )}
               </div>

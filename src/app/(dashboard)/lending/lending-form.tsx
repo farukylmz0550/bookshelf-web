@@ -34,6 +34,11 @@ export function LendingForm({
 }) {
   const [bookId, setBookId] = useState(books[0]?.id ?? "");
   const [personId, setPersonId] = useState(people[0]?.id ?? "");
+  // v3.7.0 — Base UI resolves SelectValue labels only while items are
+  // mounted; after a refresh the closed trigger falls back to the raw value
+  // (a cuid). Pass the resolved label explicitly.
+  const selectedBook = books.find((b) => b.id === bookId);
+  const selectedPerson = people.find((p) => p.id === personId);
   const [dueDate, setDueDate] = useState("");
   const [pending, startTransition] = useTransition();
 
@@ -71,7 +76,7 @@ export function LendingForm({
             className="w-full rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)]"
             aria-label={dict.book}
           >
-            <SelectValue />
+            <SelectValue>{selectedBook?.title ?? ""}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {books.map((book) => (
@@ -103,7 +108,7 @@ export function LendingForm({
               className="w-full rounded-[8px] border-[var(--border)] bg-[var(--surface-elevated)] text-foreground focus-visible:ring-[var(--ring)]"
               aria-label={dict.borrower}
             >
-              <SelectValue />
+              <SelectValue>{selectedPerson?.name ?? ""}</SelectValue>
             </SelectTrigger>
             <SelectContent aria-label={dict.namePlaceholder}>
               {people.map((person) => (

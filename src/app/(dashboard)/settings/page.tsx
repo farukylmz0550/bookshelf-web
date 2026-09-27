@@ -11,6 +11,7 @@ import { getKoboSyncState } from "@/app/actions/kobo";
 import { getAppConfig } from "@/lib/app-config";
 import { getMinPagesPerReadEvent } from "@/lib/reading-settings";
 import { ReadingStepCard } from "@/components/settings/reading-step-card";
+import { AccountCard } from "@/components/settings/account-card";
 
 export default async function SettingsPage() {
   const dict = await getDictionary();
@@ -21,7 +22,7 @@ export default async function SettingsPage() {
   const user = session?.user?.id
     ? await db.user.findUnique({
         where: { id: session.user.id },
-        select: { isAdmin: true, totpEnabled: true },
+        select: { isAdmin: true, totpEnabled: true, name: true, email: true },
       })
     : null;
   // v3.0.0 — Kobo sync card (hidden when disabled in config.yaml).
@@ -54,6 +55,18 @@ export default async function SettingsPage() {
           invalid: dict.settings.readingStepInvalid,
         }}
       />
+      {user && (
+        <AccountCard
+          userName={user.name}
+          userEmail={user.email}
+          dict={{
+            title: dict.settings.accountTitle,
+            logout: dict.nav.logout,
+            logoutConfirm: dict.settings.logoutConfirm,
+            loggingOut: dict.auth.signingIn,
+          }}
+        />
+      )}
       <SettingsForm
         settings={settings}
         currentTheme={theme}
@@ -62,7 +75,11 @@ export default async function SettingsPage() {
         koboOpdsUrl={koboState.opdsUrl}
         koboFileSource={koboState.fileSourceUrl}
         dict={{
-          settings: { goalReminders: dict.settings.goalReminders },
+          settings: {
+            goalReminders: dict.settings.goalReminders,
+            aboutTitle: dict.settings.aboutTitle,
+            licensesLink: dict.settings.licensesLink,
+          },
           backfill: {
             title: dict.settings.pageBackfillTitle,
             desc: dict.settings.pageBackfillDesc,

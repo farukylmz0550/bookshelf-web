@@ -21,6 +21,15 @@ interface SettingsFormProps {
   dict?: {
     settings?: {
       goalReminders?: string;
+      aboutTitle?: string;
+      licensesLink?: string;
+      notifEnable?: string;
+      notifStreak?: string;
+      notifWeekly?: string;
+      notifGoal?: string;
+      notifTestPush?: string;
+      notifTestOk?: string;
+      notifTestFail?: string;
     };
     backfill?: {
       title: string;
@@ -59,7 +68,19 @@ export function SettingsForm({
 }: SettingsFormProps) {
   return (
     <div className="space-y-6">
-      <NotificationSettings settings={settings} dict={{ goalReminders: dict?.settings?.goalReminders }} />
+      <NotificationSettings
+        settings={settings}
+        dict={{
+          goalReminders: dict?.settings?.goalReminders,
+          notifEnable: dict?.settings?.notifEnable,
+          notifStreak: dict?.settings?.notifStreak,
+          notifWeekly: dict?.settings?.notifWeekly,
+          notifGoal: dict?.settings?.notifGoal,
+          notifTestPush: dict?.settings?.notifTestPush,
+          notifTestOk: dict?.settings?.notifTestOk,
+          notifTestFail: dict?.settings?.notifTestFail,
+        }}
+      />
       <AppearanceSettings currentTheme={currentTheme} currentLocale={currentLocale} />
 
       {/* Book data — v3.0.0: page-count backfill moved here from Admin */}
@@ -87,7 +108,7 @@ export function SettingsForm({
       {/* Licenses — link to /licenses */}
       <section>
         <h2 className="mb-2 px-1 font-[var(--font-sans)] text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          About
+          {dict?.settings?.aboutTitle ?? "About"}
         </h2>
         <Link
           href="/licenses"
@@ -95,7 +116,9 @@ export function SettingsForm({
         >
           <div className="flex items-center gap-3">
             <Scale size={16} className="text-muted-foreground" />
-            <span className="font-[var(--font-sans)] text-sm text-foreground">Licenses</span>
+            <span className="font-[var(--font-sans)] text-sm text-foreground">
+              {dict?.settings?.licensesLink ?? "Licenses"}
+            </span>
           </div>
           <ChevronRight size={16} className="text-muted-foreground" />
         </Link>

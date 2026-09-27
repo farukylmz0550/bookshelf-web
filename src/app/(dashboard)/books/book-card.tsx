@@ -29,6 +29,7 @@ export type GroupInfo = { id: string; name: string; color: string | null };
 
 type CardDict = {
   toRead: string;
+  lentOut: string;
   reading: string;
   finished: string;
   logPagesButton: string;
@@ -219,7 +220,7 @@ export function BookCard({
           )}
           {lentOut && (
             <div className="absolute right-2 top-2 rounded-[4px] bg-[var(--accent)] px-2 py-0.5 font-[var(--font-sans)] text-[10px] font-medium text-white shadow-sm">
-              On Loan
+              {dict.lentOut}
             </div>
           )}
           {book.signed && (

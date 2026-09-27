@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { needsSetup } from "@/lib/setup";
 import { Sidebar } from "@/components/sidebar";
@@ -80,20 +80,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </Link>
           <div className="ml-auto flex items-center gap-0.5">
             <NotificationPerm dict={dict.common} />
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/login" });
-              }}
-            >
-              <button
-                type="submit"
-                className="flex h-8 w-8 items-center justify-center rounded-[8px] text-muted-foreground hover:bg-accent hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-                title={dict.nav.logout}
-              >
-                ⏻
-              </button>
-            </form>
           </div>
         </header>
 

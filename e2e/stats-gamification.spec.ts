@@ -118,6 +118,10 @@ test.describe("stats / gamification / achievements / leaderboard / excel / i18n 
     await login(page, admin.email, admin.password);
     await page.goto("/admin/users");
     await page.getByRole("button", { name: "Approve" }).first().click();
+    // v3.7.0 — logout lives in Settings → Account card now
+    await page.goto("/settings");
+    // Confirm dialog — handler must be registered before the click
+    page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: /log out/i }).click();
     await expect(page).toHaveURL(/\/login/);
     await login(page, "normal@bookshelf.test", "password123");

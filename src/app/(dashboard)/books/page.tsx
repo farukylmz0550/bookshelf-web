@@ -58,11 +58,9 @@ export default async function BooksPage() {
         dict={dict.books as never}
         excel={<ExcelActions dict={dict.excel} goodreadsDict={dict.goodreads as never} />}
       />
-      {/* v3.5.1 — page-log CTA moved out of the header into the content flow,
-          between the add panel and the list toolbar, styled like the row's
-          outline buttons so the reading flow is discoverable without
-          competing with the page title (UI Design Language §10, §16). */}
-      <div className="flex justify-end">
+      {/* v3.7.0 — page-log CTA centered between the add panel and the list
+          toolbar (desktop placement; same outline treatment). */}
+      <div className="flex justify-center">
         <PageLogCta
           books={books
             .filter((b) => b.status === "READING")
@@ -96,6 +94,7 @@ export default async function BooksPage() {
         pagesPerReadEvent={pagesPerReadEvent}
         groups={groups}
         cardDict={{
+          lentOut: dict.filter.onLoan,
           logPagesButton: dict.books.logPagesButton,
           logPagesToast: dict.books.logPagesToast,
           logPagesError: dict.books.logPagesError,
