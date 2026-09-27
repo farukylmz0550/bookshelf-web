@@ -9,6 +9,16 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
+# v3.4.0 — kepubify (static Go binary) for optional EPUB→KEPUB conversion in
+# the Kobo sync download path (config.yaml → kobo.kepubify).
+# v3.5.0 — pulled from the official GitHub release instead of the retired
+# ghcr.io/pgaskin/kepubify image (unpublished upstream → 3.4.0+ builds failed).
+# Pinned by SHA-256 (checksum verified by ADD during build).
+FROM scratch AS kepubify
+ADD --chmod=0755 --checksum=sha256:37d7628d26c5c906f607f24b36f781f306075e7073a6fe7820a751bb60431fc5 \
+    https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-64bit \
+    /usr/local/bin/kepubify
+
 FROM node:22-slim AS production
 WORKDIR /app
 ENV NODE_ENV=production
@@ -36,9 +46,7 @@ COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
 # (-v ./config.yaml:/app/config.yaml:ro) to customize without rebuilding.
 COPY --from=build --chown=nextjs:nodejs /app/config.yaml ./config.yaml
 
-# v3.4.0 — kepubify (static Go binary) for optional EPUB→KEPUB conversion in
-# the Kobo sync download path (config.yaml → kobo.kepubify).
-COPY --from=ghcr.io/pgaskin/kepubify:v4.0.4 /usr/local/bin/kepubify /usr/local/bin/kepubify
+COPY --from=kepubify /usr/local/bin/kepubify /usr/local/bin/kepubify
 
 RUN chmod +x docker-entrypoint.sh
 

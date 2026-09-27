@@ -17,6 +17,18 @@ The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
   theme. Regeneration command added to `brand/README.md`. No in-app palette,
   `theme_color` or other assets are affected.
 
+### Fixed
+
+- **Docker build** — the 3.4.0 image failed to build everywhere:
+  `ghcr.io/pgaskin/kepubify:v4.0.4` was unpublished upstream, so
+  `COPY --from` died at metadata resolution (the last successfully published
+  image was 3.3.0). The production stage now fetches the official
+  `kepubify-linux-64bit` v4.0.4 binary from the GitHub release in a
+  `scratch` stage, pinned by SHA-256
+  (`37d7628d…31fc5` — verified by `ADD --checksum` at build time). The
+  GitHub Actions `Docker Publish` workflow (triggered by `v*` tags) resumes
+  publishing.
+
 ## 3.4.0 — 2026-09-19
 
 ### Added
