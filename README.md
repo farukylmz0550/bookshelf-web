@@ -10,12 +10,12 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.4.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.5.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-> **3.4.0** — in-app **reading timer** (book detail, start/pause/stop → whole minutes into your daily reading time), **quotes** (page-referenced excerpts per book) and optional **KEPUB downloads** for Kobo (`config.yaml → kobo.kepubify`, cached conversion). Earlier: **3.3.0** added seasonal challenges, unified CSV import and automatic daily DB backups. See [`CHANGELOG.md`](CHANGELOG.md).
+> **3.5.0** — **Material You launcher icon** for the Android PWA: a manifest `monochrome` icon (Symbolic Master) the launcher tints with the user's wallpaper-derived palette. Earlier: **3.4.0** added the in-app **reading timer** (book detail, start/pause/stop → whole minutes into your daily reading time), **quotes** (page-referenced excerpts per book) and optional **KEPUB downloads** for Kobo (`config.yaml → kobo.kepubify`, cached conversion); **3.3.0** added seasonal challenges, unified CSV import and automatic daily DB backups. See [`CHANGELOG.md`](CHANGELOG.md).
 
 *Self-hosted · Private · No tracking · Your books, your data.*
 
@@ -56,6 +56,7 @@
 | 🍪 **Consent** | GDPR banner — desktop modal + mobile bar (Essential/Preferences/Analytics) |
 | 🖥️ **Shell** | Collapsible sidebar (desktop, `sidebar-collapsed` cookie) + bottom nav (mobile) · `viewport-fit=cover` · safe-area |
 | 📦 **PWA** | `manifest.json` shortcuts · `sw.js` · install prompt |
+| 🎨 **Themed icon** *(v3.5.0)* | Material You launcher icon — manifest `monochrome` icon (Symbolic Master) tinted by the Android launcher with the wallpaper-derived system palette |
 | 🔐 **Admin** | Approve/reject, promote/demote, delete users · cover cache · admin-assigned password resets (forced change at next login) · TOTP-confirmed danger zone that deletes all non-admin accounts · admins cannot act on their own account |
 | 📖 **Kobo Sync** *(v3.0.0, experimental)* | Kobo eReader pulls your whole library straight from this server — device `api_endpoint` → BookShelf sync URL · book files streamed from your own NAS URL template (`{isbn}`, `{isbn10}`, `{isbn13}`) · reading progress writes back (currentPage, streak activity, auto-finish) · optional EPUB→KEPUB conversion with cached output (`config.yaml → kobo.kepubify`, v3.4.0) · see [Kobo Sync](#-kobo-sync-v300-experimental) |
 | 🎴 **Brand** | `brand/` set — Color + Symbolic masters, all icons rendered from the Color Master |

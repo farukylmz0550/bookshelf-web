@@ -4,6 +4,19 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.5.0 — 2026-09-27
+
+### Added
+
+- **Material You launcher icon support (PWA)** — new `icon-512-monochrome.png`
+  rendered from the Symbolic Master (transparent background, artwork scaled to
+  ~74% inside the safe zone) and declared in the manifest with
+  `purpose: "monochrome"`. The Android launcher (Android 13+; automatic for all
+  apps on Android 16 QPR2+) ignores its colors and tints the alpha mask with the
+  user's wallpaper-derived system palette — themed icons now match the device
+  theme. Regeneration command added to `brand/README.md`. No in-app palette,
+  `theme_color` or other assets are affected.
+
 ## 3.4.0 — 2026-09-19
 
 ### Added

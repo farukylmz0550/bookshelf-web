@@ -30,6 +30,7 @@ Rendered from `Bookshelf — Color Master.svg` with librsvg (`rsvg-convert` / Im
 | `apple-touch-icon.png` | 180×180 | iOS home screen icon |
 | `favicon.ico` | 16/32/48 | Legacy favicon |
 | `icon-512-maskable.png` | 512×512 | PWA maskable icon (artwork scaled to ~74% on a `#E5D9D4` background — inside the central 80% safe zone) |
+| `icon-512-monochrome.png` | 512×512 | PWA monochrome icon (Symbolic Master scaled to ~74%, centered, transparent background — manifest `purpose: "monochrome"`; Android launcher tints it with the system Material You palette) |
 
 ## Regeneration
 
@@ -48,6 +49,10 @@ magick -background none "brand/Bookshelf — Color Master.svg" -define icon:auto
 # Maskable icon — artwork scaled to ~74% and centered on the app background
 magick -background none -density 144 "brand/Bookshelf — Color Master.svg" -resize 378x378 content.png
 magick -background "#E5D9D4" content.png -gravity center -background "#E5D9D4" -extent 512x512 icon-512-maskable.png
+
+# Monochrome icon — Symbolic Master scaled to ~74%, centered on transparency
+magick -background none -density 144 "brand/Bookshelf — Symbolic Master.svg" -resize 378x378 content-mono.png
+magick -background none content-mono.png -gravity center -background none -extent 512x512 icon-512-monochrome.png
 ```
 
 ## Usage Rules
