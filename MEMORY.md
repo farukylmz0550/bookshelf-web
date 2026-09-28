@@ -280,7 +280,7 @@ npm run format:check  # prettier
   5. `gh release create {version} --title "{version}" --notes-file <notes.md>` — notes follow the 2.5.1 template: what changed + **QA** line (tsc/lint/format/unit/e2e/build counts) + Docker line
 - Monitor with `gh run list` and `gh release view {version}`.
 - **Standing approval (2026-09-18):** for the APPROVED 4-phase roadmap only (MEMORY §14 — 3.1.0/3.2.0/3.3.0/3.4.0 and any later phases of that roadmap), the user granted a standing release approval: after each phase's full QA set passes, commit/push/tag/dispatch/release WITHOUT asking again. Anything outside that roadmap still requires explicit approval.
-- **Standing approval (2026-09-27, supersedes the scope limit):** the user extended the standing approval to ALL releases — "release/build/package için benden izin isteme". Every release (feature, minor, patch) is built, committed, pushed, tagged, docker-published and released automatically once the QA set passes. Reference: universal todo `~/.opencode/plan/bookshelf-todo.md` §0 R1.
+- **Standing approval (2026-09-27, revised):** the standing release approval covers the **UI_Improvement_Plan.md fazlar only** (Faz 1–5 → their minor releases; user: "bu fazlar için geçerli"). After each faz's QA set passes, commit/push/tag/docker-publish/release WITHOUT asking. **Any release outside the fazlar still requires explicit user approval.** Reference: universal todo `~/.opencode/plan/bookshelf-todo.md` §0 R1.
 - **Commit signing (v3.5.1, mandatory):** every commit and release tag is signed — `commit.gpgsign` + `tag.gpgSign` stay on, `git push --signed` for direct `main` pushes, GitHub must show "Verified". Setup: `CONTRIBUTING.md → Commit Signing`. Unsigned history blocks the release.
 
 ---
