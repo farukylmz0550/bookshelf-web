@@ -35,8 +35,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
   if (session?.user && !sessionValid) {
-    const { signOut } = await import("@/auth");
-    await signOut({ redirectTo: "/login" });
+    // v3.10.1 — signOut() mutates cookies, which Next 16 only permits in
+    // Server Actions / Route Handlers; calling it during this layout's render
+    // threw E1180 (React error #441 in production). Ghost sessions are sent
+    // to /api/logout, which clears the cookie and lands on /login.
+    redirect("/api/logout");
   }
 
   const sidebarCollapsed = (await cookies()).get("sidebar-collapsed")?.value === "1";

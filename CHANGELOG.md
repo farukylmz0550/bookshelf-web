@@ -4,6 +4,18 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.10.1 — 2026-09-28
+
+### Fixed
+
+- **Ghost-session logout no longer crashes the dashboard (React #441).** When
+  a session cookie referenced a user that no longer existed in the database
+  (e.g. after a DB restore), the dashboard layout called `signOut()` during
+  server-component render. Next 16 only permits cookie writes inside Server
+  Actions and Route Handlers, so the render threw `E1180` — visible in
+  production only as `Minified React error #441`. The sign-out now lives in a
+  dedicated `/api/logout` route handler and the layout redirects to it.
+
 ## 3.10.0 — 2026-09-28
 
 ### Changed

@@ -90,6 +90,12 @@ behavior, so you can verify or patch locally.
 - **Cause:** NextAuth builds every redirect (login, sign-out, callback) from **one** canonical `NEXTAUTH_URL`; there is no per-host redirect table.
 - **Fix:** set `NEXTAUTH_URL` to the address you consider canonical and keep `AUTH_TRUST_HOST=true` (already set in the shipped compose) so requests from the *other* address are still trusted at the session-check level. Users landing on the non-canonical address get redirected to the canonical one on the first auth redirect. Prefer a stable hostname (domain or DHCP-reserved IP) over a changeable one.
 
+### `Minified React error #441` on the dashboard (fixed in 3.10.1)
+
+- **Symptom:** production pages show `Minified React error #441` for authenticated users while `docker compose logs app` shows `Error: Cookies can only be modified in a Server Action or Route Handler` with an `E1180` digest.
+- **Cause:** pre-3.10.1 the dashboard layout called `signOut()` during server-component render for a *ghost session* (session cookie present, user row gone — typically after restoring an older database). Next 16 forbids cookie writes during render; only Server Actions and Route Handlers may mutate cookies.
+- **Fix:** upgrade to 3.10.1. The stale session is now cleared by the `/api/logout` route handler and the layout redirects there. If you cannot upgrade immediately, clear the site's cookies for the app origin (the ghost session is what triggers the crash).
+
 ---
 
 ## 2. Database & backups
