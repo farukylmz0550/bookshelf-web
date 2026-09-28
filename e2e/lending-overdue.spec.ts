@@ -4,6 +4,7 @@ import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
 import { createPerson } from "./helpers/people";
+import { openAddBook } from "./helpers/books";
 
 test.describe("lending due dates + overdue reminders", () => {
   const admin = { name: "Admin", email: "admin@bookshelf.test", password: "password123" };
@@ -16,6 +17,7 @@ test.describe("lending due dates + overdue reminders", () => {
 
   test("lending page: optional due date is stored and displayed as a badge (I: UI)", async ({ page }) => {
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Due Date Book");
     await page.getByPlaceholder("Author").first().fill("Author");
     await page.getByRole("button", { name: /^add$/i }).click();

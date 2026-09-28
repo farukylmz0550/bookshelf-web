@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login, register, logout } from "./helpers/auth";
 import { pickSelectOption } from "./helpers/ui-select";
+import { openAddBook } from "./helpers/books";
 
 test.describe("groups / shelves (v2.8.0)", () => {
   const admin = { name: "Admin", email: "admin@bookshelf.test", password: "password123" };
@@ -98,6 +99,7 @@ test.describe("groups / shelves (v2.8.0)", () => {
 
     // Add a book, then add it to the group from the book detail page
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Dune");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Dune", { exact: true }).first()).toBeVisible();
@@ -120,9 +122,11 @@ test.describe("groups / shelves (v2.8.0)", () => {
   test("books page group filter ANDs with tag filter", async ({ page }) => {
     await createGroup(page, "Favorites");
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Grouped Sci-Fi");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Grouped Sci-Fi", { exact: true }).first()).toBeVisible();
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Poetry Book");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Poetry Book", { exact: true }).first()).toBeVisible();

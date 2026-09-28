@@ -2,6 +2,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
+import { openAddBook } from "./helpers/books";
 
 function goodreadsCsv(title: string, isbn13: string) {
   return `Book Id,Title,Author l-f,Additional Authors,ISBN,ISBN13,My Rating,Average Rating,Publisher,Binding,Number of Pages,Year Published,Original Publication Year,Date Read,Date Added,Bookshelves,Bookshelves with positions,Private Notes,My Review,Spoiler,Owned Copies
@@ -14,6 +15,8 @@ function goodreadsCsv(title: string, isbn13: string) {
  * The response (not just the request) is awaited: enrichment can take seconds.
  */
 async function importCsv(page: Page, buffer: Buffer, filename = "goodreads.csv") {
+  // v3.8.0 — the CSV import input lives inside the Add book dialog
+  await openAddBook(page);
   const input = page.locator('input[type="file"][accept=".csv,text/csv"]');
   await expect(async () => {
     const post = page.waitForEvent("response", {
@@ -46,6 +49,8 @@ test.describe("Goodreads CSV import", () => {
 
   test("skips a book that already exists in the user's library (J: duplicate)", async ({ page }) => {
     await page.goto("/books");
+    // v3.8.0 — ISBN field lives inside the Add book dialog
+    await openAddBook(page);
     await page.getByPlaceholder("ISBN").first().fill("9780439708180");
     await page.getByPlaceholder("Title").first().fill("Duplicate Book");
     await page.getByPlaceholder("Author").first().fill("Auth");
@@ -66,6 +71,8 @@ test.describe("Goodreads CSV import", () => {
 
   test("existing Excel import still works (regression)", async ({ page }) => {
     await page.goto("/books");
+    // v3.8.0 — Template / Import CSV controls live inside the Add book dialog
+    await openAddBook(page);
     await expect(page.getByRole("button", { name: /template/i })).toBeVisible();
     await expect(page.getByText(/import csv/i)).toBeVisible();
   });

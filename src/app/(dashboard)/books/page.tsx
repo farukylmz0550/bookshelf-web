@@ -3,10 +3,10 @@ import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { getPagesPerReadEventFor } from "@/lib/reading-settings";
-import { BooksAddSection } from "./books-add-section";
 import { BooksGrid } from "./books-grid";
 import { ExcelActions } from "./excel-actions";
 import { PageLogCta } from "./page-log-cta";
+import { AddBookDialog } from "./add-book-dialog";
 
 export default async function BooksPage() {
   const userId = await requireUserId();
@@ -44,21 +44,25 @@ export default async function BooksPage() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
+      <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="font-[var(--font-serif)] text-2xl font-semibold tracking-tight text-foreground">
             {dict.books.title}
           </h1>
           <p className="font-[var(--font-sans)] text-sm text-muted-foreground">
-            {books.length} {dict.common.books} · {dict.books.addBook}
+            {books.length} {dict.common.books}
           </p>
         </div>
+        {/* v3.8.0 — Faz 2: primary add-book action opens the workflow dialog;
+            the panel no longer occupies the collection flow. */}
+        <AddBookDialog
+          dict={dict.books as never}
+          excel={<ExcelActions dict={dict.excel} goodreadsDict={dict.goodreads as never} />}
+          label={dict.books.addBook}
+          addedToastLabel={dict.books.addSuccess ?? ""}
+        />
       </header>
-      <BooksAddSection
-        dict={dict.books as never}
-        excel={<ExcelActions dict={dict.excel} goodreadsDict={dict.goodreads as never} />}
-      />
-      {/* v3.7.0 — page-log CTA centered between the add panel and the list
+      {/* v3.7.0 — page-log CTA centered between the header and the list
           toolbar (desktop placement; same outline treatment). */}
       <div className="flex justify-center">
         <PageLogCta

@@ -4,6 +4,7 @@ import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
 import { createPerson } from "./helpers/people";
+import { openAddBook } from "./helpers/books";
 
 test.describe("lending + people", () => {
   const admin = { name: "Admin", email: "admin@bookshelf.test", password: "password123" };
@@ -13,9 +14,11 @@ test.describe("lending + people", () => {
     await createAdminViaSetup(page, admin);
     await login(page, admin.email, admin.password);
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Book One");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Book One", { exact: true }).first()).toBeVisible();
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Book Two");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Book Two", { exact: true }).first()).toBeVisible();

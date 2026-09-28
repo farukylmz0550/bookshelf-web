@@ -4,6 +4,7 @@ import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { dismissCookieConsent, clickSetting } from "./helpers/auth";
 import { createPerson } from "./helpers/people";
+import { openAddBook } from "./helpers/books";
 
 test.describe("manual GUI", () => {
   test("full flow: setup → books → lending → people → stats → achievements → leaderboard → admin → i18n/theme", async ({
@@ -28,12 +29,14 @@ test.describe("manual GUI", () => {
     await expect(page.locator("aside").getByText("ManualAdmin").first()).toBeVisible();
     await page.screenshot({ path: "e2e/screenshots/02-books-empty.png", fullPage: true });
 
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Manual Book One");
     await page.getByPlaceholder("Author").fill("Author One");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Manual Book One").first()).toBeVisible();
     await page.screenshot({ path: "e2e/screenshots/03-book-added.png", fullPage: true });
 
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("History of Time");
     await page.getByPlaceholder("Author").fill("Stephen Hawking");
     await page.getByRole("button", { name: /^add$/i }).click();
@@ -95,6 +98,8 @@ test.describe("manual GUI", () => {
     await clickSetting(page, /^English/);
 
     await page.goto("/books");
+    // v3.8.0 — Template lives inside the Add book dialog
+    await openAddBook(page);
     const [dl] = await Promise.all([
       page.waitForEvent("download"),
       page.getByRole("button", { name: /^template$/i }).click(),

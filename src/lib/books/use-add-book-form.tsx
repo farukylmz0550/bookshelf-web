@@ -23,7 +23,8 @@ export type AddBookFormDict = {
 };
 
 /** State + logic for the one-click ISBN add form. The component only renders. */
-export function useAddBookForm(dict: AddBookFormDict) {
+export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () => void }) {
+  const { onAdded } = options ?? {};
   const [isbn, setIsbn] = useState("");
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -79,6 +80,7 @@ export function useAddBookForm(dict: AddBookFormDict) {
           if (result.ok) {
             toast.success(dict.addSuccess ?? "Book added", { description: data.title, icon: <Check size={16} /> });
             clearFields();
+            onAdded?.();
           } else {
             const msg = result.error || (dict.addFailed ?? "Could not add the book");
             setAddError(msg);
@@ -152,8 +154,20 @@ export function useAddBookForm(dict: AddBookFormDict) {
       }
       toast.success(dict.addSuccess ?? "Book added", { icon: <Check size={16} /> });
       clearFields();
+      onAdded?.();
     });
-  }, [title, isbn, author, coverUrl, numberOfPages, dict.addFailed, dict.addSuccess, dict.required, clearFields]);
+  }, [
+    title,
+    isbn,
+    author,
+    coverUrl,
+    numberOfPages,
+    dict.addFailed,
+    dict.addSuccess,
+    dict.required,
+    clearFields,
+    onAdded,
+  ]);
 
   const handleScan = useCallback(
     (scanned: string) => {

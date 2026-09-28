@@ -4,6 +4,26 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.8.0 — 2026-09-28
+
+### Changed
+
+- **UI plan Faz 2 — Books page hierarchy** (`UI_Improvement_Plan.md` §2/§3):
+  - The add-book workflow moved out of the collection flow behind a primary
+    **"+ Add book"** action that opens a dialog hosting the full panel:
+    quick ISBN/title/author form, detailed add, and the Excel/CSV
+    import-export controls (hierarchy change, not feature removal — the
+    dialog closes after a successful add).
+  - The page header now shows the title and the plain book count; the count
+    text no longer doubles as the add action.
+  - **Filter bar flattened** — no card wrapper (§10); the toolbar is now
+    `Search + Sort + direction + Filters`, with sort promoted to a primary
+    control; advanced filters stay behind the Filters toggle.
+  - The filter/sort triggers resolve their closed-state labels explicitly
+    (same treatment as v3.7.0's SelectValue fix).
+- **e2e helper `openAddBook`** — specs open the dialog before using the
+  book form; Excel/CSV controls are exercised inside the dialog.
+
 ## 3.7.0 — 2026-09-27
 
 ### Added

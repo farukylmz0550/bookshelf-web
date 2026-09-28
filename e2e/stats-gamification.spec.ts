@@ -4,6 +4,7 @@ import { pickSelectOption, setBookStatusUI } from "./helpers/ui-select";
 import { createPerson } from "./helpers/people";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login, dismissCookieConsent, clickSetting } from "./helpers/auth";
+import { openAddBook } from "./helpers/books";
 
 test.describe("stats / gamification / achievements / leaderboard / excel / i18n / theme", () => {
   const admin = { name: "Admin", email: "admin@bookshelf.test", password: "password123" };
@@ -16,6 +17,7 @@ test.describe("stats / gamification / achievements / leaderboard / excel / i18n 
 
   test("stats page shows level/xp and goal progress", async ({ page }) => {
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Stats Book");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Stats Book", { exact: true }).first()).toBeVisible();
@@ -41,6 +43,7 @@ test.describe("stats / gamification / achievements / leaderboard / excel / i18n 
     await expect(page.getByText("First Book", { exact: true })).toBeVisible();
 
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Ach Book 1");
     await page.getByPlaceholder("Author").fill("Author A");
     await page.getByRole("button", { name: /^add$/i }).click();
@@ -88,6 +91,8 @@ test.describe("stats / gamification / achievements / leaderboard / excel / i18n 
 
   test("excel: template download, export", async ({ page }) => {
     await page.goto("/books");
+    // v3.8.0 — Template/Export buttons live inside the Add book dialog
+    await openAddBook(page);
     const [download] = await Promise.all([
       page.waitForEvent("download"),
       page.getByRole("button", { name: /^template$/i }).click(),
@@ -97,6 +102,9 @@ test.describe("stats / gamification / achievements / leaderboard / excel / i18n 
     await page.getByPlaceholder("Title").first().fill("Excel Book");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Excel Book", { exact: true }).first()).toBeVisible();
+    // Re-open the dialog: it closes after a successful add, and Export lives
+    // inside it.
+    await openAddBook(page);
     await page.getByRole("button", { name: /^export$/i }).click();
     await expect(page.getByRole("button", { name: /^export$/i })).toBeVisible();
   });

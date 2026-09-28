@@ -24,12 +24,21 @@ type Dict = {
   orWithAllFields?: string;
 };
 
-export function BooksAddSection({ dict, excel }: { dict: Dict; excel: React.ReactNode }) {
+export function BooksAddSection({
+  dict,
+  excel,
+  onAdded,
+}: {
+  dict: Dict;
+  excel: React.ReactNode;
+  /** v3.8.0 — called after a successful add (closes the hosting dialog). */
+  onAdded?: () => void;
+}) {
   const [showDetailed, setShowDetailed] = useState(false);
 
   return (
     <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
-      <AddBookForm dict={dict} />
+      <AddBookForm dict={dict} onAdded={onAdded} />
       <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-3">
         <button
           type="button"
@@ -45,7 +54,13 @@ export function BooksAddSection({ dict, excel }: { dict: Dict; excel: React.Reac
       </div>
       {showDetailed && (
         <div className="mt-4 animate-in fade-in">
-          <DetailedAddForm dict={dict} onDone={() => setShowDetailed(false)} />
+          <DetailedAddForm
+            dict={dict}
+            onDone={() => {
+              setShowDetailed(false);
+              onAdded?.();
+            }}
+          />
         </div>
       )}
       <div className="mt-4">{excel}</div>

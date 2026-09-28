@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 import { pickSelectOption } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
+import { openAddBook } from "./helpers/books";
 
 test.describe("books", () => {
   const admin = { name: "Admin", email: "admin@bookshelf.test", password: "password123" };
@@ -15,6 +16,7 @@ test.describe("books", () => {
 
   test("add book via form (addBook → XP+5)", async ({ page }) => {
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Dune");
     await page.getByPlaceholder("Author").fill("Frank Herbert");
     await page.getByRole("button", { name: /^add$/i }).click();
@@ -25,6 +27,8 @@ test.describe("books", () => {
   test("ISBN lookup + add", async ({ page }) => {
     test.setTimeout(60000); // Open Library can be slow / retried
     await page.goto("/books");
+    // v3.8.0 — the add form lives in the Add book dialog
+    await openAddBook(page);
     await page.getByPlaceholder("ISBN").fill("9780140449136");
     // Lookup auto-adds the matched book — Open Library can be slow; the
     // lookup path allows 3×10s retries upstream, so wait up to 60s here.
@@ -40,9 +44,11 @@ test.describe("books", () => {
 
   test("filter bar: search + rating + status + lent + tag + sort", async ({ page }) => {
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("A History Book");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("A History Book", { exact: true }).first()).toBeVisible();
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Science Fiction Epic");
     await page.getByPlaceholder("Author").fill("Author X");
     await page.getByRole("button", { name: /^add$/i }).click();
@@ -60,6 +66,7 @@ test.describe("books", () => {
 
   test("book detail: facts edit + personal (rating/signed/tags/notes) + copies", async ({ page }) => {
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Detail Book");
     await page.getByRole("button", { name: /^add$/i }).click();
     await expect(page.getByText("Detail Book", { exact: true }).first()).toBeVisible();

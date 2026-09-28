@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 import { pickSelectOption, setBookStatusUI } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup, login } from "./helpers/auth";
+import { openAddBook } from "./helpers/books";
 
 test.describe("Annual Summary (v2.7.0)", () => {
   const admin = { name: "Admin", email: "admin@bookshelf.test", password: "password123" };
@@ -27,6 +28,7 @@ test.describe("Annual Summary (v2.7.0)", () => {
 
   test("renders summary sections after completing a book", async ({ page }) => {
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Wrapped Book");
     await page.getByPlaceholder("Author").first().fill("Test Author");
     await page.getByRole("button", { name: /^add$/i }).click();
@@ -75,6 +77,7 @@ test.describe("Reading flow (v2.7.0)", () => {
 
   test("books page shows the page-log button on READING books and logs pages", async ({ page }) => {
     await page.goto("/books");
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Streak Book");
     await page.getByPlaceholder("Author").first().fill("Auth");
     await page.getByRole("button", { name: /^add$/i }).click();

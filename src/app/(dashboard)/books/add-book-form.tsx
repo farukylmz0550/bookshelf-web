@@ -5,8 +5,8 @@ import { Search, AlertCircle } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 import { useAddBookForm, type AddBookFormDict } from "@/lib/books/use-add-book-form";
 
-export function AddBookForm({ dict }: { dict: AddBookFormDict }) {
-  const form = useAddBookForm(dict);
+export function AddBookForm({ dict, onAdded }: { dict: AddBookFormDict; onAdded?: () => void }) {
+  const form = useAddBookForm(dict, { onAdded });
 
   return (
     <div className="space-y-3">

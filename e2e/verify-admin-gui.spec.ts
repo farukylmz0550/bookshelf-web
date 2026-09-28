@@ -4,6 +4,7 @@ import { pickSelectOption, setBookStatusUI } from "./helpers/ui-select";
 import { resetDb } from "./helpers/db";
 import { createAdminViaSetup } from "./helpers/auth";
 import { createPerson } from "./helpers/people";
+import { openAddBook } from "./helpers/books";
 
 test.describe("verify admin@admin.admin GUI", () => {
   test("login as existing admin and exercise core flows", async ({ page }) => {
@@ -17,6 +18,7 @@ test.describe("verify admin@admin.admin GUI", () => {
     await expect(page.locator("aside").getByText("admin").first()).toBeVisible();
     await page.screenshot({ path: "e2e/screenshots/verify-01-books.png", fullPage: true });
 
+    await openAddBook(page);
     await page.getByPlaceholder("Title").first().fill("Verify Book");
     await page.getByPlaceholder("Author").fill("Verify Author");
     await page.getByRole("button", { name: /^add$/i }).click();
