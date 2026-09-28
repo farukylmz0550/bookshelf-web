@@ -80,6 +80,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
             ((dict.lending as Record<string, string> | undefined)?.onLoan as string) ??
             ((dict.filter as Record<string, string> | undefined)?.onLoan as string) ??
             "On Loan",
+          signed: dict.books.signedBadge,
           logPagesButton: dict.books.logPagesButton,
           logPagesToast: dict.books.logPagesToast,
           logPagesError: dict.books.logPagesError,

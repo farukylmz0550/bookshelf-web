@@ -30,6 +30,7 @@ export type GroupInfo = { id: string; name: string; color: string | null };
 type CardDict = {
   toRead: string;
   lentOut: string;
+  signed: string;
   reading: string;
   finished: string;
   logPagesButton: string;
@@ -225,7 +226,7 @@ export function BookCard({
           )}
           {book.signed && (
             <div className="absolute left-2 top-2 rounded-[4px] bg-[var(--warning-soft)] px-1.5 py-0.5 font-[var(--font-sans)] text-[9px] font-medium text-[var(--warning-text)]">
-              Signed
+              {dict.signed}
             </div>
           )}
         </div>
@@ -265,6 +266,10 @@ export function BookCard({
               )}
             </span>
           )}
+          {/* v3.9.0 — Faz 3 (UI_Improvement_Plan.md §4): the card is calm —
+              cover, title, author, subtle metadata, one status indicator.
+              Actions (log pages, re-read) live in the long-press menu and the
+              detail page. */}
           <div className="flex items-center gap-1.5 pt-0.5">
             {rating > 0 ? (
               <span
@@ -283,42 +288,6 @@ export function BookCard({
               </span>
             )}
           </div>
-          {/* v2.7.0 — remaining pages for books being read + streak-only actions */}
-          {status === "READING" && knownPages && (
-            <p className="font-[var(--font-sans)] text-[11px] tabular-nums text-muted-foreground">
-              {dict.pagesLeft.replace("{count}", String(pagesLeft))}
-            </p>
-          )}
-          {status === "READING" && (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                logPages();
-              }}
-              className="inline-flex w-full items-center justify-center gap-1 rounded-[6px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1 font-[var(--font-sans)] text-[11px] font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
-            >
-              <BookPlus size={12} />
-              {dict.logPagesButton.replace("{count}", String(pagesToLog))}
-            </button>
-          )}
-          {status === "FINISHED" && (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                reRead();
-              }}
-              className="inline-flex w-full items-center justify-center gap-1 rounded-[6px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1 font-[var(--font-sans)] text-[11px] font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
-            >
-              <RotateCcw size={12} />
-              {dict.reReadButton}
-            </button>
-          )}
         </div>
       </Link>
 
@@ -340,6 +309,7 @@ export function BookCard({
             <h3 className="mb-3 font-[var(--font-serif)] text-sm font-semibold text-foreground line-clamp-1">
               {book.title}
             </h3>
+            {/* v3.9.0 — contextual actions moved off the card (§4) */}
             <div className="flex flex-col gap-1">
               {STATUS_ORDER.map((s) => (
                 <button
@@ -356,6 +326,37 @@ export function BookCard({
                   {statusLabel(s, statusLabels)}
                 </button>
               ))}
+              {(status === "READING" || status === "FINISHED") && (
+                <div className="my-1 h-px bg-[var(--border)]" role="separator" />
+              )}
+              {status === "READING" && (
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    logPages();
+                  }}
+                  className="flex items-center gap-2 rounded-[8px] px-3 py-2 text-left font-[var(--font-sans)] text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                >
+                  <BookPlus size={14} />
+                  {dict.logPagesButton.replace("{count}", String(pagesToLog))}
+                </button>
+              )}
+              {status === "FINISHED" && (
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    reRead();
+                  }}
+                  className="flex items-center gap-2 rounded-[8px] px-3 py-2 text-left font-[var(--font-sans)] text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                >
+                  <RotateCcw size={14} />
+                  {dict.reReadButton}
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -99,6 +99,7 @@ export default async function BooksPage() {
         groups={groups}
         cardDict={{
           lentOut: dict.filter.onLoan,
+          signed: dict.books.signedBadge,
           logPagesButton: dict.books.logPagesButton,
           logPagesToast: dict.books.logPagesToast,
           logPagesError: dict.books.logPagesError,

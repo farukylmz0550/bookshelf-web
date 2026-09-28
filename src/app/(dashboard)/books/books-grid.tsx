@@ -31,6 +31,7 @@ type Book = {
 
 type CardDict = {
   lentOut: string;
+  signed: string;
   logPagesButton: string;
   logPagesToast: string;
   logPagesError: string;

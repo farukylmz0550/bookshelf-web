@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
 > Last updated: 2026-09-28
-> Version: 3.8.0
+> Version: 3.9.0
 > Branch: main
 
 ---
@@ -204,6 +204,7 @@ npm run format:check  # prettier
 
 | Date | Commit | Description |
 |-------|--------|----------|
+| 2026-09-28 | `3.9.0` | **UI Faz 3 — kart sadeleşme**: kartta artık kapak+başlık+yazar+meta (yıldız/raf noktaları) + durum göstergesi; "N sayfa oku" ve "Yeniden oku" butonları ve "N sayfa kaldı" satırı kalıcı düzenten çıktı — uzun basma menüsüne "N sayfa oku" (sayfasız kitaplarda sayım kaydet-ve-log prompt'u korunur) ve "Yeniden oku" öğeleri eklendi; detay sayfa tüm aksiyonları tutar; swipe+rozet durur; "Signed" rozeti ×6 dil (CardDict.signed) |
 | 2026-09-28 | `3.8.0` | **UI Faz 2 — Books hiyerarşisi**: "+ Kitap ekle" primer aksiyon → diyalog (`add-book-dialog.tsx`); BooksAddSection diyalog içinde (hızlı form + detaylı ekleme + Excel/CSV) — başarı sonrası diyalog kapanır (`useAddBookForm` `onAdded` callback, DetailedAddForm `onDone` kompoze); header artık başlık + düz sayı; filtre barı düz (kart sarmalayıcı yok, §10) ve Sırala + yön araç çubuğuna alındı (§3); filter/sort tetikleri kapalıyken çözümlenmiş label; e2e `openAddBook` helper'ı ve spec güncellemeleri (diji/CSV/excel kontrolleri diyalogda) |
 | 2026-09-27 | `3.7.0` | **UI faz 1 + seçim etiketi fix + çıkış→Settings**: `UI_Improvement_Plan.md` repoya (19 bölüm, faz 1–5; README doküman tablosu + MEMORY §14 bağlantısı); çıkış sidebar footer + mobil header'dan Settings → Account kartına taşındı (yerelleştirilmiş confirm, `account-card.tsx`); i18n tam kapsama: notification etiketleri+toast'lar, "On Loan" rozetleri (grid+card `lentOut` CardDict'e eklendi), "Card view"/"List view" aria, "Create account", "About"/"Licenses", logout confirm (6 dil); /books CTA ortalı (`justify-center`); SelectValue cuid fix (5 dosya — kapalı tetik artık çözümlenmiş label gösterir); Faz 1: light `--accent` → `#BB4F35` (yarışan `#B56F76` gitti), `--radius` 12px (§9 4/8/12), sidebar aktif durum soft accent (`--accent-soft` + accent text), mobil bottom-nav ikon+yazı; README e2e ekran görüntüleri yenilendi |
 | 2026-09-27 | `540f08a` | `3.6.0` — **self-approve + admin self-reset + rear-camera default**: config.yaml `auth.selfApprove` (default false; true = registrations approved automatically, register screen "log in right away", 6 langs); admin can reset their OWN password (random + `mustChangePassword`; other admins still off-limits; TOTP fresh-code dialog when enabled; rate-limit 5/5min; `adminResetPassword` SELF guard removed); barcode scanner opens the rear camera (`videoConstraints.facingMode: "environment"`); tests for self-reset/ADMIN_TARGET/validateAppConfig auth cases; unit 279/279. Deployment: VAPID keys added to `.env` (web push enabled), test account `test@book.com` approved, typo account `farukylmz0550@gmil.com` deleted |

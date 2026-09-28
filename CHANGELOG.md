@@ -4,6 +4,21 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.9.0 — 2026-09-28
+
+### Changed
+
+- **UI plan Faz 3 — Book cards** (`UI_Improvement_Plan.md` §4/§5): the card
+  is now calm — cover, title, author, subtle metadata (stars, shelf dots)
+  and one status indicator. The "Log N pages" and "Re-read" action buttons
+  and the "N pages left" line moved out of the permanent layout:
+  - Reading books: the long-press menu gains "Log N pages" (page-less books
+    keep the save-count-and-log prompt).
+  - Finished books: the long-press menu gains "Re-read".
+  - The book detail page keeps every action.
+  - Status swipe and the status badge stay.
+- "Signed" cover badge is localized in all 6 dictionaries.
+
 ## 3.8.0 — 2026-09-28
 
 ### Changed
