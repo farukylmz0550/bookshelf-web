@@ -240,7 +240,8 @@ Changing your password in Profile requires the current one — it is not recover
 | Danger zone: "Invalid code — try again." | The TOTP code was wrong — codes rotate every 30 s. |
 | Danger zone: "Too many attempts…" | 5 attempts / 5 min per admin. Wait. |
 | Danger zone does nothing + generic text | Your admin account has not completed TOTP setup yet (`TOTP_NOT_ENABLED`). Finish 2FA setup first. |
-| Key icon disabled for a user | It is your own row (self-guard) or an admin account (by design — see §5). |
+| Key icon disabled for a user | Another admin's row — no admin can reset another admin here (by design). Your **own** row is clickable since v3.6.0: click it to reset your own password (random, forced change at next login; TOTP-enabled admins confirm with a fresh code). |
+| Admin: "I forgot my password" | If you are logged in: Admin panel → your row → key icon (see above). If you are locked out entirely: another admin resets it, or restore a DB backup — there is no email recovery. |
 
 Note: **Clear cover cache** is global — it wipes every user's stored cover URLs; covers re-download on demand.
 
@@ -300,7 +301,8 @@ The bulk "+" picker only lists **your own** books; books already on the shelf ar
 | --- | --- |
 | "All copies are out" | Open loans ≥ physical `copies`. Return a copy first or raise the copy count on the book page. |
 | "Invalid due date" / "Due date must be in the future" | The server validates in UTC end-of-day; a "today" pick can be rejected around midnight UTC — pick tomorrow or later. |
-| "Invalid borrower name" | 1–200 characters. |
+| "Invalid borrower name" | Legacy error (≤ v3.5.0 free-text entry). Since v3.5.1 the borrower is a dropdown of your People — people are created on `/people` only, no auto-create. |
+| Borrower dropdown is empty / says "No people yet" | Nobody exists yet — add them on `/people` (the form links there), then come back. |
 | "Person already exists" | Names are normalized (case/spacing-insensitive) per user. |
 | "Still has books out" | Return the person's loans before deleting them. |
 | Native browser alert (e.g. "All copies are out") on the book page | Intentional: the per-book lending box surfaces thrown action errors as an `alert()`. |
@@ -367,6 +369,14 @@ v3.0.0 dropped the `AppSettings` table: admin-panel XP values are gone and `conf
 
 Push requires the three `VAPID_*` environment variables. Without them the service worker never subscribes and the server throws "VAPID keys not configured" — check `docker compose logs` and the compose `VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY/VAPID_SUBJECT` values. Use the "Send test" button in Settings → Notifications to verify.
 
+**Generate the keys** (they are just a web-push identity pair):
+
+```bash
+npx web-push generate-vapid-keys
+```
+
+Put the values in `.env` (next to `VAPID_SUBJECT=mailto:you@example.com`), then `docker compose up -d`. Existing subscriptions are not invalidated by restarts.
+
 ### "No push subscription found"
 
 No device subscribed yet — open the app in the browser you want to receive pushes and accept the notification prompt. If you previously **denied** the browser permission, no re-ask UI appears: reset the site permission in the browser settings.
@@ -404,6 +414,7 @@ Only Chromium/Android fires `beforeinstallprompt`; iOS Safari uses Share → "Ad
 - Requires **HTTPS or localhost** (camera API) and a mobile-width viewport — the button is hidden on desktop.
 - "Barcode scanner failed to load" → the html5-qrcode module could not load (offline or old browser).
 - "Invalid barcode: …" → the scanned digits are not a valid ISBN-10/13; scan the ISBN barcode, not the EAN of other products.
+- Since v3.6.0 the scanner opens the **rear camera by default** (`facingMode: "environment"`); if your device still opens the front camera, pick the rear one from the scanner's camera selector once.
 
 ---
 

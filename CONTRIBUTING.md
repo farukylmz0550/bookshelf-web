@@ -318,14 +318,19 @@ describe("levelForXp", () => {
 ## Releases (maintainer)
 
 1. Bump the version in `package.json` and add a `CHANGELOG.md` entry
-2. Commit + push `main`, then tag: `git tag X.Y.Z && git push origin X.Y.Z`
-   (no `v` prefix — the 2.4.0+ convention)
+2. Commit (signed — every commit is) + push `main`, then tag: `git tag -m "X.Y.Z" X.Y.Z && git push origin X.Y.Z`
+   (no `v` prefix — the 2.4.0+ convention; signed annotated tags)
 3. **Every tag gets a matching GitHub Release** — create it right after the tag
    lands: `gh release create X.Y.Z --title "X.Y.Z" --notes "<changelog excerpt>"`
 4. Tags without the `v` prefix don't auto-trigger the workflow — dispatch it
-   manually (`gh workflow run docker-publish.yml --ref main`); it reads the
+   manually (`gh workflow run docker-publish.yml --ref X.Y.Z`); it reads the
    version from `package.json` and publishes
    `ghcr.io/<owner>/bookshelf:latest` + `:X.Y.Z`
+5. Update the deployment (`docker compose pull && up -d`) unless the user
+   asked otherwise
+6. **Standing approval:** releases for the `UI_Improvement_Plan.md` fazlar
+   (Faz 1–5) ship without asking (see `MEMORY.md §10.1`); any release outside
+   the fazlar still needs explicit user approval
 
 ---
 

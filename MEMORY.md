@@ -136,7 +136,7 @@ User ──────┬── Book ──────── LendingRecord
 
 | File | Mutations |
 |-------|------------|
-| `auth.ts` | register (approved=false) |
+| `auth.ts` | register (approved = config.yaml `auth.selfApprove`, default false; true = auto-approved) |
 | `books.ts` | add (full metadata, one-click ISBN), update, set status, log pages, re-read, lookupIsbn, admin page-count backfill |
 | `lending.ts` | create (personId — people are created on /people), return |
 | `people.ts` | create, remove |
@@ -145,7 +145,7 @@ User ──────┬── Book ──────── LendingRecord
 | `goodreads.ts` | importGoodreadsCsv (delegate) + importBooksCsv (unified CSV: Goodreads/Calibre/StoryGraph detected from header; shared pipeline: ISBN dedupe, shelf→status/tags, Open Library enrichment, XP+achievements) |
 | `profile.ts` | update name, change password |
 | `covers.ts` | clear cache (admin) |
-| `admin.ts` | approve/reject users, toggle admin, delete users |
+| `admin.ts` | approve/reject users, toggle admin, delete users, `adminResetPassword` (v3.6.0: own row allowed — random pw + `mustChangePassword`, TOTP fresh-code when enabled, 5/5min; other admins still off-limits), `get/updateMinPagesPerReadEvent` (SiteSettings singleton) |
 | `locale.ts` | switch language (consent-gated) |
 | `theme.ts` | toggle theme Sun/Moon SVG (light/dark, consent-gated) |
 | `logout.ts` | signOut |
@@ -170,6 +170,9 @@ Every data-modifying action runs `awardXp()` + `syncAchievements()`. ISBN one-cl
 | `APP_PORT` | No | `3000` | Port (used by Docker) |
 | `RESET_SECRET` | No | — | Secret for `/api/test/reset` endpoint |
 | `ALLOW_REGISTRATION` | No | `true` | Set to `false` to disable public registration |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Push | — | Web-push identity pair (`npx web-push generate-vapid-keys`); without them push is disabled ("VAPID keys not configured") |
+| `VAPID_SUBJECT` | No | `mailto:admin@bookshelf.local` | Push contact (mailto:) |
+| `CRON_SECRET` | No | — | Bearer for the cron service (`streak-remind` / `overdue-remind` / `goal-progress` / `backup` push) |
 
 ---
 
@@ -265,7 +268,7 @@ npm run format:check  # prettier
 - **Proxy (middleware.ts):** In Next.js 16 `middleware.ts` is deprecated → `proxy.ts` is correct convention.
 - **Sidebar server actions:** `setLocale.bind`/`setTheme.bind` in Client Component → React #441. Fix: `useTransition` + direct `setLocale()`/`setTheme()` calls, `logoutAction` as separate server action.
 - **High Contrast:** Removed as incompatible with `UI_Design_Language.md` (GNOME residue). Theme is now only `light`/`dark` (Sun/Moon SVG, Lucide ISC).
-- **Book Card 60/40:** `h-[380px]` `h-[60%]` cover `object-contain p-2` + `h-[40%]` metadata `gap-1 px-3 py-3`, `text-[15px] serif` readable. Bulk import (`importBooksByIsbn`) removed.
+- **Book Card 60/40:** `h-[380px]` `h-[60%]` cover `object-contain p-2` + `h-[40%]` metadata `gap-1 px-3 py-3`, `text-[15px] serif` readable. v3.9.0 (Faz 3): card is calm — Log-N-pages/Re-read buttons and the "N pages left" line moved to the long-press context menu; swipe + status badge stay. Bulk import (`importBooksByIsbn`) removed.
 - **Cookie Consent:** Server/client split via `src/lib/cookies-shared.ts`; `next/headers` only on server.
 - **License file naming:** root-level `LICENSE-{LİSANADI}` convention — `LICENSE-GPLV3`, `LICENSE-CC-BY-NC-ND`, `LICENSE-CC0` (audio renders). Never drop the suffix or rename mid-project.
 

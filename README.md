@@ -10,12 +10,10 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.5.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.10.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-
-> **3.5.0** — **Material You launcher icon** for the Android PWA: a manifest `monochrome` icon (Symbolic Master) the launcher tints with the user's wallpaper-derived palette. Earlier: **3.4.0** added the in-app **reading timer** (book detail, start/pause/stop → whole minutes into your daily reading time), **quotes** (page-referenced excerpts per book) and optional **KEPUB downloads** for Kobo (`config.yaml → kobo.kepubify`, cached conversion); **3.3.0** added seasonal challenges, unified CSV import and automatic daily DB backups. See [`CHANGELOG.md`](CHANGELOG.md).
 
 *Self-hosted · Private · No tracking · Your books, your data.*
 
@@ -39,7 +37,7 @@
 | ✍️ **Authors** *(v3.2.0)* | Derived author pages — counts (finished/reading) + per-author grid (`/authors`) |
 | 📡 **OPDS** *(v3.2.0)* | OPDS 1.2 catalog `/api/opds/<token>` for any reader app (KOReader, Moon+, Foliate) — navigation feed per series/author, covers + EPUB downloads from your own URL template |
 | 🗂️ **Shelves** | Create/rename/delete/reorder, optional color · bulk picker dialog (+ button per shelf — select books, one "Add" click) · many-to-many books · dedicated `/groups/[id]` grid view · main-page shelf filter (AND with tags/status/search) |
-| 🤝 **Lending** | Lend / return, copy-aware, auto Person creation |
+| 🤝 **Lending** | Lend / return, copy-aware · borrower picked from your People via dropdown — people are created on `/people` only (v3.5.1) |
 | 👥 **People** | Trust scores + lending history |
 | 📊 **Stats** | Total/finished/reading, avg days, monthly chart, streak widget, heatmap |
 | 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level (+ optional custom level names via `config.yaml`, v3.1.0) · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge · device reading-time write-back (Kobo minutes → Stats tile + heatmap tooltips) |
@@ -48,16 +46,20 @@
 | 🏁 **Challenges** *(v3.3.0)* | Seasonal reading challenges — custom window + target, read-event progress, exactly-once completion XP (`/challenges`) |
 | 💾 **Auto-backup** *(v3.3.0)* | Daily SQLite backup via cron (`/data/backups`, newest 7 kept) — requires CRON_SECRET |
 | ⏱️ **Reading timer** *(v3.4.0)* | In-app start/pause/resume/stop session timer on READING books — whole minutes flow into daily reading time (device + app combined), reload-safe, anti-farm capped |
+| 📖 **Read N pages** | One tap logs your configurable page step — per-user step in Settings (v3.5.1), optional site-wide minimum set by the admin panel (v3.5.1), falling back to `config.yaml` |
+| ➕ **Add book dialog** *(v3.8.0)* | The whole add workflow (quick ISBN/title/author, detailed add, Excel import-export, unified CSV) sits behind one "+ Add book" action — the collection stays the protagonist |
 | ❝ **Quotes** *(v3.4.0)* | Page-referenced excerpts per book — add/edit/delete in the book detail page, timestamped list |
 | 👤 **Profile** | Name, password, XP, join date |
 | 🔢 **TOTP 2FA** | Optional TOTP (QR enrollment in Settings → Security) · mandatory for admin accounts · throttled per-account login attempts |
 | 🌍 **i18n** | 6 languages (EN/TR/ES/FR/RU/ZH) — cookie, `src/i18n/dictionaries` |
 | 🌓 **Theme** | Light ` #FAF0E1 / #BB4F35` · Dark ` #1D2020 / #C17A5E` · Noto · Sun/Moon SVG · Settings-only |
+| 👤 **Account card** *(v3.7.0)* | Name + email + logout live in Settings → Account (localized confirm) |
+| ✅ **Self-approve** *(v3.6.0, optional)* | `config.yaml → auth.selfApprove: true` approves every registration automatically — no admin approval step |
 | 🍪 **Consent** | GDPR banner — desktop modal + mobile bar (Essential/Preferences/Analytics) |
 | 🖥️ **Shell** | Collapsible sidebar (desktop, `sidebar-collapsed` cookie) + bottom nav (mobile) · `viewport-fit=cover` · safe-area |
 | 📦 **PWA** | `manifest.json` shortcuts · `sw.js` · install prompt |
 | 🎨 **Themed icon** *(v3.5.0)* | Material You launcher icon — manifest `monochrome` icon (Symbolic Master) tinted by the Android launcher with the wallpaper-derived system palette |
-| 🔐 **Admin** | Approve/reject, promote/demote, delete users · cover cache · admin-assigned password resets (forced change at next login) · TOTP-confirmed danger zone that deletes all non-admin accounts · admins cannot act on their own account |
+| 🔐 **Admin** | Approve/reject, promote/demote, delete users · cover cache · reading-step minimum card · admin-assigned password resets (forced change at next login) — admins can reset their own password with a fresh TOTP code (v3.6.0) · TOTP-confirmed danger zone that deletes all non-admin accounts |
 | 📖 **Kobo Sync** *(v3.0.0, experimental)* | Kobo eReader pulls your whole library straight from this server — device `api_endpoint` → BookShelf sync URL · book files streamed from your own NAS URL template (`{isbn}`, `{isbn10}`, `{isbn13}`) · reading progress writes back (currentPage, streak activity, auto-finish) · optional EPUB→KEPUB conversion with cached output (`config.yaml → kobo.kepubify`, v3.4.0) · see [Kobo Sync](#-kobo-sync-v300-experimental) |
 | 🎴 **Brand** | `brand/` set — Color + Symbolic masters, all icons rendered from the Color Master |
 | 🐳 **Docker** | `ghcr.io/farukylmz0550/bookshelf` — one command |
@@ -179,7 +181,7 @@ docker compose up -d
 ```
 
 `latest` follows the newest release automatically; to pin a version, set the
-tag explicitly in `docker-compose.yml` (e.g. `image: ghcr.io/farukylmz0550/bookshelf:3.5.1`) —
+tag explicitly in `docker-compose.yml` (e.g. `image: ghcr.io/farukylmz0550/bookshelf:3.10.0`) —
 then `docker compose pull && docker compose up -d` switches to exactly that
 version. Database migrations apply automatically on container start; user data
 lives in the `app-data` volume and is untouched by updates.

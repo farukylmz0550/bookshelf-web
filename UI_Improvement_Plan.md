@@ -1,5 +1,9 @@
 # Bookshelf UI Improvement Plan
 
+> **Status (2026-09-28):** **Faz 1 → v3.7.0 · Faz 2 → v3.8.0 · Faz 3 → v3.9.0 ·
+> Faz 5 → v3.10.0 — tamamlandı.** Faz 4 (navigasyon yeniden gruplama) kullanıcı
+> kararıyla atlandı. Release akışı fazlar için izinsizdir (MEMORY.md §10.1).
+
 ## Purpose
 
 This document defines the planned UI improvements for Bookshelf.
