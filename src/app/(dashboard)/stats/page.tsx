@@ -102,6 +102,7 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
           isTodayActive={streakInfo.isTodayActive}
           shieldCost={streakInfo.shieldCost}
           canUseShield={streakInfo.canUseShield}
+          shieldConfirmLabel={dict.stats.streakShieldConfirm ?? "Use streak protection?"}
         />
       )}
 

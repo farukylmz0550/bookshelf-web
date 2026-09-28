@@ -12,7 +12,11 @@
     "groups": "Полки",
     "series": "Серии",
     "authors": "Авторы",
-    "challenges": "Челленджи"
+    "challenges": "Челленджи",
+    "groupLibrary": "Библиотека",
+    "groupDiscover": "Обзор",
+    "groupAdmin": "Управление",
+    "streakShieldConfirm": "Использовать защиту серии?"
   },
   "theme": {
     "light": "Светлая",
@@ -286,7 +290,8 @@
     "activities": "активностей",
     "less": "Меньше",
     "more": "Больше",
-    "readingTime": "Время чтения"
+    "readingTime": "Время чтения",
+    "streakShieldConfirm": "Использовать защиту серии?"
   },
   "achievements": {
     "title": "Достижения",

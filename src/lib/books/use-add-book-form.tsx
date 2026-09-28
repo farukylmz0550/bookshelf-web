@@ -105,7 +105,7 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
         }
       });
     },
-    [isbn, dict, clearFields],
+    [isbn, dict, clearFields, onAdded],
   );
 
   const handleAdd = useCallback(() => {

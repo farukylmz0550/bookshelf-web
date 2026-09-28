@@ -32,7 +32,7 @@ export function AddBookForm({ dict, onAdded }: { dict: AddBookFormDict; onAdded?
               placeholder={dict.isbn}
               aria-invalid={!!form.lookupError}
               className={`w-full rounded-[8px] border bg-[var(--surface-elevated)] px-3 py-2 font-[var(--font-sans)] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)] ${
-                form.lookupError ? "border-[var(--destructive)] bg-[var(--error-soft)]" : "border-border"
+                form.lookupError ? "border-[var(--destructive)] bg-[var(--error-soft)]" : "border-[var(--border)]"
               }`}
             />
             <BarcodeScanner onDetected={form.handleScan} title={dict.scan} />
@@ -43,7 +43,7 @@ export function AddBookForm({ dict, onAdded }: { dict: AddBookFormDict; onAdded?
           type="button"
           onClick={() => form.handleLookup()}
           disabled={form.lookupPending || !form.isbn.trim()}
-          className="inline-flex items-center gap-1.5 rounded-[8px] border border-border bg-secondary px-3.5 py-2 font-[var(--font-sans)] text-[13px] font-medium text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-1.5 rounded-[8px] border border-[var(--border)] bg-secondary px-3.5 py-2 font-[var(--font-sans)] text-[13px] font-medium text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Search size={14} />
           {form.lookupPending ? "..." : dict.lookup}
@@ -59,7 +59,7 @@ export function AddBookForm({ dict, onAdded }: { dict: AddBookFormDict; onAdded?
             placeholder={dict.bookTitle}
             aria-invalid={!!form.addError}
             className={`w-full rounded-[8px] border bg-[var(--surface-elevated)] px-3 py-2 font-[var(--font-serif)] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)] ${
-              form.addError ? "border-[var(--destructive)] bg-[var(--error-soft)]" : "border-border"
+              form.addError ? "border-[var(--destructive)] bg-[var(--error-soft)]" : "border-[var(--border)]"
             }`}
           />
         </div>
@@ -72,7 +72,7 @@ export function AddBookForm({ dict, onAdded }: { dict: AddBookFormDict; onAdded?
             value={form.author}
             onChange={(e) => form.setAuthor(e.target.value)}
             placeholder={dict.author}
-            className="w-full rounded-[8px] border border-border bg-[var(--surface-elevated)] px-3 py-2 font-[var(--font-sans)] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+            className="w-full rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 font-[var(--font-sans)] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
           />
         </div>
 

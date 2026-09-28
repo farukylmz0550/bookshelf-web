@@ -102,8 +102,8 @@ export function UserTable({
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
-      <div className="grid grid-cols-[1fr_1fr_auto_auto_auto_auto] gap-4 border-b border-border bg-muted/50 px-4 py-2">
+    <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
+      <div className="grid grid-cols-[1fr_1fr_auto_auto_auto_auto] gap-4 border-b border-[var(--border)] bg-[var(--surface-elevated)] px-4 py-2">
         <span className="text-[11px] text-muted-foreground">{dict.name}</span>
         <span className="text-[11px] text-muted-foreground">{dict.email}</span>
         <span className="text-[11px] text-center text-muted-foreground">{dict.adminLabel}</span>
@@ -116,7 +116,7 @@ export function UserTable({
         return (
           <div
             key={user.id}
-            className="grid grid-cols-[1fr_1fr_auto_auto_auto_auto] items-center gap-4 border-b border-border last:border-b-0 px-4 py-2.5"
+            className="grid grid-cols-[1fr_1fr_auto_auto_auto_auto] items-center gap-4 border-b border-[var(--border)] last:border-b-0 px-4 py-2.5"
           >
             <span className="text-sm font-medium text-foreground truncate">
               {user.name}
@@ -131,7 +131,7 @@ export function UserTable({
                 className={`rounded px-2 py-0.5 text-[10px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
                   user.isAdmin
                     ? "bg-primary/10 text-primary hover:bg-primary/20"
-                    : "bg-muted text-muted-foreground hover:bg-accent"
+                    : "bg-[var(--surface-elevated)] text-muted-foreground hover:bg-accent"
                 }`}
               >
                 {user.isAdmin ? dict.yes : dict.no}

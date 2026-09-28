@@ -11,6 +11,7 @@ interface StreakWidgetProps {
   isTodayActive: boolean;
   shieldCost: number;
   canUseShield: boolean;
+  shieldConfirmLabel: string;
 }
 
 export function StreakWidget({
@@ -19,17 +20,18 @@ export function StreakWidget({
   isTodayActive,
   shieldCost,
   canUseShield,
+  shieldConfirmLabel,
 }: StreakWidgetProps) {
   const [isPending, startTransition] = useTransition();
 
   const handleUseShield = useCallback(() => {
-    if (!confirm("Use streak protection?")) return;
+    if (!confirm(shieldConfirmLabel)) return;
     hapticFeedback("heavy");
     startTransition(async () => {
       const mod = await import("@/app/actions/streak");
       await mod.useStreakShield();
     });
-  }, []);
+  }, [shieldConfirmLabel]);
 
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
   const today = new Date().getDay();
@@ -41,7 +43,7 @@ export function StreakWidget({
         <div className="flex items-center gap-3">
           <div
             className={`flex h-10 w-10 items-center justify-center rounded-xl ${
-              currentStreak > 0 ? "bg-[var(--accent-soft)]" : "bg-muted"
+              currentStreak > 0 ? "bg-[var(--accent-soft)]" : "bg-[var(--surface-elevated)]"
             }`}
           >
             <Flame
@@ -72,7 +74,7 @@ export function StreakWidget({
                     ? "bg-[var(--primary)] text-white"
                     : "border border-[var(--primary)] text-[var(--primary)]"
                   : i < todayIndex
-                    ? "bg-muted text-muted-foreground"
+                    ? "bg-[var(--surface-elevated)] text-muted-foreground"
                     : "bg-transparent text-muted-foreground/40"
               }`}
             >

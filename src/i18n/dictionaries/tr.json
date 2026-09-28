@@ -12,7 +12,11 @@
     "groups": "Raflar",
     "series": "Seriler",
     "authors": "Yazarlar",
-    "challenges": "Meydan Okumalar"
+    "challenges": "Meydan Okumalar",
+    "groupLibrary": "Kütüphane",
+    "groupDiscover": "Keşfet",
+    "groupAdmin": "Yönetim",
+    "streakShieldConfirm": "Seri koruması kullanılsın mı?"
   },
   "theme": {
     "light": "Aydınlık",
@@ -286,7 +290,8 @@
     "activities": "etkinlik",
     "less": "Az",
     "more": "Çok",
-    "readingTime": "Okuma süresi"
+    "readingTime": "Okuma süresi",
+    "streakShieldConfirm": "Seri koruması kullanılsın mı?"
   },
   "achievements": {
     "title": "Başarımlar",

@@ -301,7 +301,7 @@ export function BookCard({
           }}
         >
           <div
-            className="w-full max-w-xs rounded-xl bg-card p-4 shadow-lg animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200"
+            className="w-full max-w-xs rounded-[12px] bg-[var(--surface)] p-4 shadow-lg animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-label={book.title}
@@ -373,7 +373,7 @@ export function BookCard({
           }}
         >
           <div
-            className="w-full max-w-xs rounded-xl bg-card p-4 shadow-lg animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200"
+            className="w-full max-w-xs rounded-[12px] bg-[var(--surface)] p-4 shadow-lg animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-label={dict.pagesPromptTitle}

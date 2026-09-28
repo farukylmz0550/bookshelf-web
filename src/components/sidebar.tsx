@@ -104,7 +104,7 @@ export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarPr
           <div className="space-y-0.5 px-2">
             {!collapsed && (
               <p className="px-2 py-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                Library
+                {dict.groupLibrary ?? "Library"}
               </p>
             )}
             {MAIN_NAV.map((item) => (
@@ -115,7 +115,7 @@ export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarPr
           <div className="space-y-0.5 px-2">
             {!collapsed && (
               <p className="px-2 py-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                Discover
+                {dict.groupDiscover ?? "Discover"}
               </p>
             )}
             {MORE_NAV.map((item) => (
@@ -127,7 +127,7 @@ export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarPr
             <div className="space-y-0.5 px-2">
               {!collapsed ? (
                 <p className="px-2 py-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                  Admin
+                  {dict.groupAdmin ?? "Admin"}
                 </p>
               ) : (
                 <div className="mx-2 my-2 h-px bg-[var(--border)]" />

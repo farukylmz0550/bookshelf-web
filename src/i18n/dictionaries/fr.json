@@ -12,7 +12,11 @@
     "groups": "Étagères",
     "series": "Séries",
     "authors": "Auteurs",
-    "challenges": "Défis"
+    "challenges": "Défis",
+    "groupLibrary": "Bibliothèque",
+    "groupDiscover": "Découvrir",
+    "groupAdmin": "Administration",
+    "streakShieldConfirm": "Utiliser la protection de série ?"
   },
   "theme": {
     "light": "Clair",
@@ -286,7 +290,8 @@
     "activities": "activités",
     "less": "Moins",
     "more": "Plus",
-    "readingTime": "Temps de lecture"
+    "readingTime": "Temps de lecture",
+    "streakShieldConfirm": "Utiliser la protection de série ?"
   },
   "achievements": {
     "title": "Succès",

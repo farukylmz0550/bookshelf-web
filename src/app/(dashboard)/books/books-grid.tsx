@@ -245,7 +245,7 @@ export function BooksGrid({
           onClick={() => setNextBookOpen(false)}
         >
           <div
-            className="w-full max-w-sm rounded-xl bg-card p-4 shadow-lg"
+            className="w-full max-w-sm rounded-[12px] bg-[var(--surface)] p-4 shadow-lg"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-label={cardDict.nextBookDialogTitle}

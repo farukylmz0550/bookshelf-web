@@ -12,7 +12,11 @@
     "groups": "书架",
     "series": "系列",
     "authors": "作者",
-    "challenges": "挑战"
+    "challenges": "挑战",
+    "groupLibrary": "书库",
+    "groupDiscover": "发现",
+    "groupAdmin": "管理",
+    "streakShieldConfirm": "使用连续阅读保护？"
   },
   "theme": {
     "light": "浅色",
@@ -286,7 +290,8 @@
     "activities": "次活动",
     "less": "少",
     "more": "多",
-    "readingTime": "阅读时间"
+    "readingTime": "阅读时间",
+    "streakShieldConfirm": "使用连续阅读保护？"
   },
   "achievements": {
     "title": "成就",

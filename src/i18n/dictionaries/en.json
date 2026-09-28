@@ -12,7 +12,11 @@
     "groups": "Shelves",
     "series": "Series",
     "authors": "Authors",
-    "challenges": "Challenges"
+    "challenges": "Challenges",
+    "groupLibrary": "Library",
+    "groupDiscover": "Discover",
+    "groupAdmin": "Admin",
+    "streakShieldConfirm": "Use streak protection?"
   },
   "theme": {
     "light": "Light",
@@ -286,7 +290,8 @@
     "activities": "activities",
     "less": "Less",
     "more": "More",
-    "readingTime": "Reading time"
+    "readingTime": "Reading time",
+    "streakShieldConfirm": "Use streak protection?"
   },
   "achievements": {
     "title": "Achievements",

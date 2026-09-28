@@ -107,12 +107,12 @@ export function ExcelActions({
         <FileDown size={14} />
         {dict.export}
       </Button>
-      <label className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
+      <label className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
         <FileUp size={14} />
         {dict.importExcel}
         <input type="file" accept=".xlsx,.xls" onChange={onFile} className="hidden" />
       </label>
-      <label className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
+      <label className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
         <BookOpen size={14} />
         {grPending ? goodreadsDict.importing : goodreadsDict.importCsv}
         <input type="file" accept=".csv,text/csv" onChange={onGoodreadsFile} className="hidden" />

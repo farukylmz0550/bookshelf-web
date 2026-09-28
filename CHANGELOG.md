@@ -4,6 +4,21 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.10.0 — 2026-09-28
+
+### Changed
+
+- **UI plan Faz 5 — page-level refinement sweep** (§12: shared design
+  language, page-specific workspaces):
+  - Sidebar group headings are localized ("Library" / "Discover" / "Admin"
+    in all 6 dictionaries).
+  - The streak widget's shield confirm is localized; its inactive colors
+    use surface tokens.
+  - Design-token cleanup: the admin user table, card dialogs, the next-book
+    dialog and the Excel labels now use the `--surface` / `--surface-elevated`
+    / `--border` tokens instead of shadcn `bg-card` / `bg-muted` classes.
+  - Removed the unused `logout-button.tsx` (logout lives in Settings).
+
 ## 3.9.0 — 2026-09-28
 
 ### Changed

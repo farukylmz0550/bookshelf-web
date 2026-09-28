@@ -12,7 +12,11 @@
     "groups": "Estanterías",
     "series": "Series",
     "authors": "Autores",
-    "challenges": "Desafíos"
+    "challenges": "Desafíos",
+    "groupLibrary": "Biblioteca",
+    "groupDiscover": "Descubrir",
+    "groupAdmin": "Administración",
+    "streakShieldConfirm": "¿Usar protección de racha?"
   },
   "theme": {
     "light": "Claro",
@@ -286,7 +290,8 @@
     "activities": "actividades",
     "less": "Menos",
     "more": "Más",
-    "readingTime": "Tiempo de lectura"
+    "readingTime": "Tiempo de lectura",
+    "streakShieldConfirm": "¿Usar protección de racha?"
   },
   "achievements": {
     "title": "Logros",
