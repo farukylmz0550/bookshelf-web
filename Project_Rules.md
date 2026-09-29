@@ -33,12 +33,12 @@ GHCR and `build: .` stays only as a source-build fallback.
 
 **Push → delete rule (60s delay):** after a locally built image is pushed to
 GHCR, the local image copy is deleted — **not immediately, but 60 seconds
-after the push completes** (`sleep 60 && docker rmi`). The delay is a safety
-window: if the push turns out to be incomplete or the tags need re-pushing,
-the local copy is still there. GHCR is the single source of truth for release
-images — the local Docker store never keeps image backups beyond that window.
-Verification happens against GHCR (`docker manifest inspect`) before the
-local copy is removed.
+after the push completes**. The delay is a safety window: if the push turns
+out to be incomplete or the tags need re-pushing, the local copy is still
+there. GHCR is the single source of truth for release images — the local
+Docker store never keeps image backups beyond that window. Verification
+happens against GHCR (`docker manifest inspect`) before the local copy is
+removed.
 
 ---
 
