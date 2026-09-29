@@ -373,6 +373,10 @@ kobo.kepubify default false).
 
 ## 13. Tomorrow's TODO — BookShelf UI/Branding Overhaul
 
+### Tomorrow (2026-09-30)
+
+- [ ] **Maskot eklenecek** — Book Shelf için bir maskot karakteri tasarlanacak ve uygulamaya eklenecek (boş durumlar, yükleme ekranları, hata sayfaları, PWA splash gibi yerlerde görünmesi değerlendirilir). Kullanıcıyla konsept konuşulup sonra tasarım + entegrasyon planlanacak.
+
 > ✅ **PROGRESS — 2026-09-16 (v2.11.0 — permanent + monthly achievements, books page-log CTA):**
 > - **Recurrence model:** `Achievement.recurrence` (NONE/MONTHLY) + `UserAchievement.periodKey` ("" = permanent, "YYYY-MM" = monthly **UTC** period); `@@unique([userId, achievementId, periodKey])` — "" sentinel because SQLite treats NULLs as distinct in unique indexes. Migration `20260916150239_achievement_recurrence_and_periods` preserves existing rows.
 > - **Catalog 8 → 21:** permanent adds books_25/50/100, pages_1000/5000/10000, first_shelf, first_goal; monthly adds monthly_reader (3 finished), monthly_bookworm (5), monthly_page_turner (500 pages), monthly_regular_reader (7 distinct days), monthly_goal (monthly target). XP centralized in `ACHIEVEMENT_XP`.
