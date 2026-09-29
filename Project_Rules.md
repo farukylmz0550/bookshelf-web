@@ -16,6 +16,21 @@ The purpose of this document is to preserve the integrity of the existing projec
 `CONTRIBUTING.md → Commit Signing`). Unsigned commits and unsigned release
 tags are not accepted into `main`.
 
+**Docker image rule:** release Docker images are **always built locally** and
+pushed to GHCR from the developer machine (`docker build` + `docker push`).
+CI/CD must not build or publish images — the `Docker Publish` workflow was
+removed (v3.11.0) because local builds are the single source of truth.
+Publishing flow:
+
+```bash
+docker build -t ghcr.io/farukylmz0550/bookshelf:{version} -t ghcr.io/farukylmz0550/bookshelf:latest .
+docker push ghcr.io/farukylmz0550/bookshelf:{version}
+docker push ghcr.io/farukylmz0550/bookshelf:latest
+```
+
+Both the version tag and `latest` are pushed; `docker-compose.yml` pulls from
+GHCR and `build: .` stays only as a source-build fallback.
+
 ---
 
 ## 1. Respect the Existing Technology Stack

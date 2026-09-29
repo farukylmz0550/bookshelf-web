@@ -318,14 +318,18 @@ describe("levelForXp", () => {
 ## Releases (maintainer)
 
 1. Bump the version in `package.json` and add a `CHANGELOG.md` entry
-2. Commit (signed — every commit is) + push `main`, then tag: `git tag -m "X.Y.Z" X.Y.Z && git push origin X.Y.Z`
-   (no `v` prefix — the 2.4.0+ convention; signed annotated tags)
+2. Commit (signed — every commit is) + push `main`, then tag: `git tag -m "X.Y.Z" vX.Y.Z && git push origin vX.Y.Z`
+   (`v` prefix — signed annotated tags; the tag no longer triggers CI since v3.11.0)
 3. **Every tag gets a matching GitHub Release** — create it right after the tag
-   lands: `gh release create X.Y.Z --title "X.Y.Z" --notes "<changelog excerpt>"`
-4. Tags without the `v` prefix don't auto-trigger the workflow — dispatch it
-   manually (`gh workflow run docker-publish.yml --ref X.Y.Z`); it reads the
-   version from `package.json` and publishes
-   `ghcr.io/<owner>/bookshelf:latest` + `:X.Y.Z`
+   lands: `gh release create vX.Y.Z --title "X.Y.Z" --notes "<changelog excerpt>"`
+4. **Docker images are always built and pushed locally** — CI does not
+   publish images (the `Docker Publish` workflow was removed in v3.11.0;
+   see `Project_Rules.md → Docker image rule`):
+   ```bash
+   docker build -t ghcr.io/<owner>/bookshelf:X.Y.Z -t ghcr.io/<owner>/bookshelf:latest .
+   docker push ghcr.io/<owner>/bookshelf:X.Y.Z
+   docker push ghcr.io/<owner>/bookshelf:latest
+   ```
 5. Update the deployment (`docker compose pull && up -d`) unless the user
    asked otherwise
 6. **Standing approval:** releases for the `UI_Improvement_Plan.md` fazlar
