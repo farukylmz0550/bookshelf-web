@@ -58,7 +58,7 @@ export function StreakWidget({
           </div>
         </div>
         {longestStreak > 0 && (
-          <div className="text-right text-xs text-muted-foreground">
+          <div className="text-end text-xs text-muted-foreground">
             Longest: <span className="font-medium text-foreground">{longestStreak}</span>
           </div>
         )}

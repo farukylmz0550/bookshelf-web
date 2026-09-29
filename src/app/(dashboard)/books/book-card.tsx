@@ -220,12 +220,12 @@ export function BookCard({
             </div>
           )}
           {lentOut && (
-            <div className="absolute right-2 top-2 rounded-[4px] bg-[var(--accent)] px-2 py-0.5 font-[var(--font-sans)] text-[10px] font-medium text-white shadow-sm">
+            <div className="absolute end-2 top-2 rounded-[4px] bg-[var(--accent)] px-2 py-0.5 font-[var(--font-sans)] text-[10px] font-medium text-white shadow-sm">
               {dict.lentOut}
             </div>
           )}
           {book.signed && (
-            <div className="absolute left-2 top-2 rounded-[4px] bg-[var(--warning-soft)] px-1.5 py-0.5 font-[var(--font-sans)] text-[9px] font-medium text-[var(--warning-text)]">
+            <div className="absolute start-2 top-2 rounded-[4px] bg-[var(--warning-soft)] px-1.5 py-0.5 font-[var(--font-sans)] text-[9px] font-medium text-[var(--warning-text)]">
               {dict.signed}
             </div>
           )}
@@ -283,7 +283,7 @@ export function BookCard({
               <span className="text-xs text-transparent select-none">★</span>
             )}
             {book.status && (
-              <span className="ml-auto rounded-[4px] bg-[var(--surface-elevated)] border border-[var(--border)] px-2 py-0.5 font-[var(--font-sans)] text-[11px] font-medium text-foreground">
+              <span className="ms-auto rounded-[4px] bg-[var(--surface-elevated)] border border-[var(--border)] px-2 py-0.5 font-[var(--font-sans)] text-[11px] font-medium text-foreground">
                 {pending ? "…" : statusLabel(book.status, statusLabels)}
               </span>
             )}
@@ -319,7 +319,7 @@ export function BookCard({
                     if (s !== status) changeStatus(s);
                     setMenuOpen(false);
                   }}
-                  className={`rounded-[8px] px-3 py-2 text-left font-[var(--font-sans)] text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
+                  className={`rounded-[8px] px-3 py-2 text-start font-[var(--font-sans)] text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
                     s === status ? "bg-[var(--surface-elevated)] font-medium" : ""
                   }`}
                 >
@@ -340,7 +340,7 @@ export function BookCard({
                     setMenuOpen(false);
                     logPages();
                   }}
-                  className="flex items-center gap-2 rounded-[8px] bg-[var(--accent)] px-3 py-2.5 text-left font-[var(--font-sans)] text-sm font-medium text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                  className="flex items-center gap-2 rounded-[8px] bg-[var(--accent)] px-3 py-2.5 text-start font-[var(--font-sans)] text-sm font-medium text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
                 >
                   <BookPlus size={16} />
                   {dict.logPagesButton.replace("{count}", String(pagesToLog))}
@@ -354,7 +354,7 @@ export function BookCard({
                     setMenuOpen(false);
                     reRead();
                   }}
-                  className="flex items-center gap-2 rounded-[8px] px-3 py-2 text-left font-[var(--font-sans)] text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                  className="flex items-center gap-2 rounded-[8px] px-3 py-2 text-start font-[var(--font-sans)] text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
                 >
                   <RotateCcw size={14} />
                   {dict.reReadButton}

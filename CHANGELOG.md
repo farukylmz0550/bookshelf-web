@@ -4,6 +4,32 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.13.0 — 2026-09-29
+
+### Added
+
+- **Arabic (العربية) — 7th locale, with full RTL.** Complete Arabic dictionary
+  (597 keys, 100% parity with English). The `<html>` element gets
+  `dir="rtl"` for `ar` (all other locales keep `ltr`). A **full RTL audit**
+  converted every physical direction class to Tailwind's logical
+  equivalents — `ml-auto → ms-auto`, `pl/pr → ps/pe`, `text-left/right →
+  text-start/end`, absolute `left/right → start/end`, dialog/sheet/table
+  close-button and chevron sides — so LTR locales render byte-identically
+  while Arabic mirrors correctly. **Noto Sans Arabic** joins the font stack
+  (`--font-sans`, `--font-serif` fallback chain) so Arabic text stays in the
+  design language instead of falling back to system fonts.
+- **Dictionary parity test** (`src/lib/dictionaries.test.ts`): every locale
+  must expose the exact same key set as `en.json` with non-empty values —
+  Project_Rules §15 is now automatically enforced; 16 tests. CONTRIBUTING
+  updated to point at it.
+
+### Upgrade
+
+> Personal deployment (`~/BookShelf`): run **`bookshelfupdate`** — or bump the
+> image tags to `3.13.0` in `docker-compose.yml` (both `app` and `cron`), then
+> `docker compose pull && docker compose up -d`. Nothing else — Settings →
+> Language now offers العربية; existing users keep their current locale.
+
 ## 3.12.2 — 2026-09-29
 
 ### Fixed

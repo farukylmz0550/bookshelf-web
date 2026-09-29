@@ -51,7 +51,7 @@
 | ❝ **Quotes** *(v3.4.0)* | Page-referenced excerpts per book — add/edit/delete in the book detail page, timestamped list |
 | 👤 **Profile** | Name, password, XP, join date |
 | 🔢 **TOTP 2FA** | Optional TOTP (QR enrollment in Settings → Security) · mandatory for admin accounts · throttled per-account login attempts |
-| 🌍 **i18n** | 6 languages (EN/TR/ES/FR/RU/ZH) — cookie, `src/i18n/dictionaries` |
+| 🌍 **i18n** | 7 languages (EN/TR/ES/FR/RU/ZH/**AR** — Arabic RTL) — cookie, `src/i18n/dictionaries` |
 | 🌓 **Theme** | Light `#FAF0E1 / #BB4F35` · Dark `#1D2020 / #C17A5E` · **System (auto)** · no-flash script · Noto · Settings-only |
 | 📱 **QR login** *(v3.12.0)* | Sign in on your phone without typing: the desktop shows a 60 s single-use QR, the phone scans + confirms — done. Password + TOTP stays as-is |
 | 👤 **Account card** *(v3.7.0)* | Name + email + logout live in Settings → Account (localized confirm) |

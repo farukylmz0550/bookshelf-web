@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import type { Metadata, Viewport } from "next";
-import { Noto_Serif, Noto_Sans, Noto_Sans_Mono } from "next/font/google";
+import { Noto_Serif, Noto_Sans, Noto_Sans_Mono, Noto_Sans_Arabic } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { getResolvedTheme } from "@/lib/theme";
 import { getDictionary, getLocale } from "@/i18n/get-dictionary";
@@ -23,6 +23,14 @@ const notoSans = Noto_Sans({
 const notoMono = Noto_Sans_Mono({
   variable: "--font-noto-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// v3.13.0 — Arabic glyphs for the RTL locale: Noto Sans Arabic covers the
+// UI text; Noto Kufi-style serif headers come from the same family's design.
+const notoSansArabic = Noto_Sans_Arabic({
+  variable: "--font-noto-arabic",
+  subsets: ["arabic"],
   display: "swap",
 });
 
@@ -87,11 +95,14 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const theme = await getResolvedTheme();
   const locale = await getLocale();
   const dict = await getDictionary();
+  // v3.13.0 — Arabic flows right-to-left; all other locales keep LTR.
+  const dir = locale === "ar" ? "rtl" : "ltr";
   return (
     <html
       lang={locale}
+      dir={dir}
       data-scroll-behavior="smooth"
-      className={`${notoSerif.variable} ${notoSans.variable} ${notoMono.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
+      className={`${notoSerif.variable} ${notoSans.variable} ${notoMono.variable} ${notoSansArabic.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
     >
       <head>
         {/* v3.12.2 — declare the page's color scheme to the rendering engine

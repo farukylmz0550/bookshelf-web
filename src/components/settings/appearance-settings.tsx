@@ -23,6 +23,7 @@ const LOCALES: { value: Locale; label: string }[] = [
   { value: "fr", label: "Français" },
   { value: "ru", label: "Русский" },
   { value: "zh", label: "中文" },
+  { value: "ar", label: "العربية" },
 ];
 
 export function AppearanceSettings({
@@ -70,7 +71,7 @@ export function AppearanceSettings({
                 type="button"
                 onClick={() => handleThemeChange(t.value)}
                 disabled={isPending}
-                className="flex w-full items-center justify-between border-b border-[var(--border)] last:border-b-0 px-4 py-3 text-left hover:bg-[var(--surface-elevated)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                className="flex w-full items-center justify-between border-b border-[var(--border)] last:border-b-0 px-4 py-3 text-start hover:bg-[var(--surface-elevated)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
               >
                 <div className="flex items-center gap-3">
                   <Icon size={16} className="text-muted-foreground" />
@@ -95,7 +96,7 @@ export function AppearanceSettings({
               type="button"
               onClick={() => handleLocaleChange(l.value)}
               disabled={isPending}
-              className="flex w-full items-center justify-between border-b border-[var(--border)] last:border-b-0 px-4 py-3 text-left hover:bg-[var(--surface-elevated)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="flex w-full items-center justify-between border-b border-[var(--border)] last:border-b-0 px-4 py-3 text-start hover:bg-[var(--surface-elevated)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
             >
               <div className="flex items-center gap-3">
                 <Globe size={16} className="text-muted-foreground" />

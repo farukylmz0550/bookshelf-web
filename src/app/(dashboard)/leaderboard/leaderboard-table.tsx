@@ -34,7 +34,7 @@ export function LeaderboardTable({
         <span className="text-[11px] text-muted-foreground">#</span>
         <span className="text-[11px] text-muted-foreground">{dict.name}</span>
         <span className="text-[11px] text-center text-muted-foreground">{dict.level}</span>
-        <span className="text-[11px] text-right text-muted-foreground">{dict.xp}</span>
+        <span className="text-[11px] text-end text-muted-foreground">{dict.xp}</span>
       </div>
       {slice.map((user, i) => (
         <div
@@ -56,7 +56,7 @@ export function LeaderboardTable({
               </span>
             )}
           </span>
-          <span className="text-right text-sm tabular-nums text-muted-foreground">{user.xp}</span>
+          <span className="text-end text-sm tabular-nums text-muted-foreground">{user.xp}</span>
         </div>
       ))}
       {totalPages > 1 && (

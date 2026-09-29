@@ -344,7 +344,7 @@ describe("levelForXp", () => {
 2. Write unit tests in `src/lib/*.test.ts`
 3. Add server action in `src/app/actions/` if it mutates data
 4. Create page component in `src/app/(dashboard)/`
-5. Add i18n keys to all 6 dictionaries (`src/i18n/dictionaries/`)
+5. Add i18n keys to ALL 7 dictionaries — the parity test (src/lib/dictionaries.test.ts) fails on any missing key; partial additions are rejected by Project_Rules §15 (`src/i18n/dictionaries/`)
 6. Site-wide configurable values go in `config.yaml` + `src/lib/app-config.ts` (v3.0.0) — not the database
 7. Update `README.md` if it's a user-facing feature
 
@@ -353,7 +353,7 @@ describe("levelForXp", () => {
 ## Adding a New Achievement
 
 1. Add rule to `ACHIEVEMENT_RULES` in `src/lib/gamification.ts`
-2. Add i18n keys to all 6 dictionaries:
+2. Add i18n keys to ALL 7 dictionaries — the parity test (src/lib/dictionaries.test.ts) fails on any missing key; partial additions are rejected by Project_Rules §15:
    - `{key}_title` — achievement name
    - `{key}_desc` — achievement description
 3. Run `npm run db:seed` to register the achievement

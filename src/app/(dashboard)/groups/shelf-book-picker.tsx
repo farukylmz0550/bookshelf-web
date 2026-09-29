@@ -131,7 +131,7 @@ export function ShelfBookPicker({
           className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 font-[var(--font-sans)] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
         />
 
-        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className="min-h-0 flex-1 overflow-y-auto pe-1">
           {loading ? (
             <div className="flex items-center justify-center py-16 text-muted-foreground">
               <Loader2 className="size-5 animate-spin" />
@@ -150,7 +150,7 @@ export function ShelfBookPicker({
                     disabled={book.onShelf}
                     aria-pressed={active}
                     onClick={() => toggle(book.id, book.onShelf)}
-                    className={`group relative flex h-[190px] flex-col overflow-hidden rounded-[12px] border bg-[var(--surface-elevated)] text-left transition-[colors,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
+                    className={`group relative flex h-[190px] flex-col overflow-hidden rounded-[12px] border bg-[var(--surface-elevated)] text-start transition-[colors,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
                       book.onShelf
                         ? "cursor-default opacity-60"
                         : active
@@ -172,12 +172,12 @@ export function ShelfBookPicker({
                         </span>
                       )}
                       {!book.onShelf && active && (
-                        <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-sm">
+                        <span className="absolute end-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-sm">
                           <Check size={12} strokeWidth={3} />
                         </span>
                       )}
                     </div>
-                    <div className="flex min-h-0 flex-1 flex-col justify-center gap-0.5 px-2.5 py-2 text-left">
+                    <div className="flex min-h-0 flex-1 flex-col justify-center gap-0.5 px-2.5 py-2 text-start">
                       <span className="line-clamp-2 font-[var(--font-serif)] text-[12px] font-semibold leading-tight text-foreground">
                         {book.title}
                       </span>

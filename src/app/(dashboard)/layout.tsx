@@ -84,7 +84,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               Book Shelf
             </span>
           </Link>
-          <div className="ml-auto flex items-center gap-0.5">
+          <div className="ms-auto flex items-center gap-0.5">
             <NotificationPerm dict={dict.common} />
           </div>
         </header>

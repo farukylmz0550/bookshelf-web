@@ -87,7 +87,7 @@ export function BarcodeScanner({ onDetected, title = "Scan" }: BarcodeScannerPro
           <div className="relative w-full max-w-md rounded-xl bg-card p-4">
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute right-2 top-2 rounded-md p-1 text-muted-foreground hover:bg-accent"
+              className="absolute end-2 top-2 rounded-md p-1 text-muted-foreground hover:bg-accent"
             >
               <X size={18} />
             </button>

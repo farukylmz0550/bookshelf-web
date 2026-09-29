@@ -67,7 +67,7 @@ export function BookGroups({
         {memberGroups.map((group) => (
           <span
             key={group.id}
-            className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface-elevated)] py-1 pr-2 pl-2.5"
+            className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface-elevated)] py-1 pe-2 ps-2.5"
           >
             <span
               aria-hidden="true"
@@ -124,7 +124,7 @@ export function BookGroups({
                       disabled={!!busyId}
                       role="checkbox"
                       aria-checked={isMember}
-                      className="flex w-full items-center gap-3 rounded-[8px] px-2 py-2 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-50"
+                      className="flex w-full items-center gap-3 rounded-[8px] px-2 py-2 text-start transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-50"
                     >
                       <span
                         aria-hidden="true"

@@ -266,7 +266,7 @@ export function BooksGrid({
                         setNextBookOpen(false);
                         router.refresh();
                       }}
-                      className="flex w-full items-baseline justify-between gap-3 rounded-[8px] px-2 py-2 text-left transition-colors hover:bg-accent hover:text-accent-foreground"
+                      className="flex w-full items-baseline justify-between gap-3 rounded-[8px] px-2 py-2 text-start transition-colors hover:bg-accent hover:text-accent-foreground"
                     >
                       <span className="min-w-0">
                         <span className="block truncate font-[var(--font-serif)] text-sm text-foreground">

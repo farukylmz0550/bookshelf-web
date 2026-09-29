@@ -25,7 +25,7 @@ export function BottomNav({ dict }: BottomNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card safe-bottom md:hidden">
+    <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-card safe-bottom md:hidden">
       <div className="mx-auto flex h-14 max-w-3xl items-stretch justify-around px-2">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href || pathname.startsWith(tab.href + "/");

@@ -154,7 +154,7 @@ export function PageLogCta({
                     key={book.id}
                     type="button"
                     onClick={() => logFor(book)}
-                    className="flex w-full items-center justify-between gap-2 rounded-[8px] px-2 py-2 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-50"
+                    className="flex w-full items-center justify-between gap-2 rounded-[8px] px-2 py-2 text-start transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-50"
                     disabled={pending}
                   >
                     <span className="min-w-0 flex-1 truncate font-[var(--font-sans)] text-sm text-foreground">

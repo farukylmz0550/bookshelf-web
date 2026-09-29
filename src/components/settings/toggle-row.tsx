@@ -17,7 +17,7 @@ export function ToggleRow({
       type="button"
       onClick={onChange}
       disabled={disabled}
-      className="flex w-full items-center justify-between border-b border-[var(--border)] last:border-b-0 px-4 py-3 text-left hover:bg-[var(--surface-elevated)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+      className="flex w-full items-center justify-between border-b border-[var(--border)] last:border-b-0 px-4 py-3 text-start hover:bg-[var(--surface-elevated)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
     >
       <span className="font-[var(--font-sans)] text-sm text-foreground">{label}</span>
       <div

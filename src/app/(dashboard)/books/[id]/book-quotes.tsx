@@ -146,7 +146,7 @@ export function BookQuotes({
               placeholder={d.pagePlaceholder}
               className="w-24 rounded-[8px] border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
             />
-            <div className="ml-auto flex gap-2">
+            <div className="ms-auto flex gap-2">
               <button
                 onClick={submitNew}
                 disabled={pending}
@@ -195,7 +195,7 @@ export function BookQuotes({
                     placeholder={d.pagePlaceholder}
                     className="w-24 rounded-[8px] border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
                   />
-                  <div className="ml-auto flex gap-2">
+                  <div className="ms-auto flex gap-2">
                     <button
                       onClick={() => submitEdit(q.id)}
                       disabled={pending}
@@ -219,7 +219,7 @@ export function BookQuotes({
                 <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                   {q.page !== null && <span>{pageLabel(d.page, q.page)}</span>}
                   <span>{new Date(q.createdAt).toLocaleDateString()}</span>
-                  <div className="ml-auto flex gap-2">
+                  <div className="ms-auto flex gap-2">
                     <button
                       onClick={() => {
                         setEditingId(q.id);

@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-noto-sans);
+  --font-sans: var(--font-noto-sans), var(--font-noto-arabic);
   --font-mono: var(--font-noto-mono);
-  --font-heading: var(--font-noto-serif);
+  --font-heading: var(--font-noto-serif), var(--font-noto-arabic);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -108,8 +108,8 @@
   --selection-text: #3a2927;
   --disabled-surface: #e3ddd6;
   --disabled-text: #968e8b;
-  --font-sans: var(--font-noto-sans);
-  --font-serif: var(--font-noto-serif);
+  --font-sans: var(--font-noto-sans), var(--font-noto-arabic);
+  --font-serif: var(--font-noto-serif), var(--font-noto-arabic);
   --font-mono: var(--font-noto-mono);
 }
 

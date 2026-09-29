@@ -101,7 +101,7 @@ export function ActivityHeatmap({ activities, dict }: ActivityHeatmapProps) {
 
       {scrollArea(
         <div className="w-max min-w-full">
-          <div className="mb-1 flex pl-8">
+          <div className="mb-1 flex ps-8">
             {monthLabels.map((label, i) => (
               <div
                 key={`${label.month}-${i}`}
@@ -118,7 +118,7 @@ export function ActivityHeatmap({ activities, dict }: ActivityHeatmapProps) {
           </div>
 
           <div className="flex gap-0.5">
-            <div className="flex flex-col gap-0.5 pr-1">
+            <div className="flex flex-col gap-0.5 pe-1">
               {WEEK_DAYS.map((day, i) => (
                 <div key={i} className="h-[10px] w-6 text-[9px] leading-[10px] text-muted-foreground">
                   {day}

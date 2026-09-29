@@ -28,7 +28,7 @@ Web rewrite of the original PyQt6 desktop app (`legacy` branch).
 | Validation | Zod |
 | Formatting | Prettier + ESLint |
 | Test | Vitest (unit), Playwright (e2e) |
-| i18n | Cookie-based locale, 6 dictionaries |
+| i18n | Cookie-based locale, 7 dictionaries (Arabic RTL, v3.13.0) |
 | PWA | `public/sw.js` + `manifest.json` + `src/app/sw-register.tsx` |
 | Consent | GDPR cookie banner `src/components/cookie-consent.tsx` (Essential/Preferences/Analytics) |
 | Deploy | Docker (multi-stage), Docker Compose, GHCR |

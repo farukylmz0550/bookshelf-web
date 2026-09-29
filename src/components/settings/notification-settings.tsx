@@ -77,7 +77,7 @@ export function NotificationSettings({
           type="button"
           onClick={handleTestPush}
           disabled={testPushPending}
-          className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-[var(--surface-elevated)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          className="flex w-full items-center justify-between px-4 py-3 text-start hover:bg-[var(--surface-elevated)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
         >
           <div className="flex items-center gap-3">
             <BellRing size={16} className="text-muted-foreground" />

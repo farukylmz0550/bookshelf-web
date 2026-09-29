@@ -48,7 +48,7 @@ export function InstallPrompt() {
   if (!showPrompt || dismissed) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md rounded-xl border border-border bg-card p-3 shadow-lg md:bottom-4">
+    <div className="fixed bottom-20 inset-x-4 z-40 mx-auto max-w-md rounded-xl border border-border bg-card p-3 shadow-lg md:bottom-4">
       <div className="flex items-center gap-3">
         <div className="flex-shrink-0 rounded-lg bg-primary/10 p-2">
           <Download size={18} className="text-primary" />
