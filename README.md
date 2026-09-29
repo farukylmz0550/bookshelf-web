@@ -245,7 +245,7 @@ npm run dev  # → http://localhost:3000
 | Validation | Zod (trim, max, url) |
 | Format | Prettier + ESLint (`flat` + `prettier`) |
 | Test | Vitest (unit) · Playwright (e2e) |
-| i18n | Cookie locale, 6 dicts |
+| i18n | Cookie locale, 7 dicts (Arabic RTL) |
 | Theme | Cookie `light/dark/system` (default system; consent-gated) |
 | QR login | Single-use 60 s tokens (`/pair/<token>`, hash-only, explicit phone confirmation) |
 | PWA | `sw.js` + `manifest.json` + `sw-register.tsx` |
