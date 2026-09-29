@@ -172,7 +172,7 @@ Every data-modifying action runs `awardXp()` + `syncAchievements()`. ISBN one-cl
 | `APP_PORT` | No | `3000` | Port (used by Docker) |
 | `RESET_SECRET` | No | — | Secret for `/api/test/reset` endpoint |
 | `ALLOW_REGISTRATION` | No | `true` | Set to `false` to disable public registration |
-| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Push | — | Web-push identity pair (`npx web-push generate-vapid-keys`); without them push is disabled ("VAPID keys not configured") |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Push | — | Web-push identity pair (`npx web-push generate-vapid-keys`); without them push is disabled ("VAPID keys not configured"). **Personal deployment trap (v3.12.x):** `~/BookShelf/.env` must ALWAYS carry the VAPID lines — when that file is rebuilt (secrets reset, new folder), copy the VAPID block over or push silently dies; regenerating the pair is fine, but every device must re-enable notifications (old subscriptions die with the old key) |
 | `VAPID_SUBJECT` | No | `mailto:admin@bookshelf.local` | Push contact (mailto:) |
 | `CRON_SECRET` | No | — | Bearer for the cron service (`streak-remind` / `overdue-remind` / `goal-progress` / `backup` push) |
 
