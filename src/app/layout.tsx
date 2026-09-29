@@ -94,6 +94,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${notoSerif.variable} ${notoSans.variable} ${notoMono.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
     >
       <head>
+        {/* v3.12.2 — declare the page's color scheme to the rendering engine
+            (Chromium + Gecko): pinned light → "light", pinned dark → "dark",
+            system → "light dark" (the UA decides until our script applies the
+            class). Engines that honor a declared color-scheme skip their own
+            forced-dark inversion — the root cause of the broken light theme
+            seen on phones in system dark mode. */}
+        <meta name="color-scheme" content={theme === "dark" ? "dark" : theme === "light" ? "light" : "light dark"} />
         {/* v3.11.1 — "system" theme only: resolve the OS prefers-color-scheme
             before first paint (no flash) and keep following it live; also sync
             the meta theme-color so the PWA title/status bar matches the app.

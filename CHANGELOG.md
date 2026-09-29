@@ -4,6 +4,30 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.12.2 — 2026-09-29
+
+### Fixed
+
+- **Light theme inverted on phones in system dark mode.** The browser's own
+  forced-dark feature (Chrome → Settings → Themes → "Darken websites"; works
+  independently of the Android-level "Override force-dark" toggle) auto-inverts
+  light pages when the system is dark — producing muddy, banded rendering.
+  The page now **declares its color scheme to the engine**: dynamic
+  `<meta name="color-scheme">` (pinned light → `light`, pinned dark → `dark`,
+  system → `light dark`) plus `color-scheme: light / dark` CSS driven by the
+  theme class (`:root` / `.dark`). Chromium and Gecko both honor the
+  declaration: forced-dark inversion is skipped and native widgets
+  (scrollbars, form controls) draw in the right scheme. Documented in
+  TROUBLESHOOTING §13, including the guaranteed on-device fix.
+
+### Upgrade
+
+> Personal deployment (`~/BookShelf`): run **`bookshelfupdate`** — or bump the
+> image tags to `3.12.2` in `docker-compose.yml` (both `app` and `cron`), then
+> `docker compose pull && docker compose up -d`. On the phone, fully close and
+> reopen the PWA once. If a light-theme page still renders inverted: Chrome →
+> Settings → Themes → turn OFF "Darken websites" (see TROUBLESHOOTING §13).
+
 ## 3.12.1 — 2026-09-29
 
 ### Fixed

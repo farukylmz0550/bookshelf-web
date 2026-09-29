@@ -50,6 +50,10 @@
 
 /* ── Fine Porcelain × Burnt Ochre Light — UI_Design_Language 4.1 ── */
 :root {
+  /* v3.12.2 — tell the engine (Chromium/Gecko) the page is light so its own
+     forced-dark inversion is skipped and native widgets (scrollbars, form
+     controls) render in the light scheme. .dark overrides below. */
+  color-scheme: light;
   --background: #faf0e1;
   --foreground: #2b2727;
   --card: #f2edec;
@@ -111,6 +115,9 @@
 
 /* ── Ink & Copper Dark — UI_Design_Language 4.2 ── */
 .dark {
+  /* v3.12.2 — the dark class drives the scheme declaration: engines stop
+     second-guessing and draw native widgets in the dark scheme. */
+  color-scheme: dark;
   --background: #1d2020;
   --foreground: #f2eee8;
   --card: #272a29;

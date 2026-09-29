@@ -397,6 +397,13 @@ No device subscribed yet — open the app in the browser you want to receive pus
 
 ## 13. PWA & offline
 
+### Light theme looks dark/inverted when the system is dark (browser forced dark)
+
+When the **system** is in dark mode, a pinned **Light** theme may render dark and muddy — with brown/copper bands — even though the app and the server deliver the light theme correctly. The cause is the **browser's own forced-dark setting**: Chrome on Android → Settings → Themes → **"Darken websites"** (karanlıkta siteleri karart) — it works independently of the Android system-level "Override force-dark" (karanlık modu kullanmaya zorla), so that system toggle being off does not guarantee the browser won't invert light pages.
+
+- **From the app side (v3.12.2):** the page now declares its scheme to the engine — `<meta name="color-scheme">` plus `color-scheme: light / dark` CSS driven by the theme class (`:root` light, `.dark` dark). Engines skip their own forced-dark inversion for pages that declare a scheme, and native widgets (scrollbars, form controls) draw in the right mode.
+- **Guaranteed on-device:** turn OFF "Darken websites" in Chrome → Settings → Themes. Firefox Android has no forced-dark; the `color-scheme` declaration is the standard both engines honor.
+
 ### App shows a stale page / wrong theme after updates (v3.12.1)
 
 Navigations are served **network-first**, but on a network hiccup the last cached HTML is used as a fallback — an old page can therefore render with its OLD theme while newer UI pieces (e.g. the Settings theme radio) revalidate over it: a hybrid page (seen as "Light selected but dark screen", plus a copper band where the stale document's theme-color bleeds through).
