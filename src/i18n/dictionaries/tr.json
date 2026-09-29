@@ -52,6 +52,7 @@
     "totpCode": "Doğrulama kodu",
     "totpRequired": "İki adımlı doğrulama etkin — 6 haneli kodunuzu girin.",
     "invalidTotp": "Geçersiz kod — tekrar deneyin.",
+    "totpThrottled": "Çok fazla deneme — 5 dakika bekleyip tekrar deneyin.",
     "forgotPassword": "Şifrenizi mi unuttunuz? Yöneticinizle iletişime geçin.",
     "accountReady": "Hesabın onaylandı — hemen giriş yapabilirsin.",
     "registerSubtitle": "Hesap oluştur"

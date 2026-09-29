@@ -41,15 +41,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // v2.10.0 — optional TOTP: without an enabled secret this step is a
         // no-op; with it, the code is mandatory and brute force is throttled
         // per account, independent of the attacker's IP rotation.
+        //
+        // v3.11.2 — TOTP login deadlock fix: the throttle check used to run
+        // BEFORE the code-less step, so every correct-password attempt
+        // consumed one of the 5 slots per 5 minutes — and when the budget was
+        // spent, `return null` surfaced as "invalid credentials" and the
+        // client reset the form, so the code field never appeared again while
+        // each retry kept the counter maxed (endless lockout). Now:
+        // 1. the code-less step throws TOTP_REQUIRED without burning a slot;
+        // 2. a blocked attempt throws a distinct TOTP_THROTTLED the UI can
+        //    explain ("wait 5 minutes", keep the field visible);
+        // 3. a successful code clears the counter.
         if (user.totpEnabled) {
           const token = (credentials?.totp as string | undefined) ?? "";
-          if (throttlingEnabled() && !checkRateLimit(`totp-login:${user.id}`, { max: 5, windowMs: 5 * 60 * 1000 })) {
-            return null;
-          }
           if (!token) throw new Error("TOTP_REQUIRED");
+          if (throttlingEnabled() && !checkRateLimit(`totp-login:${user.id}`, { max: 5, windowMs: 5 * 60 * 1000 })) {
+            throw new Error("TOTP_THROTTLED");
+          }
           if (user.totpSecret && verifyTotpCode(user.totpSecret, token) !== "VALID") {
             throw new Error("INVALID_TOTP");
           }
+          if (throttlingEnabled()) resetRateLimit(`totp-login:${user.id}`);
         }
 
         // Successful login clears the throttle counter for this IP

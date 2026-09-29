@@ -52,6 +52,7 @@
     "totpCode": "Verification code",
     "totpRequired": "Two-factor authentication is enabled — enter your 6-digit code.",
     "invalidTotp": "Invalid code — try again.",
+    "totpThrottled": "Too many code attempts — wait 5 minutes and try again.",
     "forgotPassword": "Forgot your password? Contact your administrator.",
     "accountReady": "Your account is approved — you can log in right away.",
     "registerSubtitle": "Create account"

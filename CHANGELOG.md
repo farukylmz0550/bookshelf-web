@@ -4,6 +4,32 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.11.2 — 2026-09-29
+
+### Fixed
+
+- **TOTP login deadlock.** With 2FA enabled, the throttle check ran before the
+  code-less step, so every correct-password attempt consumed one of the 5
+  attempts per 5 minutes — and when the budget ran out, `authorize()` returned
+  null, the form showed "invalid credentials", reset itself and **the code
+  field never appeared again**, while each retry kept the counter maxed (an
+  endless lockout, seen on mobile). Now:
+  - the code-less step throws `TOTP_REQUIRED` without burning a slot;
+  - a blocked attempt throws a distinct `TOTP_THROTTLED` — the login form
+    explains "wait 5 minutes" and keeps the code field visible;
+  - a successful code clears the per-account counter.
+- Regression-tested: `auth-totp.test.ts` runs the real `authorize()` against
+  an isolated migration-built DB (3 tests, including the no-slot-consumed and
+  distinct-throttle-error matrix).
+
+### Upgrade
+
+> Personal deployment (`~/BookShelf`): `bookshelfupdate` — or manually
+> `cd ~/BookShelf`, set the image tag to `3.11.2` in `docker-compose.yml`,
+> then `docker compose pull && docker compose up -d`. Migrations run at boot;
+> no data actions needed. After the update, re-enable 2FA in Settings →
+> Security if it was disabled during the lockout.
+
 ## 3.11.1 — 2026-09-29
 
 ### Fixed

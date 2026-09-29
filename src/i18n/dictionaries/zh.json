@@ -52,6 +52,7 @@
     "totpCode": "验证码",
     "totpRequired": "已启用两步验证 — 请输入您的 6 位验证码。",
     "invalidTotp": "验证码无效 — 请重试。",
+    "totpThrottled": "尝试次数过多——请等待 5 分钟后重试。",
     "forgotPassword": "忘记密码？请联系管理员重置。",
     "accountReady": "账号已批准——你可以立即登录。",
     "registerSubtitle": "创建账号"

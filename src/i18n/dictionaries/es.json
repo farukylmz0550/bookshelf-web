@@ -52,6 +52,7 @@
     "totpCode": "Código de verificación",
     "totpRequired": "La verificación en dos pasos está activada — introduce tu código de 6 dígitos.",
     "invalidTotp": "Código no válido — inténtalo de nuevo.",
+    "totpThrottled": "Demasiados intentos: espera 5 minutos y vuelve a intentarlo.",
     "forgotPassword": "¿Olvidaste tu contraseña? Contacta con tu administrador.",
     "accountReady": "Tu cuenta está aprobada — puedes iniciar sesión ahora mismo.",
     "registerSubtitle": "Crear cuenta"

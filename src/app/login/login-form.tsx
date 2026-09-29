@@ -39,6 +39,13 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
         setError(dict.totpRequired);
         return;
       }
+      // v3.11.2 — throttle hit: explain the wait instead of pretending the
+      // password was wrong; the code field stays visible so a single retry
+      // after the window picks up where the user left off.
+      if (result.error === "TOTP_THROTTLED") {
+        setError(dict.totpThrottled);
+        return;
+      }
       if (result.error === "INVALID_TOTP") {
         setError(dict.invalidTotp);
         return;
