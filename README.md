@@ -10,7 +10,7 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.10.1-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.12.1-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -52,7 +52,8 @@
 | 👤 **Profile** | Name, password, XP, join date |
 | 🔢 **TOTP 2FA** | Optional TOTP (QR enrollment in Settings → Security) · mandatory for admin accounts · throttled per-account login attempts |
 | 🌍 **i18n** | 6 languages (EN/TR/ES/FR/RU/ZH) — cookie, `src/i18n/dictionaries` |
-| 🌓 **Theme** | Light ` #FAF0E1 / #BB4F35` · Dark ` #1D2020 / #C17A5E` · Noto · Sun/Moon SVG · Settings-only |
+| 🌓 **Theme** | Light `#FAF0E1 / #BB4F35` · Dark `#1D2020 / #C17A5E` · **System (auto)** · no-flash script · Noto · Settings-only |
+| 📱 **QR login** *(v3.12.0)* | Sign in on your phone without typing: the desktop shows a 60 s single-use QR, the phone scans + confirms — done. Password + TOTP stays as-is |
 | 👤 **Account card** *(v3.7.0)* | Name + email + logout live in Settings → Account (localized confirm) |
 | ✅ **Self-approve** *(v3.6.0, optional)* | `config.yaml → auth.selfApprove: true` approves every registration automatically — no admin approval step |
 | 🍪 **Consent** | GDPR banner — desktop modal + mobile bar (Essential/Preferences/Analytics) |
@@ -181,7 +182,7 @@ docker compose up -d
 ```
 
 `latest` follows the newest release automatically; to pin a version, set the
-tag explicitly in `docker-compose.yml` (e.g. `image: ghcr.io/farukylmz0550/bookshelf:3.10.0`) —
+tag explicitly in `docker-compose.yml` (e.g. `image: ghcr.io/farukylmz0550/bookshelf:3.12.0`) —
 then `docker compose pull && docker compose up -d` switches to exactly that
 version. Database migrations apply automatically on container start; user data
 lives in the `app-data` volume and is untouched by updates.
@@ -238,14 +239,15 @@ npm run dev  # → http://localhost:3000
 | Layer | Tech |
 |---|---|
 | Framework | Next.js 16 (App Router) + TypeScript `strict` |
-| UI | Tailwind 4 · shadcn/ui · lucide-react (Sun/Moon ISC) · Recharts · Noto |
+| UI | Tailwind 4 · shadcn/ui · lucide-react (ISC) · Recharts · Noto |
 | DB | SQLite · Prisma 7 (`better-sqlite3`) |
 | Auth | NextAuth v5 (Credentials/JWT/bcrypt, TOTP 2FA, approval guard) |
 | Validation | Zod (trim, max, url) |
 | Format | Prettier + ESLint (`flat` + `prettier`) |
 | Test | Vitest (unit) · Playwright (e2e) |
 | i18n | Cookie locale, 6 dicts |
-| Theme | Cookie `light/dark` (consent-gated) |
+| Theme | Cookie `light/dark/system` (default system; consent-gated) |
+| QR login | Single-use 60 s tokens (`/pair/<token>`, hash-only, explicit phone confirmation) |
 | PWA | `sw.js` + `manifest.json` + `sw-register.tsx` |
 | Config | `config.yaml` (site-wide values, v3.0.0 — `yaml` + zod) |
 | Deploy | Docker multi-stage · GHCR |
@@ -284,7 +286,7 @@ bookshelf/
 │   │   ├── books/ · cookies* · isbn.ts (full meta) · gamification-pure.ts (Fibonacci) · streak.ts
 │   │   ├── app-config.ts         # config.yaml loader (v3.0.0 — single source of site-wide values)
 │   │   ├── kobo.ts               # Kobo token/templates/progress write-back + store proxy (v3.0.0)
-│   │   └── theme.ts              # light/dark only
+│   │   └── theme.ts              # light/dark/system (no-flash client script)
 │   └── i18n/  auth.ts  proxy.ts  # proxy: auth gate + rate limits (+ Kobo public path, v3.0.0)
 ├── config.yaml                    # v3.0.0 — site-wide configuration (XP, backfill, Kobo)
 ├── prisma/  schema.prisma  seed.ts/cjs  migrations/

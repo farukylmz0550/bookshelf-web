@@ -1,7 +1,7 @@
 # Bookshelf — Memory Bank
 
-> Last updated: 2026-09-28
-> Version: 3.10.0
+> Last updated: 2026-09-29
+> Version: 3.12.1
 > Branch: main
 
 ---
@@ -83,7 +83,8 @@ bookshelf/
 │   │   ├── stats.ts              # Monthly finish counts
 │   │   ├── streak.ts             # Streak calculation
 │   │   ├── totp.ts               # TOTP helpers (enroll payload, verify — v2.10.0)
-│   │   └── theme.ts              # Cookie theme (light/dark)
+│   │   └── theme.ts              # Cookie theme (light/dark/system, default system)
+│   │   └── qr-login.ts           # Passwordless QR login tokens (v3.12.0: hash-only, 60s, single-use)
 │   ├── i18n/                     # Dictionaries (en, tr, es, fr, ru, zh)
 │   ├── auth.ts                   # NextAuth config + approval check
 │   ├── proxy.ts                  # Proxy (auth + rate limiting)
@@ -147,7 +148,8 @@ User ──────┬── Book ──────── LendingRecord
 | `covers.ts` | clear cache (admin) |
 | `admin.ts` | approve/reject users, toggle admin, delete users, `adminResetPassword` (v3.6.0: own row allowed — random pw + `mustChangePassword`, TOTP fresh-code when enabled, 5/5min; other admins still off-limits), `get/updateMinPagesPerReadEvent` (SiteSettings singleton) |
 | `locale.ts` | switch language (consent-gated) |
-| `theme.ts` | toggle theme Sun/Moon SVG (light/dark, consent-gated) |
+| `theme.ts` | set theme (light/dark/**system**, consent-gated; System deletes the cookie → no-flash script follows the OS; v3.11.0) |
+| `qr-login.ts` | v3.12.0 — passwordless QR login: createQrLoginSession (60 s, hash-only), confirmQrLogin (atomic single-use claim → normal JWT), cancel, status; pair page `/pair/<token>` with explicit confirmation |
 | `logout.ts` | signOut |
 | `settings.ts` | update notifications/streak/weeklyDigest/goalReminders (goalReminders feeds calendar-based goal-progress push) |
 | `kobo.ts` | v3.0.0 — Kobo sync management: getKoboSyncState, createKoboSyncUrl (token create/rotate), setFileSourceUrl (per-user download URL template) |
@@ -207,6 +209,11 @@ npm run format:check  # prettier
 
 | Date | Commit | Description |
 |-------|--------|----------|
+| 2026-09-29 | `3.12.0` | **Passwordless QR login**: Settings → Security "Sign in with QR" — 60 s single-use 256-bit CSPRNG token (hash-only, never logged), QR shows `NEXTAUTH_URL/pair/<token>`, phone gets explicit confirm screen (account+device), atomic claim (parallel confirms → exactly one session) → normal NextAuth JWT (no second auth system); 8 new unit tests; `/pair/` public + tight per-IP QR rate limit; `cf-connecting-ip` preferred for trusted client IP (tunnel-friendly throttling) |
+| 2026-09-29 | `3.11.2` | **TOTP login deadlock fix**: code-less step no longer burns throttle slots (5/5min), distinct `TOTP_THROTTLED` error keeps the code field visible + "wait 5 minutes" message; success clears the per-account counter; 3 regression tests on real authorize(); "Read N pages" → "I've read N pages" ×6; Material You launcher-tint guide (TROUBLESHOOTING §13) |
+| 2026-09-29 | `3.11.1` | **Pinned themes no longer overridden by OS preference**: v3.11.0's no-flash script rendered unconditionally and forced `dark` from raw prefers-color-scheme — now renders ONLY for System; theme change = full reload (head scripts don't re-run on SPA navigations); live curl-verified per cookie |
+| 2026-09-29 | `3.11.0` | **Theme System default + desktop/PWA sync**: Theme gains "system" (missing cookie = system); no-flash inline script (before first paint, live-tracks OS, syncs meta theme-color); Settings gains Light/Dark/System ×6 (`theme.system` added, unused contrast/amoled keys removed); PWA title/status-bar color follows the app's theme cookie (`generateViewport`), not the raw OS; theme cookie deletion = un-pin |
+| 2026-09-29 | `3.10.2` | **Filter bar no longer overflows narrow screens** — search takes its own full-width row below `sm` (input's intrinsic min-width forced horizontal scroll); row unchanged from `sm` up |
 | 2026-09-28 | `3.10.0` | **UI Faz 5 — sayfa-bazlı rafine taraması**: sidebar grup başlıkları ×6 dil (`nav.groupLibrary/groupDiscover/groupAdmin`); streak widget shield confirm ×6 + pasif renkler surface token; tasarım token temizliği (admin user-table, card diyalogları, next-book diyalogu, Excel etiketleri → `--surface/--surface-elevated/--border`); kullanılmayan `logout-button.tsx` silindi |
 | 2026-09-28 | `3.9.0` | **UI Faz 3 — kart sadeleşme**: kartta artık kapak+başlık+yazar+meta (yıldız/raf noktaları) + durum göstergesi; "N sayfa oku" ve "Yeniden oku" butonları ve "N sayfa kaldı" satırı kalıcı düzenten çıktı — uzun basma menüsüne "N sayfa oku" (sayfasız kitaplarda sayım kaydet-ve-log prompt'u korunur) ve "Yeniden oku" öğeleri eklendi; detay sayfa tüm aksiyonları tutar; swipe+rozet durur; "Signed" rozeti ×6 dil (CardDict.signed) |
 | 2026-09-28 | `3.8.0` | **UI Faz 2 — Books hiyerarşisi**: "+ Kitap ekle" primer aksiyon → diyalog (`add-book-dialog.tsx`); BooksAddSection diyalog içinde (hızlı form + detaylı ekleme + Excel/CSV) — başarı sonrası diyalog kapanır (`useAddBookForm` `onAdded` callback, DetailedAddForm `onDone` kompoze); header artık başlık + düz sayı; filtre barı düz (kart sarmalayıcı yok, §10) ve Sırala + yön araç çubuğuna alındı (§3); filter/sort tetikleri kapalıyken çözümlenmiş label; e2e `openAddBook` helper'ı ve spec güncellemeleri (diji/CSV/excel kontrolleri diyalogda) |
@@ -267,7 +274,8 @@ npm run format:check  # prettier
 - **seed.cjs:** TypeScript seed file (`tsx` devDependency) doesn't run in production → plain JS alternative added (`CONTRIBUTING.md` exception: `public/sw.js` + `prisma/seed.cjs`).
 - **Proxy (middleware.ts):** In Next.js 16 `middleware.ts` is deprecated → `proxy.ts` is correct convention.
 - **Sidebar server actions:** `setLocale.bind`/`setTheme.bind` in Client Component → React #441. Fix: `useTransition` + direct `setLocale()`/`setTheme()` calls, `logoutAction` as separate server action.
-- **High Contrast:** Removed as incompatible with `UI_Design_Language.md` (GNOME residue). Theme is now only `light`/`dark` (Sun/Moon SVG, Lucide ISC).
+- **High Contrast:** Removed as incompatible with `UI_Design_Language.md` (GNOME residue). Theme is `light`/`dark`/`system` (Settings-only, System = default + no-flash script; Sun/Moon SVG icons in Appearance, Lucide ISC).
+- **Stale PWA hybrid pages (v3.12.1):** the service worker's navigation cache (network-first with offline fallback) served an OLD document after network hiccups while fresh RSC pieces (theme radio) revalidated over it → hybrid page: old `<html>` theme class + new UI state (seen as "Light selected but dark screen", plus a copper band from the stale doc's theme-color). Fix: `CACHE_NAME` bump wipes old caches on activation; users should refresh the PWA once when the update toast appears. If it recurs: Settings → clear site data, or reinstall.
 - **Book Card 60/40:** `h-[380px]` `h-[60%]` cover `object-contain p-2` + `h-[40%]` metadata `gap-1 px-3 py-3`, `text-[15px] serif` readable. v3.9.0 (Faz 3): card is calm — Log-N-pages/Re-read buttons and the "N pages left" line moved to the long-press context menu; swipe + status badge stay. Bulk import (`importBooksByIsbn`) removed.
 - **Cookie Consent:** Server/client split via `src/lib/cookies-shared.ts`; `next/headers` only on server.
 - **License file naming:** root-level `LICENSE-{LİSANADI}` convention — `LICENSE-GPLV3`, `LICENSE-CC-BY-NC-ND`, `LICENSE-CC0` (audio renders). Never drop the suffix or rename mid-project.

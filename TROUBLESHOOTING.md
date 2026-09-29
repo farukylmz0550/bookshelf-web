@@ -397,9 +397,17 @@ No device subscribed yet — open the app in the browser you want to receive pus
 
 ## 13. PWA & offline
 
-### App shows an old page after an update
+### App shows a stale page / wrong theme after updates (v3.12.1)
 
-Navigations are served **network-first**, but if the server is unreachable the last cached copy is used, with `/offline.html` as the final fallback. After upgrading the container, do a hard refresh; the service worker also shows "New version available — refresh the page to update" when a new version activates.
+Navigations are served **network-first**, but on a network hiccup the last cached HTML is used as a fallback — an old page can therefore render with its OLD theme while newer UI pieces (e.g. the Settings theme radio) revalidate over it: a hybrid page (seen as "Light selected but dark screen", plus a copper band where the stale document's theme-color bleeds through).
+
+- **Fix:** bump the service worker cache (`CACHE_NAME` in `public/sw.js`, currently `bookshelf-v6`) — activating the new worker deletes ALL older caches; the PWA then reloads from the network. When the "New version available" toast appears, tap it and refresh once.
+- If a hybrid page still appears: **Settings → clear site data** for the app origin, or uninstall + reinstall the PWA.
+- The SW **never caches POST requests or `/api/*`**; only GETs (documents, static assets, RSC payloads) are cached with network-first semantics.
+
+### PWA cookie sharing (QR login)
+
+The pair session cookie lives on the app origin: Android **WebAPK shares cookies with Chrome**, so a QR-paired session works inside the installed PWA. Firefox/Safari mobile PWAs keep separate cookie jars — pair the session in the same browser that runs the app.
 
 ### Offline book adds
 

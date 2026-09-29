@@ -4,6 +4,37 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.12.1 — 2026-09-29
+
+### Fixed
+
+- **Stale PWA hybrid pages (theme mismatch).** The service worker's navigation
+  cache could serve an OLD document after a network hiccup while fresh RSC
+  pieces (Settings' theme radio) revalidated over it — producing a hybrid
+  page: old `<html>` theme class + new UI state (seen as "Light selected but
+  dark screen", plus a copper band where the stale document's theme-color
+  bleeds through). The server was verified correct for every cookie state
+  (live curl checks); the bug was purely client-side caching.
+  - **Fix:** `CACHE_NAME` bump (`bookshelf-v5` → `bookshelf-v6`) — activating
+    the new worker deletes all older caches; the PWA then always reloads from
+    the network. No code behavior changed; cache hygiene only.
+- **Docs sweep (outdated references):** README version badge, theme row
+  (Sun/Moon → System auto), stack/tech table (`light/dark/system` + QR login),
+  compose tag example; MEMORY header (3.10.0 → 3.12.1), theme action row,
+  file-structure notes, commit history (3.10.2 → 3.12.0 entries), known
+  issues (stale-PWA-hybrid lesson); TROUBLESHOOTING §13 rewritten — stale-page
+  section + PWA cookie-sharing note for QR pairing (WebAPK ↔ Chrome share
+  cookies; Firefox/Safari PWAs separate).
+
+### Upgrade
+
+> Personal deployment (`~/BookShelf`): run **`bookshelfupdate`** — or bump the
+> image tags to `3.12.1` in `docker-compose.yml` (both `app` and `cron`), then
+> `docker compose pull && docker compose up -d`. On the PHONE: when the "New
+> version available" toast appears, tap it and let the page reload once (this
+> wipes the old service-worker cache — the stale-theme fix reaches the PWA
+> here). No other actions needed.
+
 ## 3.12.0 — 2026-09-29
 
 ### Added
