@@ -94,14 +94,21 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${notoSerif.variable} ${notoSans.variable} ${notoMono.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
     >
       <head>
-        {/* v3.11.0 — "system" theme: resolve the OS prefers-color-scheme before
-            first paint (no flash) and keep following it live; also sync the
-            meta theme-color so the PWA title/status bar matches the app. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");function a(){var d=m.matches;var c=document.documentElement.classList;c.toggle("dark",d);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",d?"#C17A5E":"#BB4F35");}if(m.addEventListener)m.addEventListener("change",a);a();})();`,
-          }}
-        />
+        {/* v3.11.1 — "system" theme only: resolve the OS prefers-color-scheme
+            before first paint (no flash) and keep following it live; also sync
+            the meta theme-color so the PWA title/status bar matches the app.
+            Pinned light/dark themes must NOT get this script — the server-set
+            class is authoritative, otherwise the OS preference overrides the
+            user's pin on every load (seen as "mobile light mode shows dark").
+            Inline <script> does not re-execute on client-side navigations, so
+            Settings does a full reload when the theme changes. */}
+        {theme === undefined && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");function a(){var d=m.matches;var c=document.documentElement.classList;c.toggle("dark",d);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",d?"#C17A5E":"#BB4F35");}if(m.addEventListener)m.addEventListener("change",a);a();})();`,
+            }}
+          />
+        )}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />

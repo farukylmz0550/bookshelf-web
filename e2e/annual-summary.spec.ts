@@ -92,7 +92,7 @@ test.describe("Reading flow (v2.7.0)", () => {
     await readPost.catch(() => {});
     await page.goto("/books");
     // v2.11.0 — the header CTA + the card button both exist; use the header one
-    const button = page.locator('button:has-text("Read 20 pages")').first();
+    const button = page.locator('button:has-text("read 20 pages")').first();
     await expect(button).toBeVisible();
     // v2.9.6 — page-less books ask for the page count first; the count is
     // saved and the reading is logged in the same step.

@@ -407,7 +407,22 @@ Adding a book while offline queues it in browser localStorage and syncs on recon
 
 ### Launcher icon is not tinted (Material You)
 
-Android 13+ tints launcher icons with the wallpaper palette only when the app provides a `monochrome` icon. Book Shelf ships one (`manifest.json → purpose: "monochrome"`), but **Chrome on Android does not yet pass manifest monochrome icons to installed PWAs** (open Chromium bug 40277264) — on Android 13–15 the classic icon is shown. Android 16 QPR2+ auto-themes all icons (including PWAs) in the "Minimal" launcher mode, no app change needed. Nothing to fix server-side; the monochrome icon will activate automatically once Chromium ships the fix.
+Android 13+ tints launcher icons with the wallpaper palette only when the app provides a `monochrome` icon. Book Shelf ships one (`manifest.json → purpose: "monochrome"`, regenerated from `brand/Bookshelf — Symbolic Master.svg`), but **Chrome on Android does not yet pass manifest monochrome icons to installed PWAs** (open Chromium bug 40277264) — on Android 13–15 the classic icon is shown. Nothing to fix server-side; the monochrome icon will activate automatically once Chromium ships the fix.
+
+**To make sure the tint CAN work on your device (Chrome still gates it):**
+
+1. **Reinstall the PWA** — Chrome bakes the launcher icon into the WebAPK at
+   install time. Remove the app, then reinstall from Chrome (⋮ menu → *Add to
+   Home screen* / *Install app*). A manifest change alone usually only lands
+   via the periodic WebAPK update (24h–30d cadence).
+2. **Enable Themed icons** — Android Settings → *Wallpaper & style* →
+   *Themed icons* on. (Samsung: *Settings → Wallpaper and style → Color
+   palette → Apply to icons* varies by One UI version.)
+3. Optional check: open `about://webapks` in Chrome, select Book Shelf and
+   verify the last manifest update picked up the current icon set.
+
+Android 16 QPR2+ themes all icons (including PWAs) in the "Minimal" launcher
+mode automatically — no app change needed there.
 
 ### Install prompt never shows
 

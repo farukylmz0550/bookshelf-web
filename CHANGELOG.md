@@ -4,6 +4,33 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.11.1 — 2026-09-29
+
+### Fixed
+
+- **Pinned themes are no longer overridden by the OS preference.** The
+  v3.11.0 no-flash script ran unconditionally and forced the `dark` class on
+  every load from the raw `prefers-color-scheme` — so a pinned light theme
+  showed dark on a dark-mode phone (and vice versa). The script now renders
+  **only for the System theme**; pinned light/dark keep the server-rendered
+  class as the single authority.
+- **Theme changes now take a full page reload.** The theme class is
+  server-rendered on `<html>` and the system-theme script is an inline
+  `<head>` script — inline scripts don't re-execute on client-side
+  navigations, so switching themes inside the SPA could leave a stale class.
+  Settings reloads the page after saving the theme.
+
+### Changed
+
+- **"Read N pages" → "I've read N pages"** (`books.logPagesButton`, all 6
+  dictionaries; Settings → Reading step description updated to quote the new
+  label).
+- **TROUBLESHOOTING §13 (Material You launcher tint)**: step-by-step guide —
+  reinstall the PWA so Chrome bakes the current monochrome icon into the
+  WebAPK, enable Themed icons, verify via `about://webapks`. The monochrome
+  icon itself was verified byte-identical to the brand master; Chrome's
+  WebAPK monochrome gap (crbug 40277264) remains the blocker.
+
 ## 3.11.0 — 2026-09-29
 
 ### Changed

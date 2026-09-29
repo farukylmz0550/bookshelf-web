@@ -37,8 +37,14 @@ export function AppearanceSettings({
   const [isPending, startTransition] = useTransition();
 
   function handleThemeChange(value: Theme) {
-    startTransition(() => {
-      setTheme(value);
+    startTransition(async () => {
+      await setTheme(value);
+      // v3.11.1 — full reload, not RSC refresh: the theme class is
+      // server-rendered on <html> and the system-theme no-flash script lives
+      // in <head> (inline scripts don't re-execute on client navigations).
+      // A reload guarantees the class, script presence and meta theme-color
+      // all match the new theme.
+      window.location.reload();
     });
   }
 
