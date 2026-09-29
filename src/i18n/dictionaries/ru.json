@@ -641,5 +641,25 @@
     "completed": "Завершён",
     "delete": "Удалить",
     "deleteConfirm": "Удалить этот челлендж?"
+  },
+  "qrLogin": {
+    "cardTitle": "Вход по QR",
+    "cardDesc": "Создайте код и отсканируйте его камерой телефона — вход без пароля.",
+    "generateCta": "Создать QR-код",
+    "regenerateCta": "Новый код",
+    "waiting": "Ожидание сканирования",
+    "scanned": "Отсканировано — подтвердите на устройстве",
+    "completed": "Выполнен вход ✓",
+    "expired": "Код истёк",
+    "cancelled": "Код отменён",
+    "completedToast": "Вход выполнен на другом устройстве",
+    "errorToast": "Ошибка входа по QR",
+    "pairTitle": "Войти в Book Shelf?",
+    "pairAccount": "Аккаунт",
+    "pairDevice": "Устройство",
+    "pairSignCta": "Войти",
+    "pairCancelCta": "Отмена",
+    "pairInvalid": "Код недействителен или истёк.",
+    "pairRateLimited": "Слишком много попыток — подождите минуту и попробуйте снова."
   }
 }

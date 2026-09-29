@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-import { checkRateLimit, throttlingEnabled, DEFAULT_LIMITS } from "@/lib/rate-limit";
+import { checkRateLimit, throttlingEnabled, DEFAULT_LIMITS, getRequestIp } from "@/lib/rate-limit";
 
 const PUBLIC_PATHS = [
   "/login",
   "/register",
   "/setup",
+  // v3.12.0 — passwordless QR login: the phone opens this page right after
+  // scanning, before it holds any session cookie.
+  "/pair/",
   "/manifest.json",
   "/sw.js",
   "/icon-192.png",
@@ -45,9 +48,18 @@ export default auth(async (req) => {
         : null;
     const key = tokenPrefix
       ? `device:${pathname.slice(tokenPrefix.length).split("/")[0] ?? "anon"}`
-      : `${req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "anonymous"}:${pathname}`;
+      : `${getRequestIp(req.headers)}:${pathname}`;
     if (throttlingEnabled() && !checkRateLimit(key, DEFAULT_LIMITS.api)) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+  }
+
+  // v3.12.0 — QR login pair page (public): a tight per-IP budget protects the
+  // token lookup from hammering; the token itself is unguessable (256-bit).
+  if (pathname.startsWith("/pair/")) {
+    const key = `${getRequestIp(req.headers)}:/pair/`;
+    if (throttlingEnabled() && !checkRateLimit(key, DEFAULT_LIMITS.qr)) {
+      return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
     }
   }
 

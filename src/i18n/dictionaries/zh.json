@@ -641,5 +641,25 @@
     "completed": "已完成",
     "delete": "删除",
     "deleteConfirm": "删除这个挑战？"
+  },
+  "qrLogin": {
+    "cardTitle": "扫码登录",
+    "cardDesc": "生成二维码，用手机相机扫描——手机无需密码即可登录。",
+    "generateCta": "生成二维码",
+    "regenerateCta": "新二维码",
+    "waiting": "等待扫描",
+    "scanned": "已扫描——请在设备上确认",
+    "completed": "已登录 ✓",
+    "expired": "二维码已过期",
+    "cancelled": "二维码已取消",
+    "completedToast": "已在其他设备登录",
+    "errorToast": "扫码登录失败",
+    "pairTitle": "登录 Book Shelf？",
+    "pairAccount": "账户",
+    "pairDevice": "设备",
+    "pairSignCta": "登录",
+    "pairCancelCta": "取消",
+    "pairInvalid": "此代码无效或已过期。",
+    "pairRateLimited": "尝试次数过多——请等待一分钟后再试。"
   }
 }

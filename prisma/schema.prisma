@@ -55,6 +55,7 @@ model User {
   koboSyncedBooks KoboSyncedBook[]
   challenges      Challenge[]
   quotes          Quote[]
+  qrLoginSessions QrLoginSession[]
 
   @@index([id])
 }
@@ -370,4 +371,22 @@ model BookGroupMembership {
   @@unique([bookId, groupId])
   @@index([bookId])
   @@index([groupId])
+}
+
+// v3.12.0 — passwordless QR login: single-use, short-lived (60 s) handoff
+// tokens. The RAW token is never stored — only its SHA-256 hash — and it is
+// never logged. The confirming device atomically claims the row (confirmedAt
+// conditional update), then receives a normal NextAuth JWT session; the token
+// itself is not a credential.
+model QrLoginSession {
+  id          String    @id @default(cuid())
+  tokenHash   String    @unique
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  scannedAt   DateTime?
+  confirmedAt DateTime?
+
+  @@index([userId])
 }

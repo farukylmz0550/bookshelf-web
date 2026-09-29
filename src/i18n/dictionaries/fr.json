@@ -641,5 +641,25 @@
     "completed": "Terminé",
     "delete": "Supprimer",
     "deleteConfirm": "Supprimer ce défi ?"
+  },
+  "qrLogin": {
+    "cardTitle": "Se connecter via QR",
+    "cardDesc": "Générez un code et scannez-le avec l'appareil photo de votre téléphone — connexion sans mot de passe.",
+    "generateCta": "Générer le QR",
+    "regenerateCta": "Nouveau code",
+    "waiting": "En attente du scan",
+    "scanned": "Scanné — confirmez sur l'appareil",
+    "completed": "Connecté ✓",
+    "expired": "Code expiré",
+    "cancelled": "Code annulé",
+    "completedToast": "Connecté sur l'autre appareil",
+    "errorToast": "Échec de la connexion QR",
+    "pairTitle": "Se connecter à Book Shelf ?",
+    "pairAccount": "Compte",
+    "pairDevice": "Appareil",
+    "pairSignCta": "Se connecter",
+    "pairCancelCta": "Annuler",
+    "pairInvalid": "Ce code est invalide ou a expiré.",
+    "pairRateLimited": "Trop de tentatives : attendez une minute puis réessayez."
   }
 }

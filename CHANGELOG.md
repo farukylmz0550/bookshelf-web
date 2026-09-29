@@ -4,6 +4,32 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.12.0 — 2026-09-29
+
+### Added
+
+- **Passwordless QR login.** Settings → Security gains a "Sign in with QR"
+  card: the desktop generates a **60-second, single-use, 256-bit CSPRNG**
+  token (stored hash-only, never logged), renders the pair URL as a QR and
+  tracks the state live (waiting → scanned → signed in, with auto-regenerate
+  on expiry). The phone scans the QR, opens `NEXTAUTH_URL/pair/<token>` and
+  gets an explicit **confirmation screen** (account + device + [Sign in] /
+  [Cancel]) — scanning alone never authenticates. Confirmation atomically
+  consumes the token (conditional update — two parallel confirmations yield
+  exactly one session) and issues a **normal NextAuth JWT session**, reusing
+  the existing auth lifecycle; no second auth system. QR payload contains
+  only the temporary token — no passwords, keys or session data.
+- Rate limiting: `/pair/` page and confirm attempts share a tight per-IP QR
+  budget (`10/min`); trusted client IP now prefers `cf-connecting-ip` behind
+  Cloudflare so per-device limits work through the tunnel.
+
+### Upgrade
+
+> Personal deployment (`~/BookShelf`): run **`bookshelfupdate`** — or bump the
+> image tags to `3.12.0` in `docker-compose.yml` (both `app` and `cron`), then
+> `docker compose pull && docker compose up -d`. The `QrLoginSession` table is
+> created by the automatic boot migration; no data or settings actions needed.
+
 ## 3.11.2 — 2026-09-29
 
 ### Fixed

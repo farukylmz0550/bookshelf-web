@@ -641,5 +641,25 @@
     "completed": "Completed",
     "delete": "Delete",
     "deleteConfirm": "Delete this challenge?"
+  },
+  "qrLogin": {
+    "cardTitle": "Sign in with QR",
+    "cardDesc": "Generate a code, scan it with your phone's camera, and confirm — your phone signs in without a password.",
+    "generateCta": "Generate QR code",
+    "regenerateCta": "New code",
+    "waiting": "Waiting for scan",
+    "scanned": "Scanned — confirm on the device",
+    "completed": "Signed in ✓",
+    "expired": "Code expired",
+    "cancelled": "Code cancelled",
+    "completedToast": "Signed in on the other device",
+    "errorToast": "QR sign-in failed",
+    "pairTitle": "Sign in to Book Shelf?",
+    "pairAccount": "Account",
+    "pairDevice": "Device",
+    "pairSignCta": "Sign in",
+    "pairCancelCta": "Cancel",
+    "pairInvalid": "This code is invalid or has expired.",
+    "pairRateLimited": "Too many attempts — wait a minute and try again."
   }
 }

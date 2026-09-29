@@ -641,5 +641,25 @@
     "completed": "Tamamlandı",
     "delete": "Sil",
     "deleteConfirm": "Bu meydan okuma silinsin mi?"
+  },
+  "qrLogin": {
+    "cardTitle": "QR ile giriş",
+    "cardDesc": "Kod oluştur, telefonunuzun kamerasıyla okutun — telefon şifresiz giriş yapar.",
+    "generateCta": "QR kodu oluştur",
+    "regenerateCta": "Yeni kod",
+    "waiting": "Okutma bekleniyor",
+    "scanned": "Okutuldu — cihazda onaylayın",
+    "completed": "Giriş yapıldı ✓",
+    "expired": "Kodun süresi doldu",
+    "cancelled": "Kod iptal edildi",
+    "completedToast": "Diğer cihazda giriş yapıldı",
+    "errorToast": "QR girişi başarısız",
+    "pairTitle": "Book Shelf'e giriş yap?",
+    "pairAccount": "Hesap",
+    "pairDevice": "Cihaz",
+    "pairSignCta": "Oturum aç",
+    "pairCancelCta": "Vazgeç",
+    "pairInvalid": "Bu kod geçersiz ya da süresi dolmuş.",
+    "pairRateLimited": "Çok fazla deneme — bir dakika bekleyip tekrar deneyin."
   }
 }

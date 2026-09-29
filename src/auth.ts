@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-import { checkRateLimit, resetRateLimit, throttlingEnabled, DEFAULT_LIMITS } from "@/lib/rate-limit";
+import { checkRateLimit, resetRateLimit, throttlingEnabled, getRequestIp, DEFAULT_LIMITS } from "@/lib/rate-limit";
 import { verifyTotpCode } from "@/lib/totp";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -18,10 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // authorize() runs in the Node runtime (db/bcrypt not available in the
       // middleware runtime), so the limiters live here instead of the proxy.
       authorize: async (credentials, request) => {
-        const ip =
-          request instanceof Request
-            ? (request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "anonymous")
-            : "anonymous";
+        const ip = getRequestIp(request instanceof Request ? request.headers : new Headers());
         if (throttlingEnabled() && !checkRateLimit(`login:${ip}`, DEFAULT_LIMITS.login)) return null;
 
         const email = credentials?.email as string | undefined;
@@ -73,7 +70,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     jwt: ({ token, user }) => {
-      if (user) token.id = user.id;
+      // user.id is optional in Auth.js' User type — assign only when set.
+      if (user && user.id) token.id = user.id;
       return token;
     },
     session: ({ session, token }) => {

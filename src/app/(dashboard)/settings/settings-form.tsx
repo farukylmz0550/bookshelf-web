@@ -8,6 +8,7 @@ import type { Locale } from "@/i18n/get-dictionary";
 import type { UserSettingsData } from "@/app/actions/settings";
 import { NotificationSettings } from "@/components/settings/notification-settings";
 import { AppearanceSettings } from "@/components/settings/appearance-settings";
+import { QrLoginCard, type QrLoginDict } from "@/components/settings/qr-login-card";
 import { PageBackfillCard } from "@/components/settings/page-backfill-card";
 import { KoboSyncCard } from "@/components/settings/kobo-sync-card";
 
@@ -16,6 +17,7 @@ interface SettingsFormProps {
   currentTheme: Theme;
   currentLocale: Locale;
   themeLabels: { light: string; dark: string; system: string };
+  qrLoginDict: QrLoginDict;
   koboSyncUrl: string | null;
   koboOpdsUrl: string | null;
   koboFileSource: string | null;
@@ -63,6 +65,7 @@ export function SettingsForm({
   currentTheme,
   currentLocale,
   themeLabels,
+  qrLoginDict,
   koboSyncUrl,
   koboOpdsUrl,
   koboFileSource,
@@ -84,6 +87,7 @@ export function SettingsForm({
         }}
       />
       <AppearanceSettings currentTheme={currentTheme} currentLocale={currentLocale} themeLabels={themeLabels} />
+      <QrLoginCard dict={qrLoginDict} />
 
       {/* Book data — v3.0.0: page-count backfill moved here from Admin */}
       <section>

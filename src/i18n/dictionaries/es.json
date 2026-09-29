@@ -641,5 +641,25 @@
     "completed": "Completado",
     "delete": "Eliminar",
     "deleteConfirm": "¿Eliminar este desafío?"
+  },
+  "qrLogin": {
+    "cardTitle": "Iniciar sesión con QR",
+    "cardDesc": "Genera un código y escanéalo con la cámara de tu teléfono: tu móvil entra sin contraseña.",
+    "generateCta": "Generar código QR",
+    "regenerateCta": "Nuevo código",
+    "waiting": "Esperando el escaneo",
+    "scanned": "Escaneado — confirma en el dispositivo",
+    "completed": "Sesión iniciada ✓",
+    "expired": "Código caducado",
+    "cancelled": "Código cancelado",
+    "completedToast": "Sesión iniciada en el otro dispositivo",
+    "errorToast": "El inicio con QR falló",
+    "pairTitle": "¿Iniciar sesión en Book Shelf?",
+    "pairAccount": "Cuenta",
+    "pairDevice": "Dispositivo",
+    "pairSignCta": "Iniciar sesión",
+    "pairCancelCta": "Cancelar",
+    "pairInvalid": "Este código no es válido o ha caducado.",
+    "pairRateLimited": "Demasiados intentos: espera un minuto y vuelve a intentarlo."
   }
 }

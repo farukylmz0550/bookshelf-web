@@ -72,6 +72,7 @@ export default async function SettingsPage() {
         currentTheme={theme}
         currentLocale={locale}
         themeLabels={dict.theme}
+        qrLoginDict={dict.qrLogin}
         koboSyncUrl={koboState.syncUrl}
         koboOpdsUrl={koboState.opdsUrl}
         koboFileSource={koboState.fileSourceUrl}
