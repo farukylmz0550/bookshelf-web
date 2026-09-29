@@ -40,45 +40,51 @@ export function FilterBar({
     // v3.8.0 — Faz 2 (§10): flat toolbar, no card wrapper — the content
     // creates the structure naturally.
     <div>
-      <div className="flex items-center gap-2">
+      {/* v3.10.2 — mobile: the single-row toolbar overflowed narrow screens
+          (the search input's intrinsic min-width forced a horizontal scroll).
+          Search takes its own full-width row below `sm`; the row and controls
+          are unchanged from `sm` up. */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           placeholder={dict.search}
           value={filters.search}
           onChange={(e) => update({ search: e.target.value })}
-          className="flex-1 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 font-[var(--font-sans)] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          className="w-full min-w-0 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 font-[var(--font-sans)] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)] sm:flex-1 sm:w-auto"
         />
-        {/* v3.8.0 — sort is a primary toolbar control (§3) */}
-        <Select value={filters.sort} onValueChange={(v) => update({ sort: v ?? SORT_TITLE })}>
-          <SelectTrigger className={`${TRIGGER_CLS} w-fit shrink-0`} aria-label={dict.sortByTitle}>
-            <SelectValue>
-              {filters.sort === SORT_RATING
-                ? dict.sortByRating
-                : filters.sort === SORT_YEAR
-                  ? dict.sortByYear
-                  : dict.sortByTitle}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={SORT_TITLE}>{dict.sortByTitle}</SelectItem>
-            <SelectItem value={SORT_RATING}>{dict.sortByRating}</SelectItem>
-            <SelectItem value={SORT_YEAR}>{dict.sortByYear}</SelectItem>
-          </SelectContent>
-        </Select>
-        <button
-          onClick={() => update({ asc: !filters.asc })}
-          title={dict.sortByTitle}
-          className="shrink-0 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 font-[var(--font-sans)] text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-        >
-          {filters.asc ? "↑" : "↓"}
-        </button>
-        <button
-          onClick={() => setExpanded(!expanded)}
-          aria-expanded={expanded}
-          className="flex items-center gap-1 rounded-[8px] border border-[var(--border)] bg-secondary px-3 py-1.5 font-[var(--font-sans)] text-[13px] text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-        >
-          {dict.filters}
-          {hasActiveFilters && <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* v3.8.0 — sort is a primary toolbar control (§3) */}
+          <Select value={filters.sort} onValueChange={(v) => update({ sort: v ?? SORT_TITLE })}>
+            <SelectTrigger className={`${TRIGGER_CLS} w-fit shrink-0`} aria-label={dict.sortByTitle}>
+              <SelectValue>
+                {filters.sort === SORT_RATING
+                  ? dict.sortByRating
+                  : filters.sort === SORT_YEAR
+                    ? dict.sortByYear
+                    : dict.sortByTitle}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={SORT_TITLE}>{dict.sortByTitle}</SelectItem>
+              <SelectItem value={SORT_RATING}>{dict.sortByRating}</SelectItem>
+              <SelectItem value={SORT_YEAR}>{dict.sortByYear}</SelectItem>
+            </SelectContent>
+          </Select>
+          <button
+            onClick={() => update({ asc: !filters.asc })}
+            title={dict.sortByTitle}
+            className="shrink-0 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1.5 font-[var(--font-sans)] text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          >
+            {filters.asc ? "↑" : "↓"}
+          </button>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+            className="flex items-center gap-1 rounded-[8px] border border-[var(--border)] bg-secondary px-3 py-1.5 font-[var(--font-sans)] text-[13px] text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          >
+            {dict.filters}
+            {hasActiveFilters && <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />}
+          </button>
+        </div>
       </div>
       {expanded && (
         <div className="mt-3 flex flex-wrap gap-2 border-t border-[var(--border)] pt-3">

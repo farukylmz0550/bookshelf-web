@@ -4,6 +4,16 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.10.2 — 2026-09-29
+
+### Fixed
+
+- **Filter bar no longer overflows narrow screens.** The single-row toolbar
+  (search input + sort + direction + filters) forced a horizontal scroll on
+  mobile because the search input's intrinsic min-width wouldn't shrink.
+  Below `sm` the search input now takes its own full-width row (`w-full
+  min-w-0`); the row and controls are unchanged from `sm` up.
+
 ## 3.10.1 — 2026-09-28
 
 ### Fixed
