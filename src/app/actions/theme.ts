@@ -6,6 +6,8 @@ import { revalidatePath } from "next/cache";
 import type { Theme } from "@/lib/theme";
 import { hasConsent } from "@/lib/cookies";
 
+// v3.11.0 — "system" removes the pin: the cookie is deleted so getTheme()
+// falls back to the system default (no flash, live OS-tracking script).
 export async function setTheme(theme: Theme) {
   // Respect cookie consent — preferences category
   const allowed = await hasConsent("preferences");
@@ -30,11 +32,15 @@ export async function setTheme(theme: Theme) {
     return;
   }
 
-  (await cookies()).set("theme", theme, {
-    maxAge: 60 * 60 * 24 * 365,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-  });
+  if (theme === "system") {
+    (await cookies()).delete("theme");
+  } else {
+    (await cookies()).set("theme", theme, {
+      maxAge: 60 * 60 * 24 * 365,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+  }
   revalidatePath("/");
 }

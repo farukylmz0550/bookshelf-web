@@ -21,9 +21,7 @@
   "theme": {
     "light": "浅色",
     "dark": "深色",
-    "lightContrast": "浅色高对比度",
-    "darkContrast": "深色高对比度",
-    "amoled": "AMOLED"
+    "system": "跟随系统"
   },
   "auth": {
     "login": "登录",

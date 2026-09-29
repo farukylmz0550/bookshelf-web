@@ -330,6 +330,9 @@ export function BookCard({
                 <div className="my-1 h-px bg-[var(--border)]" role="separator" />
               )}
               {status === "READING" && (
+                // v3.11.0 — the menu's primary action gets the accent fill so
+                // it no longer reads as a secondary list item (palette tokens
+                // only; hover uses the established accent-hover state).
                 <button
                   type="button"
                   disabled={pending}
@@ -337,9 +340,9 @@ export function BookCard({
                     setMenuOpen(false);
                     logPages();
                   }}
-                  className="flex items-center gap-2 rounded-[8px] px-3 py-2 text-left font-[var(--font-sans)] text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                  className="flex items-center gap-2 rounded-[8px] bg-[var(--accent)] px-3 py-2.5 text-left font-[var(--font-sans)] text-sm font-medium text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
                 >
-                  <BookPlus size={14} />
+                  <BookPlus size={16} />
                   {dict.logPagesButton.replace("{count}", String(pagesToLog))}
                 </button>
               )}

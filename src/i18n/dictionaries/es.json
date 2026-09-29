@@ -21,9 +21,7 @@
   "theme": {
     "light": "Claro",
     "dark": "Oscuro",
-    "lightContrast": "Alto Contraste Claro",
-    "darkContrast": "Alto Contraste Oscuro",
-    "amoled": "AMOLED"
+    "system": "Sistema"
   },
   "auth": {
     "login": "Iniciar sesión",

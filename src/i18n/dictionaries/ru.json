@@ -21,9 +21,7 @@
   "theme": {
     "light": "Светлая",
     "dark": "Тёмная",
-    "lightContrast": "Светлая Высокий Контраст",
-    "darkContrast": "Тёмная Высокий Контраст",
-    "amoled": "AMOLED"
+    "system": "Системная"
   },
   "auth": {
     "login": "Вход",

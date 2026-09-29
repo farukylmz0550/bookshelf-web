@@ -2,7 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Serif, Noto_Sans, Noto_Sans_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { getTheme } from "@/lib/theme";
+import { getResolvedTheme } from "@/lib/theme";
 import { getDictionary, getLocale } from "@/i18n/get-dictionary";
 import { SWRegister } from "./sw-register";
 import { CookieConsent } from "@/components/cookie-consent";
@@ -26,16 +26,29 @@ const notoMono = Noto_Sans_Mono({
   display: "swap",
 });
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
-  viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#BB4F35" },
-    { media: "(prefers-color-scheme: dark)", color: "#C17A5E" },
-  ],
-};
+// v3.11.0 — the title/status-bar color follows the app's actual theme (the
+// theme cookie), not the raw OS preference: a pinned dark theme must show the
+// dark title bar even in a light-mode OS, and vice versa. "system" (no/absent
+// pin) keeps the media-query pair so the bar follows the OS like the app does.
+export async function generateViewport(): Promise<Viewport> {
+  const theme = await getResolvedTheme();
+  const themeColor =
+    theme === "dark"
+      ? "#C17A5E"
+      : theme === "light"
+        ? "#BB4F35"
+        : [
+            { media: "(prefers-color-scheme: light)", color: "#BB4F35" },
+            { media: "(prefers-color-scheme: dark)", color: "#C17A5E" },
+          ];
+  return {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    viewportFit: "cover",
+    themeColor,
+  };
+}
 
 export const metadata: Metadata = {
   title: {
@@ -71,7 +84,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const theme = await getTheme();
+  const theme = await getResolvedTheme();
   const locale = await getLocale();
   const dict = await getDictionary();
   return (
@@ -81,6 +94,14 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${notoSerif.variable} ${notoSans.variable} ${notoMono.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
     >
       <head>
+        {/* v3.11.0 — "system" theme: resolve the OS prefers-color-scheme before
+            first paint (no flash) and keep following it live; also sync the
+            meta theme-color so the PWA title/status bar matches the app. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");function a(){var d=m.matches;var c=document.documentElement.classList;c.toggle("dark",d);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",d?"#C17A5E":"#BB4F35");}if(m.addEventListener)m.addEventListener("change",a);a();})();`,
+          }}
+        />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />

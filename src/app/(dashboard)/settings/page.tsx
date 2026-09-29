@@ -71,6 +71,7 @@ export default async function SettingsPage() {
         settings={settings}
         currentTheme={theme}
         currentLocale={locale}
+        themeLabels={dict.theme}
         koboSyncUrl={koboState.syncUrl}
         koboOpdsUrl={koboState.opdsUrl}
         koboFileSource={koboState.fileSourceUrl}

@@ -2,15 +2,18 @@
 "use client";
 
 import { useTransition } from "react";
-import { Sun, Moon, Globe } from "lucide-react";
+import { Sun, Moon, Monitor, Globe } from "lucide-react";
 import { setTheme } from "@/app/actions/theme";
 import { setLocale } from "@/app/actions/locale";
 import type { Theme } from "@/lib/theme";
 import type { Locale } from "@/i18n/get-dictionary";
 
-const THEMES: { value: Theme; label: string; Icon: React.ElementType }[] = [
-  { value: "light", label: "Light", Icon: Sun },
-  { value: "dark", label: "Dark", Icon: Moon },
+// v3.11.0 — labels come from the dictionary (theme.*); System follows the OS
+// preference and is the default for devices that never set a theme.
+const THEMES: { value: Theme; Icon: React.ElementType }[] = [
+  { value: "light", Icon: Sun },
+  { value: "dark", Icon: Moon },
+  { value: "system", Icon: Monitor },
 ];
 
 const LOCALES: { value: Locale; label: string }[] = [
@@ -22,7 +25,15 @@ const LOCALES: { value: Locale; label: string }[] = [
   { value: "zh", label: "中文" },
 ];
 
-export function AppearanceSettings({ currentTheme, currentLocale }: { currentTheme: Theme; currentLocale: Locale }) {
+export function AppearanceSettings({
+  currentTheme,
+  currentLocale,
+  themeLabels,
+}: {
+  currentTheme: Theme;
+  currentLocale: Locale;
+  themeLabels: { light: string; dark: string; system: string };
+}) {
   const [isPending, startTransition] = useTransition();
 
   function handleThemeChange(value: Theme) {
@@ -57,7 +68,7 @@ export function AppearanceSettings({ currentTheme, currentLocale }: { currentThe
               >
                 <div className="flex items-center gap-3">
                   <Icon size={16} className="text-muted-foreground" />
-                  <span className="font-[var(--font-sans)] text-sm text-foreground">{t.label}</span>
+                  <span className="font-[var(--font-sans)] text-sm text-foreground">{themeLabels[t.value]}</span>
                 </div>
                 {currentTheme === t.value && <div className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" />}
               </button>

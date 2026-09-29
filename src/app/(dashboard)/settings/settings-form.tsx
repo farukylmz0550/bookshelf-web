@@ -15,6 +15,7 @@ interface SettingsFormProps {
   settings: UserSettingsData;
   currentTheme: Theme;
   currentLocale: Locale;
+  themeLabels: { light: string; dark: string; system: string };
   koboSyncUrl: string | null;
   koboOpdsUrl: string | null;
   koboFileSource: string | null;
@@ -61,6 +62,7 @@ export function SettingsForm({
   settings,
   currentTheme,
   currentLocale,
+  themeLabels,
   koboSyncUrl,
   koboOpdsUrl,
   koboFileSource,
@@ -81,7 +83,7 @@ export function SettingsForm({
           notifTestFail: dict?.settings?.notifTestFail,
         }}
       />
-      <AppearanceSettings currentTheme={currentTheme} currentLocale={currentLocale} />
+      <AppearanceSettings currentTheme={currentTheme} currentLocale={currentLocale} themeLabels={themeLabels} />
 
       {/* Book data — v3.0.0: page-count backfill moved here from Admin */}
       <section>

@@ -4,6 +4,36 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.11.0 — 2026-09-29
+
+### Changed
+
+- **Theme system: new "System (auto)" default + desktop/PWA consistency.** The
+  theme previously lived only in a per-browser cookie and fell back to hard
+  light — so a fresh PWA install stayed light even in OS dark mode, while the
+  desktop browser (where dark was once chosen) stayed dark. Now:
+  - `Theme` gains `"system"`; a missing/invalid cookie means system. The OS
+    `prefers-color-scheme` is resolved by a no-flash inline script (applied
+    before first paint, live-tracks OS changes, and keeps the meta
+    `theme-color` in sync).
+  - Settings → Appearance now offers **Light / Dark / System** with
+    localized labels in all 6 dictionaries (`theme.system` added; unused
+    `lightContrast`/`darkContrast`/`amoled` keys removed). Selecting System
+    deletes the theme cookie (pin removal), not a stored "system" value.
+  - The PWA title/status-bar color now follows the app's actual theme cookie
+    (`generateViewport`) instead of the raw OS preference — a pinned dark
+    theme shows the dark bar even in a light-mode OS.
+
+### UI
+
+- **"Read N pages" is now a prominent primary CTA.** The page-level button on
+  /books was a small outline chip (28px); it is now the accent-filled primary
+  action (44px touch target, `text-base`, 18px icon, full-width on mobile,
+  still centered). The long-press menu's "Read N pages" row on book cards gets
+  the same accent fill + 16px icon + `py-2.5`; "Re-read" stays calm. All
+  colors use palette tokens only (`--accent`, `--accent-hover`,
+  `--accent-foreground`).
+
 ## 3.10.2 — 2026-09-29
 
 ### Fixed

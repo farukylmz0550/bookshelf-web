@@ -3,8 +3,8 @@
 
 // v3.5.1 — page-level "Read N pages" CTA for /books, placed in the content
 // flow between the add panel and the list toolbar (moved out of the page
-// header). Styled with the same outline treatment as the neighboring action
-// row so it reads as part of that toolbar (UI Design Language §10, §16).
+// header). v3.11.0: promoted to a primary (accent-filled) CTA — it is the
+// most-used action on the page and previously read as a dwarf outline chip.
 // Single reading book logs in one tap; multiple books open a picker;
 // page-less books get the same page-count prompt as the card button.
 
@@ -124,12 +124,14 @@ export function PageLogCta({
   return (
     <>
       <Button
-        size="sm"
-        variant="outline"
         onClick={() => (books.length === 1 ? logFor(books[0]) : setPickerOpen(true))}
         disabled={pending}
+        // v3.11.0 — the primary reading action deserves primary weight: brand
+        // accent fill, 44px touch target, larger type — full-width on mobile.
+        // Colors stay inside the palette tokens (UI Design Language §19).
+        className="h-11 w-full gap-2 rounded-[12px] px-6 text-base sm:w-auto"
       >
-        <BookPlus size={14} />
+        <BookPlus size={18} />
         {dict.label.replace("{count}", String(pagesPerReadEvent))}
       </Button>
 

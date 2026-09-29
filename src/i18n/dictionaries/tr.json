@@ -21,9 +21,7 @@
   "theme": {
     "light": "Aydınlık",
     "dark": "Karanlık",
-    "lightContrast": "Aydınlık Kontrast",
-    "darkContrast": "Karanlık Kontrast",
-    "amoled": "AMOLED"
+    "system": "Sistem"
   },
   "auth": {
     "login": "Giriş yap",
