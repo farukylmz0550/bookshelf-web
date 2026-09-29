@@ -271,6 +271,7 @@ npm run format:check  # prettier
 - **Book Card 60/40:** `h-[380px]` `h-[60%]` cover `object-contain p-2` + `h-[40%]` metadata `gap-1 px-3 py-3`, `text-[15px] serif` readable. v3.9.0 (Faz 3): card is calm — Log-N-pages/Re-read buttons and the "N pages left" line moved to the long-press context menu; swipe + status badge stay. Bulk import (`importBooksByIsbn`) removed.
 - **Cookie Consent:** Server/client split via `src/lib/cookies-shared.ts`; `next/headers` only on server.
 - **License file naming:** root-level `LICENSE-{LİSANADI}` convention — `LICENSE-GPLV3`, `LICENSE-CC-BY-NC-ND`, `LICENSE-CC0` (audio renders). Never drop the suffix or rename mid-project.
+- **Temp QA servers must be killed (v3.11.1 lesson):** a leftover `next start` from a verification session kept holding **port 1024** (the local `NEXTAUTH_URL` port) with a dummy `NEXTAUTH_SECRET` — the user's local app then hit that rogue server and NextAuth showed **"Server error / There is a problem with the server configuration"**. Rule: after any temporary `next start`/`next dev` used for QA, ALWAYS kill the process and verify with `ss -tlnp` that the port is free before ending the session. Diagnose "Server error" locally by checking `pgrep -af next` + port collisions first.
 
 ---
 
