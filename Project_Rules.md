@@ -31,6 +31,12 @@ docker push ghcr.io/farukylmz0550/bookshelf:latest
 Both the version tag and `latest` are pushed; `docker-compose.yml` pulls from
 GHCR and `build: .` stays only as a source-build fallback.
 
+**Push → delete rule:** as soon as a locally built image is pushed to GHCR,
+the local image copy is **deleted** (`docker rmi`). GHCR is the single source
+of truth for release images — the local Docker store never keeps image
+backups after publishing. Verification happens against GHCR
+(`docker manifest inspect`) before the local copy is removed.
+
 ---
 
 ## 1. Respect the Existing Technology Stack
