@@ -399,7 +399,7 @@ No device subscribed yet — open the app in the browser you want to receive pus
 
 ### Light theme looks dark/inverted when the system is dark (browser forced dark)
 
-When the **system** is in dark mode, a pinned **Light** theme may render dark and muddy — with brown/copper bands — even though the app and the server deliver the light theme correctly. The cause is the **browser's own forced-dark setting**: Chrome on Android → Settings → Themes → **"Darken websites"** (karanlıkta siteleri karart) — it works independently of the Android system-level "Override force-dark" (karanlık modu kullanmaya zorla), so that system toggle being off does not guarantee the browser won't invert light pages.
+When the **system** is in dark mode, a pinned **Light** theme may render dark and muddy — with brown/copper bands — even though the app and the server deliver the light theme correctly. The cause is the **browser's own forced-dark setting**: Chrome on Android → Settings → Themes → **"Darken websites"** — it works independently of the Android system-level "Override force-dark", so that system toggle being off does not guarantee the browser won't invert light pages.
 
 - **From the app side (v3.12.2):** the page now declares its scheme to the engine — `<meta name="color-scheme">` plus `color-scheme: light / dark` CSS driven by the theme class (`:root` light, `.dark` dark). Engines skip their own forced-dark inversion for pages that declare a scheme, and native widgets (scrollbars, form controls) draw in the right mode.
 - **Guaranteed on-device:** turn OFF "Darken websites" in Chrome → Settings → Themes. Firefox Android has no forced-dark; the `color-scheme` declaration is the standard both engines honor.

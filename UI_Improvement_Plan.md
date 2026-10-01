@@ -1,8 +1,9 @@
 # Bookshelf UI Improvement Plan
 
 > **Status (2026-09-28):** **Faz 1 → v3.7.0 · Faz 2 → v3.8.0 · Faz 3 → v3.9.0 ·
-> Faz 5 → v3.10.0 — tamamlandı.** Faz 4 (navigasyon yeniden gruplama) kullanıcı
-> kararıyla atlandı. Release akışı fazlar için izinsizdir (MEMORY.md §10.1).
+> Faz 5 → v3.10.0 — done.** Faz 4 (navigation regrouping) was skipped by user
+> decision, then re-scheduled for v3.15.0 (2026-10-01). The release flow within
+> a planned version range needs no per-release approval (todo R1 revision).
 
 ## Purpose
 

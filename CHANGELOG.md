@@ -611,7 +611,7 @@ The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
   calibre-web protocol reference — **not hardware-verified**; feedback from
   real devices is expected. New `scripts/kobo-sim.ts` (`npm run kobo:sim`)
   replays the full device flow for self-hosters without a spare eReader.
-- **Settings → Book data** — "Sayfa sayısı doldurma" (Open Library page-count
+- **Settings → Book data** — "Page-count backfill" (Open Library page-count
   backfill, v2.9.6) moved from Admin to Settings: it fills the caller's own
   books, so it was never an admin power. Chunk sizes now come from
   `config.yaml` (`backfill.chunkSize` / `maxBatch`).
