@@ -17,19 +17,25 @@ The purpose of this document is to preserve the integrity of the existing projec
 tags are not accepted into `main`.
 
 **Docker image rule:** release Docker images are **always built locally** and
-pushed to GHCR from the developer machine (`docker build` + `docker push`).
-CI/CD must not build or publish images — the `Docker Publish` workflow was
-removed (v3.11.0) because local builds are the single source of truth.
-Publishing flow:
+pushed to GHCR from the developer machine. CI/CD must not build or publish
+images — the `Docker Publish` workflow was removed (v3.11.0) because local
+builds are the single source of truth.
+**Multi-arch rule (2026-10-01):** every release image is built for BOTH
+`linux/amd64` and `linux/arm64` — a single buildx push publishes the
+multi-arch manifest for both tags:
 
 ```bash
-docker build -t ghcr.io/farukylmz0550/bookshelf:{version} -t ghcr.io/farukylmz0550/bookshelf:latest .
-docker push ghcr.io/farukylmz0550/bookshelf:{version}
-docker push ghcr.io/farukylmz0550/bookshelf:latest
+docker buildx build --platform linux/amd64,linux/arm64 --push \
+  -t ghcr.io/farukylmz0550/bookshelf:{version} \
+  -t ghcr.io/farukylmz0550/bookshelf:latest .
 ```
 
-Both the version tag and `latest` are pushed; `docker-compose.yml` pulls from
-GHCR and `build: .` stays only as a source-build fallback.
+The Dockerfile selects the kepubify binary per `TARGETARCH` (both archs
+SHA-256-pinned from the official v4.0.4 release). Verify the published
+manifest per architecture with
+`docker manifest inspect ghcr.io/farukylmz0550/bookshelf:{version}` (both
+`amd64` and `arm64` descriptors must be listed). `docker-compose.yml` pulls
+from GHCR and `build: .` stays only as a source-build fallback.
 
 **Push → delete rule (60s delay):** after a locally built image is pushed to
 GHCR, the local image copy is deleted — **not immediately, but 60 seconds

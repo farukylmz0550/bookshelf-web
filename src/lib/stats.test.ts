@@ -332,19 +332,25 @@ describe("moodForProgress + pieceForYear", () => {
     expect(moodForProgress(5, 0)).toBe("neutral");
   });
 
-  it("few books read relative to goal → sad (user rule)", () => {
+  it("under a quarter of the goal → sad (user rule 2026-10-01)", () => {
     expect(moodForProgress(1, 10)).toBe("sad");
     expect(moodForProgress(2, 10)).toBe("sad");
   });
 
-  it("mid progress → neutral, near-goal → happy", () => {
-    expect(moodForProgress(4, 10)).toBe("neutral");
-    expect(moodForProgress(7, 10)).toBe("happy");
-    expect(moodForProgress(10, 10)).toBe("happy");
+  it("the mood ladder rises with progress: hopeful → neutral → happy", () => {
+    expect(moodForProgress(3, 10)).toBe("hopeful");
+    expect(moodForProgress(4, 10)).toBe("hopeful");
+    expect(moodForProgress(5, 10)).toBe("neutral");
+    expect(moodForProgress(6, 10)).toBe("neutral");
+    expect(moodForProgress(7, 10)).toBe("neutral");
+    expect(moodForProgress(8, 10)).toBe("happy");
+    expect(moodForProgress(9, 10)).toBe("happy");
   });
 
-  it("exceeding the yearly goal → the special celebration piece", () => {
+  it("exactly the goal → happier; beyond it → the celebration piece", () => {
+    expect(moodForProgress(10, 10)).toBe("happier");
     expect(moodForProgress(11, 10)).toBe("celebration");
+    expect(moodForProgress(15, 10)).toBe("celebration");
     const piece = pieceForYear(2026, 11, 10);
     expect(piece.mood).toBe("celebration");
     expect(piece.slug).toBe("beethoven-ode-to-joy");

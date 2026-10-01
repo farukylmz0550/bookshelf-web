@@ -7,10 +7,15 @@
 // public/audio/annual/README.md).
 //
 // The user can NEVER choose the piece: the app deterministically maps the
-// user's yearly-goal progress to a mood, then picks a piece within that mood
-// by year hash. Same year + same progress bucket → same piece.
+// user's yearly-goal progress to a mood tier, then picks a piece within that
+// tier by year hash. Same year + same progress bucket → same piece.
+//
+// Mood ladder (user rule, 2026-10-01) — finer tiers as the goal gets closer:
+//   < 25%  → sad          25–49% → hopeful      50–74% → neutral
+//   75–99% → happy        exactly 100% → happier
+//   over 100% (goal exceeded) → celebration
 
-export type AnnualPieceMood = "sad" | "neutral" | "happy" | "celebration";
+export type AnnualPieceMood = "sad" | "hopeful" | "neutral" | "happy" | "happier" | "celebration";
 
 export type AnnualPiece = {
   slug: string;
@@ -52,7 +57,7 @@ export const ANNUAL_PIECES: AnnualPiece[] = [
     title: "Für Elise, WoO 59",
     composer: "Ludwig van Beethoven",
     composerDied: 1827,
-    mood: "neutral",
+    mood: "hopeful",
     src: "/audio/annual/beethoven-fur-elise.mp3",
   },
   {
@@ -80,6 +85,14 @@ export const ANNUAL_PIECES: AnnualPiece[] = [
     src: "/audio/annual/vivaldi-spring-allegro.mp3",
   },
   {
+    slug: "tchaikovsky-swan-lake-theme",
+    title: "Swan Lake, Op. 20 (Theme)",
+    composer: "Pyotr Ilyich Tchaikovsky",
+    composerDied: 1893,
+    mood: "sad",
+    src: "/audio/annual/tchaikovsky-swan-lake-theme.mp3",
+  },
+  {
     slug: "beethoven-ode-to-joy",
     title: "Ode to Joy (Symphony No. 9, Op. 125)",
     composer: "Ludwig van Beethoven",
@@ -90,17 +103,20 @@ export const ANNUAL_PIECES: AnnualPiece[] = [
 ];
 
 /**
- * Map yearly goal progress to a mood (user decision):
- * fewer books read relative to the yearly goal → sadder music; more books →
- * happier music; exceeding the yearly goal → the special celebration piece.
+ * Map yearly goal progress to a mood tier (user rule, 2026-10-01): the closer
+ * the books-read count gets to the yearly goal, the happier the music —
+ * < 25% sad · 25–49% hopeful · 50–74% neutral · 75–99% happy · exactly the
+ * goal → happier · beyond the goal → the celebration piece.
  * No yearly goal → neutral.
  */
 export function moodForProgress(booksRead: number, yearlyTarget: number): AnnualPieceMood {
   if (yearlyTarget <= 0) return "neutral";
   const ratio = booksRead / yearlyTarget;
   if (ratio > 1) return "celebration";
-  if (ratio >= 2 / 3) return "happy";
-  if (ratio >= 1 / 3) return "neutral";
+  if (ratio >= 1) return "happier";
+  if (ratio >= 0.75) return "happy";
+  if (ratio >= 0.5) return "neutral";
+  if (ratio >= 0.25) return "hopeful";
   return "sad";
 }
 

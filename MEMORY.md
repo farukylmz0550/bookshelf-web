@@ -293,14 +293,14 @@ npm run format:check  # prettier
   1. Conventional Commit on `main`: `feat|fix: {version} — {short description}`
   2. `git push origin main`
   3. Signed annotated tag `v{version}` and push it
-  4. **Docker image built LOCALLY and pushed from local** (rule since 3.11.0 —
-     the `Docker Publish` workflow was REMOVED; CI never publishes images):
-     `docker build -t ghcr.io/farukylmz0550/bookshelf:{version} -t ghcr.io/farukylmz0550/bookshelf:latest .` + `docker push` both tags
-     **then DELETE the local images 60 seconds AFTER the push** (wait 60s
-     after the last push completes, then remove the local image copies —
-     verify the tags exist on GHCR via `docker manifest inspect` first; the
-     60s delay is the safety window for a failed/incomplete push, rule since
-     3.11.1)
+  4. **Docker image built LOCALLY for amd64 + arm64 and pushed from local**
+     (rule since 3.11.0, multi-arch since 2026-10-01 — the `Docker Publish`
+     workflow was REMOVED; CI never publishes images):
+     `docker buildx build --platform linux/amd64,linux/arm64 --push -t ghcr.io/farukylmz0550/bookshelf:{version} -t ghcr.io/farukylmz0550/bookshelf:latest .`
+     (`--push` streams directly to GHCR — no local image copy is created, so
+     the 60 s delete rule below only applies to plain `docker build` runs;
+     verify both arch descriptors via
+     `docker manifest inspect ghcr.io/farukylmz0550/bookshelf:{version}`)
   5. `gh release create v{version} --title "{version}" --notes-file <notes.md>` — notes follow the 2.5.1 template: what changed + **QA** line (tsc/lint/format/unit/e2e/build counts) + Docker line — **AND every release note MUST contain an "Upgrade" section** (rule since 3.11.2) describing exactly how to move the deployment to this version: for the personal deployment `bookshelfupdate` (or bump the image tag in `~/BookShelf/docker-compose.yml` + `docker compose pull && up -d`), plus any data/setting actions the release requires (migrations run at boot; call out anything beyond that, e.g. re-enabling settings touched by the release).
 - Monitor with `gh run list` and `gh release view {version}`. *(Workflow monitoring is gone since 3.11.0 — verify the image instead: `docker manifest inspect ghcr.io/farukylmz0550/bookshelf:{version}` / `gh release view {version}`.)*
 - **Standing approval (2026-09-18):** for the APPROVED 4-phase roadmap only (MEMORY §14 — 3.1.0/3.2.0/3.3.0/3.4.0 and any later phases of that roadmap), the user granted a standing release approval: after each phase's full QA set passes, commit/push/tag/dispatch/release WITHOUT asking again. Anything outside that roadmap still requires explicit approval.

@@ -322,19 +322,20 @@ describe("levelForXp", () => {
    (`v` prefix — signed annotated tags; the tag no longer triggers CI since v3.11.0)
 3. **Every tag gets a matching GitHub Release** — create it right after the tag
    lands: `gh release create vX.Y.Z --title "X.Y.Z" --notes "<changelog excerpt>"`
-4. **Docker images are always built and pushed locally** — CI does not
-   publish images (the `Docker Publish` workflow was removed in v3.11.0;
-   see `Project_Rules.md → Docker image rule`):
+4. **Docker images are always built and pushed locally, for BOTH amd64 and
+   arm64** — CI does not publish images (the `Docker Publish` workflow was
+   removed in v3.11.0; multi-arch rule since 2026-10-01, see
+   `Project_Rules.md → Docker image rule`):
    ```bash
-   docker build -t ghcr.io/<owner>/bookshelf:X.Y.Z -t ghcr.io/<owner>/bookshelf:latest .
-   docker push ghcr.io/<owner>/bookshelf:X.Y.Z
-   docker push ghcr.io/<owner>/bookshelf:latest
+   docker buildx build --platform linux/amd64,linux/arm64 --push \
+     -t ghcr.io/<owner>/bookshelf:X.Y.Z -t ghcr.io/<owner>/bookshelf:latest .
    ```
 5. Update the deployment (`docker compose pull && up -d`) unless the user
    asked otherwise
-6. **Standing approval:** releases for the `UI_Improvement_Plan.md` fazlar
-   (Faz 1–5) ship without asking (see `MEMORY.md §10.1`); any release outside
-   the fazlar still needs explicit user approval
+6. **Standing approval:** releases inside a planned version range (e.g.
+   3.14.0 → 3.15.0 locked with the user) ship without asking (revised rule
+   2026-10-01; see `MEMORY.md §10.1` + the universal todo R1); any release
+   outside a planned range still needs explicit user approval
 
 ---
 

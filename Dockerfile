@@ -1,5 +1,8 @@
 FROM node:22-slim AS base
 WORKDIR /app
+# 2026-10-01 — multi-arch (user rule: every image is built for amd64 + arm64);
+# TARGETARCH selects the kepubify stage below (automatic buildx platform arg).
+ARG TARGETARCH
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -14,10 +17,22 @@ RUN npm run build
 # v3.5.0 — pulled from the official GitHub release instead of the retired
 # ghcr.io/pgaskin/kepubify image (unpublished upstream → 3.4.0+ builds failed).
 # Pinned by SHA-256 (checksum verified by ADD during build).
-FROM scratch AS kepubify
+# 2026-10-01 — multi-arch (user rule: every image is built for amd64 + arm64):
+# one scratch stage per TARGETARCH, selected by the platform TARGETARCH buildx
+# provides. Both binaries are v4.0.4 from the same official release.
+FROM scratch AS kepubify-amd64
 ADD --chmod=0755 --checksum=sha256:37d7628d26c5c906f607f24b36f781f306075e7073a6fe7820a751bb60431fc5 \
     https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-64bit \
     /usr/local/bin/kepubify
+
+FROM scratch AS kepubify-arm64
+ADD --chmod=0755 --checksum=sha256:5a15b8f6f6a96216c69330601bca29638cfee50f7bf48712795cff88ae2d03a3 \
+    https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-arm64 \
+    /usr/local/bin/kepubify
+
+# FROM supports ARG expansion; COPY --from does not (buildkit limitation) —
+# this intermediate stage aliases the per-arch scratch stage.
+FROM kepubify-${TARGETARCH} AS kepubify
 
 FROM node:22-slim AS production
 WORKDIR /app
@@ -50,7 +65,8 @@ COPY --from=kepubify /usr/local/bin/kepubify /usr/local/bin/kepubify
 
 RUN chmod +x docker-entrypoint.sh
 
-# SQLite veri dizini (DATABASE_URL=file:/data/bookshelf.db) non-root'a yazılabilir olmalı
+# SQLite data directory (DATABASE_URL=file:/data/bookshelf.db) must be
+# writable by the non-root user
 RUN mkdir -p /data && chown nextjs:nodejs /data
 
 USER nextjs
