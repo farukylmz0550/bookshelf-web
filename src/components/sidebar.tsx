@@ -39,18 +39,35 @@ const MAIN_NAV: NavItem[] = [
   { href: "/stats", label: "stats", icon: BarChart3 },
 ];
 
-const MORE_NAV: NavItem[] = [
-  { href: "/challenges", label: "challenges", icon: Flag },
+// Faz 4 (UI_Improvement_Plan §6, v3.15.0): the Discover group (8 flat items)
+// split into Explore / More / Account so frequent destinations separate from
+// secondary features and account screens (user decision 2026-10-01: People
+// lives in MORE).
+const EXPLORE_NAV: NavItem[] = [
   { href: "/series", label: "series", icon: Layers },
   { href: "/authors", label: "authors", icon: PenLine },
+];
+
+const MORE_NAV: NavItem[] = [
   { href: "/achievements", label: "achievements", icon: Trophy },
+  { href: "/challenges", label: "challenges", icon: Flag },
   { href: "/leaderboard", label: "leaderboard", icon: Medal },
   { href: "/people", label: "people", icon: Users },
+];
+
+const ACCOUNT_NAV: NavItem[] = [
   { href: "/profile", label: "profile", icon: User },
   { href: "/settings", label: "settings", icon: Settings },
 ];
 
 const ADMIN_NAV: NavItem[] = [{ href: "/admin", label: "admin", icon: Shield, adminOnly: true }];
+
+const NAV_GROUPS: { labelKey: string; fallback: string; items: NavItem[] }[] = [
+  { labelKey: "groupLibrary", fallback: "Library", items: MAIN_NAV },
+  { labelKey: "groupExplore", fallback: "Explore", items: EXPLORE_NAV },
+  { labelKey: "groupMore", fallback: "More", items: MORE_NAV },
+  { labelKey: "groupAccount", fallback: "Account", items: ACCOUNT_NAV },
+];
 
 export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarProps) {
   const pathname = usePathname();
@@ -98,30 +115,24 @@ export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarPr
         </button>
       </div>
 
-      {/* Nav */}
+      {/* Nav — Faz 4 (§6): Library / Explore / More / Account / Admin; when
+          collapsed, every group after the first shows a divider line */}
       <nav className="flex-1 overflow-y-auto py-3">
         <div className="space-y-4">
-          <div className="space-y-0.5 px-2">
-            {!collapsed && (
-              <p className="px-2 py-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                {dict.groupLibrary ?? "Library"}
-              </p>
-            )}
-            {MAIN_NAV.map((item) => (
-              <NavLink key={item.href} item={item} dict={dict} pathname={pathname} collapsed={collapsed} />
-            ))}
-          </div>
-
-          <div className="space-y-0.5 px-2">
-            {!collapsed && (
-              <p className="px-2 py-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                {dict.groupDiscover ?? "Discover"}
-              </p>
-            )}
-            {MORE_NAV.map((item) => (
-              <NavLink key={item.href} item={item} dict={dict} pathname={pathname} collapsed={collapsed} />
-            ))}
-          </div>
+          {NAV_GROUPS.map((group, gi) => (
+            <div key={group.labelKey} className="space-y-0.5 px-2">
+              {!collapsed ? (
+                <p className="px-2 py-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                  {dict[group.labelKey] ?? group.fallback}
+                </p>
+              ) : (
+                gi > 0 && <div className="mx-2 my-2 h-px bg-[var(--border)]" />
+              )}
+              {group.items.map((item) => (
+                <NavLink key={item.href} item={item} dict={dict} pathname={pathname} collapsed={collapsed} />
+              ))}
+            </div>
+          ))}
 
           {isAdmin && (
             <div className="space-y-0.5 px-2">

@@ -1,6 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import Link from "next/link";
-import { Trophy, TrendingUp, Settings, Shield, ChevronRight, Library, Layers, PenLine, Flag } from "lucide-react";
+import {
+  Trophy,
+  TrendingUp,
+  Settings,
+  Shield,
+  ChevronRight,
+  Library,
+  Layers,
+  PenLine,
+  Flag,
+  Users,
+  User,
+} from "lucide-react";
 import { auth } from "@/auth";
 import { getDictionary } from "@/i18n/get-dictionary";
 
@@ -18,15 +30,39 @@ export default async function MorePage() {
     isAdmin = !!u?.isAdmin;
   }
 
+  // Faz 4 (UI_Improvement_Plan §6, v3.15.0): mirror the desktop sidebar
+  // hierarchy — Library / Explore / More / Account (+ Admin). People and
+  // Profile are NEW here: mobile had no sidebar, so they were previously
+  // unreachable from the bottom navigation.
   const sections = [
     {
+      heading: dict.nav.groupLibrary,
+      items: [{ href: "/groups", icon: Library, label: dict.nav.groups }],
+    },
+    {
+      heading: dict.nav.groupExplore,
       items: [
-        { href: "/groups", icon: Library, label: dict.nav.groups },
-        { href: "/challenges", icon: Flag, label: dict.nav.challenges },
         { href: "/series", icon: Layers, label: dict.nav.series },
         { href: "/authors", icon: PenLine, label: dict.nav.authors },
+      ],
+    },
+    {
+      heading: dict.nav.groupMore,
+      items: [
         { href: "/achievements", icon: Trophy, label: dict.nav.achievements },
+        { href: "/challenges", icon: Flag, label: dict.nav.challenges },
         { href: "/leaderboard", icon: TrendingUp, label: dict.nav.leaderboard },
+        { href: "/people", icon: Users, label: dict.nav.people },
+      ],
+    },
+    {
+      heading: dict.nav.groupAccount,
+      items: [
+        {
+          href: "/profile",
+          icon: User,
+          label: (dict as unknown as { profile: { title: string } }).profile?.title ?? "Profile",
+        },
         { href: "/settings", icon: Settings, label: dict.nav.settings },
       ],
     },
@@ -34,6 +70,7 @@ export default async function MorePage() {
 
   if (isAdmin) {
     sections.push({
+      heading: dict.admin.adminLabel,
       items: [{ href: "/admin", icon: Shield, label: dict.admin.adminLabel }],
     });
   }
@@ -49,23 +86,28 @@ export default async function MorePage() {
         </p>
       </header>
       {sections.map((section, si) => (
-        <div key={si} className="overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)]">
-          {section.items.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group flex w-full items-center justify-between border-b border-[var(--border)] px-4 py-3 last:border-b-0 transition-colors hover:bg-[var(--surface-elevated)]"
-              >
-                <div className="flex items-center gap-3">
-                  <Icon size={18} className="text-muted-foreground" />
-                  <span className="text-sm text-foreground">{item.label}</span>
-                </div>
-                <ChevronRight size={16} className="text-muted-foreground/50" />
-              </Link>
-            );
-          })}
+        <div key={si} className="space-y-1">
+          <p className="px-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+            {section.heading}
+          </p>
+          <div className="overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)]">
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex w-full items-center justify-between border-b border-[var(--border)] px-4 py-3 last:border-b-0 transition-colors hover:bg-[var(--surface-elevated)]"
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon size={18} className="text-muted-foreground" />
+                    <span className="text-sm text-foreground">{item.label}</span>
+                  </div>
+                  <ChevronRight size={16} className="text-muted-foreground/50" />
+                </Link>
+              );
+            })}
+          </div>
         </div>
       ))}
     </div>

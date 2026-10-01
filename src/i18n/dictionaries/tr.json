@@ -14,7 +14,9 @@
     "authors": "Yazarlar",
     "challenges": "Meydan Okumalar",
     "groupLibrary": "Kütüphane",
-    "groupDiscover": "Keşfet",
+    "groupExplore": "Keşfet",
+    "groupMore": "Daha Fazla",
+    "groupAccount": "Hesap",
     "groupAdmin": "Yönetim",
     "streakShieldConfirm": "Seri koruması kullanılsın mı?"
   },

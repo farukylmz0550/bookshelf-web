@@ -14,7 +14,9 @@
     "authors": "Autores",
     "challenges": "Desafíos",
     "groupLibrary": "Biblioteca",
-    "groupDiscover": "Descubrir",
+    "groupExplore": "Explorar",
+    "groupMore": "Más",
+    "groupAccount": "Cuenta",
     "groupAdmin": "Administración",
     "streakShieldConfirm": "¿Usar protección de racha?"
   },

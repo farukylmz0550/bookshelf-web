@@ -14,7 +14,9 @@
     "authors": "作者",
     "challenges": "挑战",
     "groupLibrary": "书库",
-    "groupDiscover": "发现",
+    "groupExplore": "发现",
+    "groupMore": "更多",
+    "groupAccount": "账户",
     "groupAdmin": "管理",
     "streakShieldConfirm": "使用连续阅读保护？"
   },

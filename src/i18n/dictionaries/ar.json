@@ -14,7 +14,9 @@
     "authors": "المؤلفون",
     "challenges": "التحديات",
     "groupLibrary": "المكتبة",
-    "groupDiscover": "استكشاف",
+    "groupExplore": "استكشاف",
+    "groupMore": "المزيد",
+    "groupAccount": "الحساب",
     "groupAdmin": "الإدارة",
     "streakShieldConfirm": "استخدام حماية السلسلة؟"
   },

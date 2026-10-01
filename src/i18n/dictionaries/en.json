@@ -14,7 +14,9 @@
     "authors": "Authors",
     "challenges": "Challenges",
     "groupLibrary": "Library",
-    "groupDiscover": "Discover",
+    "groupExplore": "Explore",
+    "groupMore": "More",
+    "groupAccount": "Account",
     "groupAdmin": "Admin",
     "streakShieldConfirm": "Use streak protection?"
   },

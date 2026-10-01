@@ -4,6 +4,58 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.15.0 — 2026-10-01
+
+### Added
+
+- **Faz 4 — sidebar hierarchy (UI_Improvement_Plan §6).** The flat 8-item
+  Discover group is split into three groups so frequent destinations separate
+  from secondary features and account screens: **Explore** (Series, Authors),
+  **More** (Achievements, Challenges, Leaderboard, People — user decision:
+  People stays in More), **Account** (Profile, Settings). Library and Admin
+  unchanged. When the sidebar is collapsed, every group after the first
+  renders a divider line (generalized logic).
+- **Mobile /more mirrors the sidebar hierarchy.** The mobile More page now
+  shows section headings (Library / Explore / More / Account / Admin) and
+  gains People and Profile — on mobile there is no sidebar, so those two
+  destinations were previously unreachable from the bottom navigation.
+- **Annual-summary music overhaul (user rules, 2026-10-01).**
+  - A 6-tier goal-progress mood ladder: under 25% of the yearly goal → sad ·
+    25–49% → hopeful · 50–74% → neutral · 75–99% → happy · exactly the goal →
+    happier · beyond the goal → celebration.
+  - The Swan Lake theme joins the catalog (harp) — it existed in the renderer
+    but had never been rendered or listed.
+  - Western instrument voices per piece: piano (Nocturne, Moonlight, Für
+    Elise, Rondo alla Turca), harp (Swan Lake), violin (Nachtmusik, Spring,
+    Ode to Joy), guitar (Minuet in G) — additive partials, per-voice
+    envelopes, bowed vibrato.
+  - An old/vintage treatment: tape warmth (one-pole low-pass), wow & flutter
+    (delay-modulated readout), soft saturation, faint deterministic hiss.
+  - Every track is now a ~60 s performance (theme repeats + second-half
+    reprises; previously 38–67 s single passes). All 9 tracks re-rendered
+    (54.8–67 s); the service worker cache bumped (v7) so installed PWAs pick
+    the new audio up.
+
+### Changed
+
+- **Multi-arch Docker images (user rule, 2026-10-01).** Every release image
+  is built for `linux/amd64` + `linux/arm64` via
+  `docker buildx build --platform linux/amd64,linux/arm64 --push` and both
+  tags (version + `latest`) land on GHCR as a multi-arch manifest. The
+  Dockerfile selects the kepubify binary per `TARGETARCH` (arm64 binary
+  SHA-256-pinned from the official v4.0.4 release). The release flow docs
+  (Project_Rules, CONTRIBUTING, MEMORY §10.1) updated.
+- **Release approval rule revised (todo R1):** standing approval is attached
+  to planned version ranges (e.g. 3.14.0 → 3.15.0 locked with the user) —
+  releases inside a planned range ship without asking; anything outside
+  still requires explicit approval.
+- **All documentation in English (user rule, 2026-10-01).** The remaining
+  Turkish prose in MEMORY, CHANGELOG, TROUBLESHOOTING and UI_Improvement_Plan
+  was translated; plan-file reports (universal todo, dead-code report) as
+  well. Going forward every documentation change is written in English.
+- The 3.14.0 single-arch images were re-published as multi-arch manifests
+  (same release, completed to the new rule) and the deployment re-pulled.
+
 ## 3.14.0 — 2026-10-01
 
 ### Added

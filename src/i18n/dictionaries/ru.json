@@ -14,7 +14,9 @@
     "authors": "Авторы",
     "challenges": "Челленджи",
     "groupLibrary": "Библиотека",
-    "groupDiscover": "Обзор",
+    "groupExplore": "Обзор",
+    "groupMore": "Ещё",
+    "groupAccount": "Аккаунт",
     "groupAdmin": "Управление",
     "streakShieldConfirm": "Использовать защиту серии?"
   },
