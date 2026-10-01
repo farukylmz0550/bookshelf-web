@@ -10,8 +10,10 @@
 import { createHash, randomBytes } from "node:crypto";
 import { db } from "@/lib/db";
 
-/** QR login sessions live for 60 s — a short-lived handoff, not a credential. */
-export const QR_LOGIN_TTL_SECONDS = 60;
+/** QR login sessions live for 30 s — a short-lived handoff, not a credential.
+ * v3.14.0: TTL shortened from 60 s and the client auto-regenerates the code on
+ * expiry, so the QR on screen is always within its validity window. */
+export const QR_LOGIN_TTL_SECONDS = 30;
 
 export function hashQrToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");

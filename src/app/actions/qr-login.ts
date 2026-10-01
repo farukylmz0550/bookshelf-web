@@ -2,7 +2,7 @@
 "use server";
 
 // v3.12.0 — passwordless QR login. The desktop (already authenticated)
-// creates a 60 s single-use token and renders it as a QR; the phone scans
+// creates a 30 s single-use token and renders it as a QR; the phone scans
 // it, opens /pair/<token>, SEES a confirmation screen (account + device) and
 // only after explicit confirmation does the server atomically consume the
 // token and issue a normal NextAuth JWT session — the same lifecycle as a
@@ -63,7 +63,7 @@ async function issueSessionCookie(userId: string): Promise<void> {
   });
 }
 
-/** Desktop side: create a fresh 60 s single-use token. */
+/** Desktop side: create a fresh 30 s single-use token. */
 export async function createQrLoginSession(): Promise<
   { ok: true; sessionId: string; token: string; url: string; expiresAt: string } | { ok: false; error: string }
 > {

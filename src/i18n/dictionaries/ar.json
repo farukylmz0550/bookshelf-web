@@ -123,12 +123,10 @@
     "logPagesButton": "قرأتُ {count} صفحة",
     "logPagesToast": "سُجّلت {count} صفحة · 🔥 سلسلة {streak} يوم",
     "logPagesError": "تعذّر تسجيل القراءة",
-    "pagesLeft": "{count} صفحة متبقية",
     "bookFinishedToast": "اكتمل الكتاب!",
     "pagesPromptTitle": "أدخل عدد الصفحات",
     "pagesPromptPlaceholder": "مثال: 352",
     "pagesPromptInvalid": "أدخل عدد صفحات صحيحًا",
-    "nextBookCta": "ابدأ كتابًا جديدًا",
     "nextBookDialogTitle": "ابدأ كتابًا جديدًا",
     "nextBookEmpty": "لا شيء للقراءة لاحقًا — قائمة القراءة فارغة",
     "startBook": "ابدأ",
@@ -238,7 +236,10 @@
     "overdues": "متجاوز",
     "dueLabel": "مستحق",
     "noPeople": "لا أشخاص بعد",
-    "addPeople": "أضف من صفحة الأشخاص"
+    "addPeople": "أضف من صفحة الأشخاص",
+    "newPerson": "شخص جديد",
+    "save": "حفظ",
+    "personAdded": "تمت إضافة الشخص"
   },
   "people": {
     "title": "الأشخاص",

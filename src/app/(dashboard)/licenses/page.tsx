@@ -89,12 +89,6 @@ const LICENSES: LicenseEntry[] = [
     licenseUrl: "https://github.com/emilkowalski/sonner/blob/main/license.md",
   },
   {
-    name: "next-themes",
-    url: "https://github.com/pacocoursey/next-themes",
-    license: "MIT",
-    licenseUrl: "https://github.com/pacocoursey/next-themes/blob/main/license",
-  },
-  {
     name: "otplib",
     url: "https://otplib.yeojz.dev",
     license: "MIT",

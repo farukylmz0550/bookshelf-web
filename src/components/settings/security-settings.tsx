@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Loader2, ShieldCheck, ShieldOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { TotpCodeInput } from "@/components/ui/totp-input";
 import { startTotpEnrollment, verifyTotpEnrollment, disableTotp } from "@/app/actions/security";
 
 export type SecurityDict = {
@@ -64,10 +65,10 @@ export function TotpSetupFlow({ dict, onActivated }: { dict: SecurityDict; onAct
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function submit() {
-    if (verifying || token.trim().length !== 6) return;
+  async function verifyWith(code: string) {
+    if (verifying || code.length !== 6) return;
     setVerifying(true);
-    const res = await verifyTotpEnrollment(token);
+    const res = await verifyTotpEnrollment(code);
     setVerifying(false);
     if (res.ok) {
       toast.success(dict.setupToast);
@@ -102,18 +103,17 @@ export function TotpSetupFlow({ dict, onActivated }: { dict: SecurityDict; onAct
         aria-label="Secret"
         className="w-full rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 font-[var(--font-mono)] text-xs tracking-wider text-foreground"
       />
-      <div className="flex items-center gap-2">
-        <input
-          type="text"
-          inputMode="numeric"
-          autoComplete="one-time-code"
+      <div className="flex flex-col items-center gap-3">
+        <TotpCodeInput
           value={token}
-          onChange={(e) => setToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          placeholder="123456"
-          maxLength={6}
-          className="w-32 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 text-center font-[var(--font-mono)] text-sm tracking-[0.25em] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          onChange={setToken}
+          onComplete={(code) => {
+            if (!verifying) void verifyWith(code);
+          }}
+          disabled={verifying}
+          ariaLabel={dict.totpCode}
         />
-        <Button onClick={submit} disabled={verifying || token.length !== 6}>
+        <Button onClick={() => verifyWith(token)} disabled={verifying || token.length !== 6}>
           {verifying && <Loader2 className="size-4 animate-spin" />}
           {dict.verifyCta}
         </Button>
@@ -217,15 +217,7 @@ export function SecuritySettings({
             </DialogHeader>
             <div className="space-y-3">
               <p className="font-[var(--font-sans)] text-sm text-muted-foreground">{dict.scanHint}</p>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={token}
-                onChange={(e) => setToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="123456"
-                maxLength={6}
-                className="w-32 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 text-center font-[var(--font-mono)] text-sm tracking-[0.25em] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-              />
+              <TotpCodeInput value={token} onChange={setToken} disabled={pending} ariaLabel={dict.totpCode} />
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setDialog(null)}>

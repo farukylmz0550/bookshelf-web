@@ -44,48 +44,55 @@ export default async function BooksPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h1 className="font-[var(--font-serif)] text-2xl font-semibold tracking-tight text-foreground">
-            {dict.books.title}
-          </h1>
-          <p className="font-[var(--font-sans)] text-sm text-muted-foreground">
-            {books.length} {dict.common.books}
-          </p>
-        </div>
-        {/* v3.8.0 — Faz 2: primary add-book action opens the workflow dialog;
-            the panel no longer occupies the collection flow. */}
-        <AddBookDialog
-          dict={dict.books as never}
-          excel={<ExcelActions dict={dict.excel} goodreadsDict={dict.goodreads as never} />}
-          label={dict.books.addBook}
-          addedToastLabel={dict.books.addSuccess ?? ""}
-        />
-      </header>
-      {/* v3.7.0 — page-log CTA centered between the header and the list
-          toolbar (desktop placement; same outline treatment). */}
-      <div className="flex justify-center">
-        <PageLogCta
-          books={books
-            .filter((b) => b.status === "READING")
-            .map((b) => ({ id: b.id, title: b.title, numberOfPages: b.numberOfPages, currentPage: b.currentPage }))}
-          pagesPerReadEvent={pagesPerReadEvent}
-          dict={{
-            label: dict.books.logPagesButton,
-            logPagesToast: dict.books.logPagesToast,
-            bookFinishedToast: dict.books.bookFinishedToast,
-            logPagesError: dict.books.logPagesError,
-            pagesPromptTitle: dict.books.pagesPromptTitle,
-            pagesPromptPlaceholder: dict.books.pagesPromptPlaceholder,
-            pagesPromptInvalid: dict.books.pagesPromptInvalid,
-            save: dict.facts.save,
-            cancel: dict.facts.cancel,
-          }}
-        />
-      </div>
+      {/* v3.14.0 — header + CTA passed into BooksGrid as slots: they are pinned
+          together with the filter toolbar in ONE sticky block on mobile, so
+          the card list is the only scrolling element. Desktop unchanged. */}
       <BooksGrid
         books={booksWithGroups as never}
         lentMap={lentMap}
+        headerSlot={
+          <header className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h1 className="font-[var(--font-serif)] text-2xl font-semibold tracking-tight text-foreground">
+                {dict.books.title}
+              </h1>
+              <p className="font-[var(--font-sans)] text-sm text-muted-foreground">
+                {books.length} {dict.common.books}
+              </p>
+            </div>
+            {/* v3.8.0 — Faz 2: primary add-book action opens the workflow dialog;
+                the panel no longer occupies the collection flow. */}
+            <AddBookDialog
+              dict={dict.books as never}
+              excel={<ExcelActions dict={dict.excel} goodreadsDict={dict.goodreads as never} />}
+              label={dict.books.addBook}
+              addedToastLabel={dict.books.addSuccess ?? ""}
+            />
+          </header>
+        }
+        ctaSlot={
+          /* v3.7.0 — page-log CTA centered between the header and the list
+              toolbar (desktop placement; same outline treatment). */
+          <div className="flex justify-center py-1">
+            <PageLogCta
+              books={books
+                .filter((b) => b.status === "READING")
+                .map((b) => ({ id: b.id, title: b.title, numberOfPages: b.numberOfPages, currentPage: b.currentPage }))}
+              pagesPerReadEvent={pagesPerReadEvent}
+              dict={{
+                label: dict.books.logPagesButton,
+                logPagesToast: dict.books.logPagesToast,
+                bookFinishedToast: dict.books.bookFinishedToast,
+                logPagesError: dict.books.logPagesError,
+                pagesPromptTitle: dict.books.pagesPromptTitle,
+                pagesPromptPlaceholder: dict.books.pagesPromptPlaceholder,
+                pagesPromptInvalid: dict.books.pagesPromptInvalid,
+                save: dict.facts.save,
+                cancel: dict.facts.cancel,
+              }}
+            />
+          </div>
+        }
         dict={
           {
             ...dict.books,
@@ -103,7 +110,6 @@ export default async function BooksPage() {
           logPagesButton: dict.books.logPagesButton,
           logPagesToast: dict.books.logPagesToast,
           logPagesError: dict.books.logPagesError,
-          pagesLeft: dict.books.pagesLeft,
           reReadButton: dict.books.reReadButton,
           bookFinishedToast: dict.books.bookFinishedToast,
           earlyFinishBlocked: dict.books.earlyFinishBlocked,
@@ -112,7 +118,6 @@ export default async function BooksPage() {
           pagesPromptInvalid: dict.books.pagesPromptInvalid,
           save: dict.facts.save,
           cancel: dict.facts.cancel,
-          nextBookCta: dict.books.nextBookCta,
           nextBookDialogTitle: dict.books.nextBookDialogTitle,
           nextBookEmpty: dict.books.nextBookEmpty,
           startBook: dict.books.startBook,

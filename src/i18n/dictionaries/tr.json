@@ -123,12 +123,10 @@
     "logPagesButton": "{count} sayfa okudum",
     "logPagesToast": "{count} sayfa kaydedildi · 🔥 {streak} gün",
     "logPagesError": "Okuma kaydedilemedi",
-    "pagesLeft": "{count} sayfa kaldı",
     "bookFinishedToast": "Kitap bitti!",
     "pagesPromptTitle": "Sayfa sayısı gir",
     "pagesPromptPlaceholder": "örn. 352",
     "pagesPromptInvalid": "Geçerli bir sayfa sayısı gir",
-    "nextBookCta": "Yeni kitaba başla",
     "nextBookDialogTitle": "Yeni kitaba başla",
     "nextBookEmpty": "Okunacak kitap yok — okunacaklar listen boş",
     "startBook": "Başla",
@@ -238,7 +236,10 @@
     "overdues": "Gecikmiş",
     "dueLabel": "Bitiş",
     "noPeople": "Henüz kişi yok",
-    "addPeople": "Kişiler sayfasından ekle"
+    "addPeople": "Kişiler sayfasından ekle",
+    "newPerson": "Yeni kişi",
+    "save": "Kaydet",
+    "personAdded": "Kişi eklendi"
   },
   "people": {
     "title": "Kişiler",

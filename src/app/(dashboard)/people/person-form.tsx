@@ -29,7 +29,7 @@ export function PersonForm({
     setError(null);
     startTransition(async () => {
       const res = await createPerson(name);
-      if (res.error) setError(res.error);
+      if ("error" in res) setError(res.error);
       else {
         setName("");
         router.refresh();

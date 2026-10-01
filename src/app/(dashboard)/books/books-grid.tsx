@@ -35,7 +35,6 @@ type CardDict = {
   logPagesButton: string;
   logPagesToast: string;
   logPagesError: string;
-  pagesLeft: string;
   reReadButton: string;
   bookFinishedToast: string;
   earlyFinishBlocked: string;
@@ -44,7 +43,6 @@ type CardDict = {
   pagesPromptInvalid: string;
   save: string;
   cancel: string;
-  nextBookCta: string;
   nextBookDialogTitle: string;
   nextBookEmpty: string;
   startBook: string;
@@ -57,6 +55,8 @@ export function BooksGrid({
   cardDict,
   pagesPerReadEvent,
   groups,
+  headerSlot,
+  ctaSlot,
 }: {
   books: Book[];
   lentMap: Record<string, boolean>;
@@ -64,6 +64,11 @@ export function BooksGrid({
   cardDict: CardDict;
   pagesPerReadEvent: number;
   groups?: GroupInfo[];
+  /** v3.14.0 — server-rendered page header (title + count + add dialog) and
+   * the page-log CTA, pinned together with the toolbar in one sticky block on
+   * mobile so only the card list scrolls. Unpinned (static) from md up. */
+  headerSlot?: React.ReactNode;
+  ctaSlot?: React.ReactNode;
 }) {
   const router = useRouter();
   // v2.7.0 — "start a new book" flow after finishing one
@@ -103,140 +108,151 @@ export function BooksGrid({
   const shown = filtered.length;
 
   return (
-    <div className="space-y-4">
-      <FilterBar
-        onChange={setFilters}
-        tagsInUse={tagsInUse}
-        dict={(dict as Record<string, unknown>).filter as Record<string, string>}
-        groups={groups}
-      />
-      <div className="flex items-center justify-between gap-2">
-        <p className="font-[var(--font-sans)] text-xs text-muted-foreground">
-          {shown === total ? `${total} ${dict.booksCount ?? "books"}` : `${shown} ${dict.ofTotal ?? "of"} ${total}`}
-        </p>
-        <div className="flex items-center rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-0.5">
-          <button
-            type="button"
-            onClick={() => handleViewChange("card")}
-            aria-label={dict.cardView ?? "Card view"}
-            aria-pressed={view === "card"}
-            className={`flex h-7 w-7 items-center justify-center rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
-              view === "card"
-                ? "bg-[var(--accent)] text-white"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground"
-            }`}
-          >
-            <LayoutGrid size={14} />
-          </button>
-          <button
-            type="button"
-            onClick={() => handleViewChange("list")}
-            aria-label={dict.listView ?? "List view"}
-            aria-pressed={view === "list"}
-            className={`flex h-7 w-7 items-center justify-center rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
-              view === "list"
-                ? "bg-[var(--accent)] text-white"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground"
-            }`}
-          >
-            <List size={14} />
-          </button>
+    <div>
+      {/* v3.14.0 — one sticky block pins everything above the cards on mobile:
+          page header + page-log CTA (passed as slots from the server page) +
+          the filter toolbar. The card grid is the only thing that scrolls.
+          Desktop keeps the plain flow (md:static). The negative margins bleed
+          the background over the main element's horizontal padding so cards
+          slide cleanly underneath. */}
+      <div className="sticky top-12 z-20 -mx-4 bg-[var(--background)] px-4 pb-3 pt-2 md:static md:mx-0 md:px-0 md:pb-0 md:pt-0 md:bg-transparent">
+        {headerSlot}
+        {ctaSlot}
+        <FilterBar
+          onChange={setFilters}
+          tagsInUse={tagsInUse}
+          dict={(dict as Record<string, unknown>).filter as Record<string, string>}
+          groups={groups}
+        />
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <p className="font-[var(--font-sans)] text-xs text-muted-foreground">
+            {shown === total ? `${total} ${dict.booksCount ?? "books"}` : `${shown} ${dict.ofTotal ?? "of"} ${total}`}
+          </p>
+          <div className="flex items-center rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-0.5">
+            <button
+              type="button"
+              onClick={() => handleViewChange("card")}
+              aria-label={dict.cardView ?? "Card view"}
+              aria-pressed={view === "card"}
+              className={`flex h-7 w-7 items-center justify-center rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
+                view === "card"
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              }`}
+            >
+              <LayoutGrid size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleViewChange("list")}
+              aria-label={dict.listView ?? "List view"}
+              aria-pressed={view === "list"}
+              className={`flex h-7 w-7 items-center justify-center rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
+                view === "list"
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              }`}
+            >
+              <List size={14} />
+            </button>
+          </div>
         </div>
       </div>
-
-      {filtered.length === 0 ? (
-        <div className="flex flex-col items-center py-16">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="" className="mb-4 h-16 w-16 opacity-20" />
-          <p className="font-[var(--font-sans)] text-sm text-muted-foreground">
-            {total === 0 ? dict.empty : (dict.noResults ?? "No results — try clearing filters")}
-          </p>
-        </div>
-      ) : view === "card" ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((book) => (
-            <BookCard
-              key={book.id}
-              book={book as Book}
-              lentOut={!!lentMap[book.id]}
-              statusLabels={statusLabels}
-              pagesPerReadEvent={pagesPerReadEvent}
-              groups={groups}
-              dict={{
-                toRead: statusLabels.toRead,
-                reading: statusLabels.reading,
-                finished: statusLabels.finished,
-                ...cardDict,
-                lentOut: ((dict.filter as Record<string, string> | undefined)?.onLoan as string) ?? "On Loan",
-              }}
-              onFinished={() => setNextBookOpen(true)}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)]">
-          <div className="hidden grid-cols-[3rem_1fr_12rem_6rem_5rem] gap-3 border-b border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 sm:grid">
-            <span className="font-[var(--font-sans)] text-[10px] uppercase tracking-widest text-muted-foreground">
-              {dict.cover ?? "Cover"}
-            </span>
-            <span className="font-[var(--font-sans)] text-[10px] uppercase tracking-widest text-muted-foreground">
-              {dict.title}
-            </span>
-            <span className="font-[var(--font-sans)] text-[10px] uppercase tracking-widest text-muted-foreground">
-              {dict.author}
-            </span>
-            <span className="font-[var(--font-sans)] text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-              {dict.filter?.status ?? "Status"}
-            </span>
-            <span className="font-[var(--font-sans)] text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-              {dict.rating ?? "Rating"}
-            </span>
+      <div className="mt-4">
+        {filtered.length === 0 ? (
+          <div className="flex flex-col items-center py-16">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="" className="mb-4 h-16 w-16 opacity-20" />
+            <p className="font-[var(--font-sans)] text-sm text-muted-foreground">
+              {total === 0 ? dict.empty : (dict.noResults ?? "No results — try clearing filters")}
+            </p>
           </div>
-          {filtered.map((book) => (
-            <Link
-              key={book.id}
-              href={`/books/${book.id}`}
-              className="grid grid-cols-[3rem_1fr] sm:grid-cols-[3rem_1fr_12rem_6rem_5rem] gap-3 items-center border-b border-[var(--border)] last:border-b-0 bg-[var(--surface)] px-3 py-2.5 hover:bg-[var(--surface-elevated)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-            >
-              <div className="h-10 w-8 overflow-hidden rounded-[4px] bg-[var(--surface-elevated)] border border-[var(--border)] shrink-0">
-                {book.coverUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={book.coverUrl} alt={book.title} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/logo.svg" alt="" className="h-4 w-4 opacity-20" />
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0">
-                <p className="font-[var(--font-serif)] text-sm font-medium leading-tight text-foreground truncate">
-                  {book.title}
-                </p>
-                <p className="font-[var(--font-sans)] text-xs text-muted-foreground sm:hidden truncate">
+        ) : view === "card" ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {filtered.map((book) => (
+              <BookCard
+                key={book.id}
+                book={book as Book}
+                lentOut={!!lentMap[book.id]}
+                statusLabels={statusLabels}
+                pagesPerReadEvent={pagesPerReadEvent}
+                groups={groups}
+                dict={{
+                  toRead: statusLabels.toRead,
+                  reading: statusLabels.reading,
+                  finished: statusLabels.finished,
+                  ...cardDict,
+                  lentOut: ((dict.filter as Record<string, string> | undefined)?.onLoan as string) ?? "On Loan",
+                }}
+                onFinished={() => setNextBookOpen(true)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)]">
+            <div className="hidden grid-cols-[3rem_1fr_12rem_6rem_5rem] gap-3 border-b border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 sm:grid">
+              <span className="font-[var(--font-sans)] text-[10px] uppercase tracking-widest text-muted-foreground">
+                {dict.cover ?? "Cover"}
+              </span>
+              <span className="font-[var(--font-sans)] text-[10px] uppercase tracking-widest text-muted-foreground">
+                {dict.title}
+              </span>
+              <span className="font-[var(--font-sans)] text-[10px] uppercase tracking-widest text-muted-foreground">
+                {dict.author}
+              </span>
+              <span className="font-[var(--font-sans)] text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+                {dict.filter?.status ?? "Status"}
+              </span>
+              <span className="font-[var(--font-sans)] text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+                {dict.rating ?? "Rating"}
+              </span>
+            </div>
+            {filtered.map((book) => (
+              <Link
+                key={book.id}
+                href={`/books/${book.id}`}
+                className="grid grid-cols-[3rem_1fr] sm:grid-cols-[3rem_1fr_12rem_6rem_5rem] gap-3 items-center border-b border-[var(--border)] last:border-b-0 bg-[var(--surface)] px-3 py-2.5 hover:bg-[var(--surface-elevated)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              >
+                <div className="h-10 w-8 overflow-hidden rounded-[4px] bg-[var(--surface-elevated)] border border-[var(--border)] shrink-0">
+                  {book.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={book.coverUrl} alt={book.title} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/logo.svg" alt="" className="h-4 w-4 opacity-20" />
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-[var(--font-serif)] text-sm font-medium leading-tight text-foreground truncate">
+                    {book.title}
+                  </p>
+                  <p className="font-[var(--font-sans)] text-xs text-muted-foreground sm:hidden truncate">
+                    {book.author ?? "—"}
+                  </p>
+                  {lentMap[book.id] && (
+                    <span className="mt-1 inline-block rounded-[4px] bg-[var(--accent)] px-1.5 py-0.5 font-[var(--font-sans)] text-[10px] text-white sm:hidden">
+                      {((dict.filter as Record<string, string> | undefined)?.onLoan as string) ?? "On Loan"}
+                    </span>
+                  )}
+                </div>
+                <p className="hidden font-[var(--font-sans)] text-sm text-muted-foreground truncate sm:block">
                   {book.author ?? "—"}
                 </p>
-                {lentMap[book.id] && (
-                  <span className="mt-1 inline-block rounded-[4px] bg-[var(--accent)] px-1.5 py-0.5 font-[var(--font-sans)] text-[10px] text-white sm:hidden">
-                    {((dict.filter as Record<string, string> | undefined)?.onLoan as string) ?? "On Loan"}
+                <span className="hidden justify-center sm:flex">
+                  <span className="rounded-[4px] border border-[var(--border)] bg-[var(--surface-elevated)] px-1.5 py-0.5 font-[var(--font-sans)] text-xs text-muted-foreground">
+                    {statusLabel(book.status ?? "TO_READ", statusLabels)}
                   </span>
-                )}
-              </div>
-              <p className="hidden font-[var(--font-sans)] text-sm text-muted-foreground truncate sm:block">
-                {book.author ?? "—"}
-              </p>
-              <span className="hidden justify-center sm:flex">
-                <span className="rounded-[4px] border border-[var(--border)] bg-[var(--surface-elevated)] px-1.5 py-0.5 font-[var(--font-sans)] text-xs text-muted-foreground">
-                  {statusLabel(book.status ?? "TO_READ", statusLabels)}
                 </span>
-              </span>
-              <span className="hidden justify-center sm:flex font-[var(--font-sans)] text-xs text-[var(--warning)]">
-                {book.rating ? "★".repeat(book.rating) : "—"}
-              </span>
-            </Link>
-          ))}
-        </div>
-      )}
+                <span className="hidden justify-center sm:flex font-[var(--font-sans)] text-xs text-[var(--warning)]">
+                  {book.rating ? "★".repeat(book.rating) : "—"}
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* v2.7.0 — after finishing a book: pick a to-read book to start next */}
       {nextBookOpen && (

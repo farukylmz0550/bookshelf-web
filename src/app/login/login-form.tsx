@@ -1,52 +1,69 @@
 // SPDX-License-Identifier: GPL-3.0-only
 "use client";
 
+// v3.14.0 — TOTP second factor moved into its own popup (PopupShell) with the
+// shared TotpCodeInput (six boxes, auto-advance, paste). When authorize()
+// answers TOTP_REQUIRED the popup opens and re-submits the stored
+// credentials + code in one signIn call — the same single-auth-system
+// lifecycle as before, only a better entry surface. Auto-submit fires when
+// the sixth digit lands; a wrong code re-opens with the boxes cleared.
+
 import { useRef, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { TotpCodeInput } from "@/components/ui/totp-input";
+import { PopupShell } from "@/components/ui/popup";
+import { Button } from "@/components/ui/button";
 
 export default function LoginForm({ dict }: { dict: Record<string, string> }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  // v2.10.0 — TOTP: the form stays on one screen; authorize() answers with
-  // TOTP_REQUIRED, the code field appears, and the same submit re-sends the
-  // stored email/password together with the six-digit code.
+  // v2.10.0 — TOTP: authorize() answers TOTP_REQUIRED; since v3.14.0 the code
+  // entry lives in a popup with the shared TotpCodeInput instead of an inline
+  // field on the login card.
   const [needsTotp, setNeedsTotp] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const [totpCode, setTotpCode] = useState("");
+  const [totpInvalid, setTotpInvalid] = useState(false);
+  // Credentials are stashed when TOTP_REQUIRED lands (inside attempt); the
+  // popup's submit re-sends them together with the code.
+  const credsRef = useRef<{ email: string; password: string } | null>(null);
+  async function attempt(email: FormDataEntryValue | null, password: FormDataEntryValue | null, totp?: string) {
     setPending(true);
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const email = form.get("email");
-    const password = form.get("password");
-    const totp = form.get("totp");
-
     const result = await signIn("credentials", {
       email,
       password,
-      totp: needsTotp ? totp : undefined,
+      totp,
       redirect: false,
     });
-
     setPending(false);
     if (result?.error) {
       if (result.error === "TOTP_REQUIRED") {
+        // v3.14.0 — open the TOTP popup with the credentials stashed; the
+        // popup's submit re-sends them + the code in the same signIn path.
+        credsRef.current = {
+          email: typeof email === "string" ? email : "",
+          password: typeof password === "string" ? password : "",
+        };
+        setTotpCode("");
+        setTotpInvalid(false);
         setNeedsTotp(true);
         setError(dict.totpRequired);
         return;
       }
       // v3.11.2 — throttle hit: explain the wait instead of pretending the
-      // password was wrong; the code field stays visible so a single retry
-      // after the window picks up where the user left off.
+      // password was wrong; the code entry stays open for a single retry
+      // after the window.
       if (result.error === "TOTP_THROTTLED") {
         setError(dict.totpThrottled);
         return;
       }
       if (result.error === "INVALID_TOTP") {
+        setTotpInvalid(true);
+        setTotpCode("");
         setError(dict.invalidTotp);
         return;
       }
@@ -58,6 +75,8 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
       // to the password step with a fresh state.
       if (needsTotp && (result.error === "CredentialsSignin" || result.error === "AccessDeniedError")) {
         setNeedsTotp(false);
+        setTotpCode("");
+        credsRef.current = null;
         formRef.current?.reset();
       }
       setError(dict.invalidCredentials);
@@ -65,6 +84,13 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
     }
     router.push("/books");
     router.refresh();
+  }
+
+  // The popup's own submit: same credentials + the assembled TOTP code.
+  function handleTotpSubmit(code: string) {
+    const creds = credsRef.current;
+    if (!creds || code.length !== 6) return;
+    void attempt(creds.email, creds.password, code);
   }
 
   return (
@@ -80,7 +106,11 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
         <form
           ref={formRef}
           method="POST"
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const form = new FormData(e.currentTarget);
+            void attempt(form.get("email"), form.get("password"));
+          }}
           className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-6"
         >
           <div className="space-y-4">
@@ -104,23 +134,6 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
                 className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
-            {needsTotp && (
-              <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-foreground">{dict.totpCode}</label>
-                <input
-                  name="totp"
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  placeholder="123456"
-                  maxLength={6}
-                  pattern="[0-9]*"
-                  required
-                  autoFocus
-                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-center font-mono text-lg tracking-[0.3em] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
-            )}
             {error && <div className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</div>}
             <button
               type="submit"
@@ -139,6 +152,33 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
         </p>
         <p className="mt-2 text-center text-xs text-muted-foreground">{dict.forgotPassword}</p>
       </div>
+
+      {needsTotp && (
+        <PopupShell open onOpenChange={() => undefined} title={dict.totpCode} description={dict.totpRequired}>
+          <div className="space-y-4">
+            <TotpCodeInput
+              value={totpCode}
+              onChange={(v) => {
+                setTotpCode(v);
+                setTotpInvalid(false);
+              }}
+              onComplete={(code) => handleTotpSubmit(code)}
+              disabled={pending}
+              invalid={totpInvalid}
+              ariaLabel={dict.totpCode}
+              autoFocus
+            />
+            {error && <div className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</div>}
+            <Button
+              onClick={() => handleTotpSubmit(totpCode)}
+              disabled={pending || totpCode.length !== 6}
+              className="w-full"
+            >
+              {pending ? dict.signingIn : dict.loginCta}
+            </Button>
+          </div>
+        </PopupShell>
+      )}
     </div>
   );
 }

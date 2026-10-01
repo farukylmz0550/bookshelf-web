@@ -123,12 +123,10 @@
     "logPagesButton": "I've read {count} pages",
     "logPagesToast": "{count} pages logged · 🔥 {streak}-day streak",
     "logPagesError": "Could not log reading",
-    "pagesLeft": "{count} pages left",
     "bookFinishedToast": "Book finished!",
     "pagesPromptTitle": "Enter page count",
     "pagesPromptPlaceholder": "e.g. 352",
     "pagesPromptInvalid": "Enter a valid page count",
-    "nextBookCta": "Start a new book",
     "nextBookDialogTitle": "Start a new book",
     "nextBookEmpty": "Nothing to read next — your to-read list is empty",
     "startBook": "Start",
@@ -238,7 +236,10 @@
     "overdues": "Overdue",
     "dueLabel": "Due",
     "noPeople": "No people yet",
-    "addPeople": "Add from People page"
+    "addPeople": "Add from People page",
+    "newPerson": "New person",
+    "save": "Save",
+    "personAdded": "Person added"
   },
   "people": {
     "title": "People",

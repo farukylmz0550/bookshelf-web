@@ -8,6 +8,7 @@ import { KeyRound } from "lucide-react";
 import { approveUser, rejectUser, toggleAdmin, deleteUser, adminResetPassword } from "@/app/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { TotpCodeInput } from "@/components/ui/totp-input";
 
 type User = {
   id: string;
@@ -87,11 +88,12 @@ export function UserTable({
     }
   }
 
-  function confirmSelfReset() {
-    if (selfResetTotp.length !== 6) return;
+  function confirmSelfReset(codeOverride?: string) {
+    const code = codeOverride ?? selfResetTotp;
+    if (code.length !== 6) return;
     setSelfResetOpen(false);
     startTransition(async () => {
-      const res = await adminResetPassword(currentUserId, selfResetTotp);
+      const res = await adminResetPassword(currentUserId, code);
       if (res.ok) {
         setResetPassword(res.password);
         router.refresh();
@@ -197,22 +199,16 @@ export function UserTable({
               <DialogTitle>{dict.selfResetTitle}</DialogTitle>
               <DialogDescription>{dict.selfResetDesc}</DialogDescription>
             </DialogHeader>
-            <input
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              autoFocus
-              maxLength={6}
+            <TotpCodeInput
               value={selfResetTotp}
-              onChange={(e) => setSelfResetTotp(e.target.value.replace(/\D/g, ""))}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") confirmSelfReset();
-              }}
-              placeholder="000000"
-              aria-label={dict.selfResetTitle}
-              className="w-full rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 text-center font-mono text-lg tracking-[0.4em] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+              onChange={setSelfResetTotp}
+              onComplete={(code) => confirmSelfReset(code)}
+              disabled={pending}
+              ariaLabel={dict.selfResetTitle}
+              autoFocus
             />
             <div className="flex gap-2">
-              <Button onClick={confirmSelfReset} disabled={selfResetTotp.length !== 6 || pending}>
+              <Button onClick={() => confirmSelfReset()} disabled={selfResetTotp.length !== 6 || pending}>
                 {dict.resetPasswordCta}
               </Button>
               <Button variant="outline" onClick={() => setSelfResetOpen(false)}>

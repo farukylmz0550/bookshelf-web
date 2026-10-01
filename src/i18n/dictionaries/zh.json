@@ -123,12 +123,10 @@
     "logPagesButton": "我读了 {count} 页",
     "logPagesToast": "已记录 {count} 页 · 🔥 连续 {streak} 天",
     "logPagesError": "阅读记录失败",
-    "pagesLeft": "还剩 {count} 页",
     "bookFinishedToast": "读完一本书！",
     "pagesPromptTitle": "输入页数",
     "pagesPromptPlaceholder": "例如 352",
     "pagesPromptInvalid": "请输入有效的页数",
-    "nextBookCta": "开始一本新书",
     "nextBookDialogTitle": "开始一本新书",
     "nextBookEmpty": "暂无待读书籍——待读列表为空",
     "startBook": "开始",
@@ -238,7 +236,10 @@
     "overdues": "已逾期",
     "dueLabel": "应还",
     "noPeople": "还没有联系人",
-    "addPeople": "从联系人页面添加"
+    "addPeople": "从联系人页面添加",
+    "newPerson": "新联系人",
+    "save": "保存",
+    "personAdded": "联系人已添加"
   },
   "people": {
     "title": "人物",

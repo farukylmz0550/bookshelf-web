@@ -27,16 +27,6 @@ export type GoodreadsImportResult = {
 };
 
 /**
- * Import a Goodreads-exported CSV into the current user's library.
- * Flow: parse rows → Zod validation → Open Library enrichment with one
- * request per unique ISBN (§19) → duplicate check (ISBN + exact title/author)
- * → batch creation scoped to the authenticated user.
- */
-export async function importGoodreadsCsv(base64: string): Promise<GoodreadsImportResult> {
-  return importBooksCsv(base64);
-}
-
-/**
  * v3.3.0 — unified CSV import: accepts Goodreads, Calibre and StoryGraph
  * exports. The format is detected from the header row; unknown layouts are
  * rejected with invalidCsv rather than guessed.

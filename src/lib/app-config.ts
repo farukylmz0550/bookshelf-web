@@ -170,8 +170,3 @@ export async function getAppConfig(): Promise<AppConfigValues> {
   cache = { values, at: Date.now() };
   return values;
 }
-
-/** Drop the in-memory cache (tests; file is re-read on next access). */
-export function invalidateAppConfigCache() {
-  cache = null;
-}

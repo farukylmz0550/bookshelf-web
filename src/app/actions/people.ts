@@ -9,7 +9,9 @@ import { normalizeName } from "@/lib/person";
 
 const personNameSchema = z.string().min(1).max(200);
 
-export async function createPerson(name: string) {
+export async function createPerson(
+  name: string,
+): Promise<{ ok: true; person: { id: string; name: string } } | { error: string }> {
   const userId = await requireUserId();
   const parsed = personNameSchema.safeParse(name.trim());
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid name" };
@@ -23,10 +25,12 @@ export async function createPerson(name: string) {
     return { error: "Person already exists" };
   }
   if (existing) return { error: "Person already exists" };
-  await db.person.create({ data: { userId, name: trimmed } });
+  const person = await db.person.create({ data: { userId, name: trimmed }, select: { id: true, name: true } });
   revalidatePath("/people");
   revalidatePath("/lending");
-  return { ok: true };
+  // v3.14.0 — in-place borrower creation (lending popup): the caller can
+  // select the fresh person immediately without a full round-trip.
+  return { ok: true as const, person: { id: person.id, name: person.name } };
 }
 
 export async function removePerson(personId: string) {

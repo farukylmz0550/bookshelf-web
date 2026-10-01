@@ -36,7 +36,6 @@ type CardDict = {
   logPagesButton: string;
   logPagesToast: string;
   logPagesError: string;
-  pagesLeft: string;
   reReadButton: string;
   bookFinishedToast: string;
   earlyFinishBlocked: string;

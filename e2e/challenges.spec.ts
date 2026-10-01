@@ -31,7 +31,9 @@ test.describe("Seasonal challenges (v3.3.0)", () => {
     await dates.nth(1).fill(fmt(new Date(Date.now() + 60 * 86400_000)));
     await page.getByRole("button", { name: /^create$/i }).click();
     await expect(page.getByText("Winter sprint")).toBeVisible();
-    await expect(page.getByText(/0\/2/)).toBeVisible();
+    // exact match — the loose /0\/2/ regex also hits the date range line
+    // ("…11/30/2026" contains "0/2") and trips strict mode.
+    await expect(page.getByText("0/2", { exact: true })).toBeVisible();
   });
 
   test("progress advances with logged pages and completes exactly once", async ({ page }) => {

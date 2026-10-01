@@ -7,7 +7,6 @@
 
 import { generateSecret, generateURI, verifySync } from "otplib";
 import QRCode from "qrcode";
-import { createHash } from "node:crypto";
 
 const TOTP_ISSUER = "Book Shelf";
 
@@ -37,10 +36,4 @@ export function verifyTotpCode(secret: string, token: string): TotpVerifyResult 
     epochTolerance: [30, 30],
   });
   return result.valid ? "VALID" : "INVALID";
-}
-
-// One-way digest for comparing / storing token-like values (kept here so
-// future token flows reuse one canonical hash).
-export function hashSecretValue(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
 }

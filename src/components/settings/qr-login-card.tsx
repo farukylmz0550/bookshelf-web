@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-only
 "use client";
 
-// v3.12.0 — QR login card for Settings → Security. The desktop (already
-// authenticated) generates a 60 s single-use token, renders its pair URL as
-// a QR code and tracks the state via polling: pending → scanned → confirmed.
-// Expired codes regenerate automatically (fresh token, fresh window).
+// v3.14.0 — QR login card for Settings → Security. The card is now just a
+// trigger: the whole generation flow lives in its own popup (PopupShell —
+// see ui/popup.tsx for the approved popup locations). Opening the popup
+// auto-generates a session; the token TTL is 30 s and the QR renews
+// AUTOMATICALLY when it expires (the visible code is always in-window).
+// The lifecycle stays single-use + atomic-claim (lib/qr-login.ts).
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { QrCode, RefreshCw, CheckCircle2 } from "lucide-react";
+import { QrCode, CheckCircle2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { PopupShell } from "@/components/ui/popup";
 import QRCode from "qrcode";
 import { cancelQrLoginSession, createQrLoginSession, getQrLoginStatus } from "@/app/actions/qr-login";
 
@@ -32,6 +35,7 @@ type Phase = "idle" | "pending" | "scanned" | "completed" | "expired" | "cancell
 
 export function QrLoginCard({ dict }: { dict: QrLoginDict }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [remaining, setRemaining] = useState(0);
@@ -64,6 +68,30 @@ export function QrLoginCard({ dict }: { dict: QrLoginDict }) {
     });
   }
 
+  // v3.14.0 — auto-renew: when the popup's open session expires, a fresh token
+  // is generated without user action, so the QR never sits stale on screen.
+  // Manual regenerate stays available as a fallback control.
+  useEffect(() => {
+    if (phase !== "expired" || !open) return;
+    const renew = setTimeout(generate, 600);
+    return () => clearTimeout(renew);
+  }, [phase, open]);
+
+  // Closing the popup cancels the open session — a half-issued token must not
+  // stay confirmable in the wild.
+  function handleOpenChange(next: boolean) {
+    setOpen(next);
+    if (!next) {
+      const previous = sessionRef.current;
+      if (previous && previous.sessionId && (phase === "pending" || phase === "scanned" || phase === "expired")) {
+        void cancelQrLoginSession(previous.sessionId).catch(() => {});
+        sessionRef.current = null;
+      }
+      setPhase("idle");
+      setQrDataUrl(null);
+    }
+  }
+
   // Countdown tick — display only; the server enforces expiry.
   useEffect(() => {
     if (phase !== "pending" && phase !== "scanned") return;
@@ -76,6 +104,7 @@ export function QrLoginCard({ dict }: { dict: QrLoginDict }) {
 
   // Poll the server-side state — the source of truth for scanned/completed.
   useEffect(() => {
+    if (!open) return;
     if (phase !== "pending" && phase !== "scanned") return;
     let cancelled = false;
     const poll = setInterval(async () => {
@@ -103,7 +132,7 @@ export function QrLoginCard({ dict }: { dict: QrLoginDict }) {
       cancelled = true;
       clearInterval(poll);
     };
-  }, [phase, dict.completedToast, router]);
+  }, [open, phase, dict.completedToast, router]);
 
   const busy = phase === "pending" && pending && !qrDataUrl;
 
@@ -114,13 +143,22 @@ export function QrLoginCard({ dict }: { dict: QrLoginDict }) {
       </h2>
       <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
         <p className="mb-3 font-[var(--font-sans)] text-sm text-muted-foreground">{dict.cardDesc}</p>
+        <div className="flex justify-center">
+          <Button onClick={() => handleOpenChange(true)} className="gap-2">
+            <QrCode size={16} />
+            {dict.generateCta}
+          </Button>
+        </div>
+      </div>
+
+      <PopupShell open={open} onOpenChange={handleOpenChange} title={dict.cardTitle} description={dict.cardDesc}>
         {qrDataUrl ? (
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-3 py-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrDataUrl}
               alt={dict.cardTitle}
-              className={`h-44 w-44 rounded-[12px] border border-[var(--border)] bg-white p-2 ${
+              className={`h-48 w-48 rounded-[12px] border border-[var(--border)] bg-white p-2 transition-opacity ${
                 phase === "completed" ? "opacity-30" : ""
               }`}
             />
@@ -130,7 +168,9 @@ export function QrLoginCard({ dict }: { dict: QrLoginDict }) {
                   <CheckCircle2 size={15} /> {dict.completed}
                 </span>
               ) : phase === "expired" ? (
-                <span className="text-destructive">{dict.expired}</span>
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <RefreshCw size={14} className="animate-spin" /> {dict.regenerateCta}…
+                </span>
               ) : phase === "scanned" ? (
                 <span className="text-foreground">{dict.scanned}</span>
               ) : (
@@ -141,22 +181,17 @@ export function QrLoginCard({ dict }: { dict: QrLoginDict }) {
               )}
             </div>
           </div>
-        ) : busy ? null : (
-          <div className="flex justify-center">
+        ) : busy ? (
+          <div className="flex h-48 w-48 mx-auto items-center justify-center text-sm text-muted-foreground">…</div>
+        ) : (
+          <div className="flex justify-center py-6">
             <Button onClick={generate} disabled={pending} className="gap-2">
               <QrCode size={16} />
-              {phase === "expired" || phase === "cancelled" ? dict.regenerateCta : dict.generateCta}
+              {dict.generateCta}
             </Button>
           </div>
         )}
-        {(phase === "expired" || phase === "cancelled") && qrDataUrl && (
-          <div className="mt-3 flex justify-center">
-            <Button variant="outline" onClick={generate} disabled={pending} className="gap-2">
-              <RefreshCw size={15} /> {dict.regenerateCta}
-            </Button>
-          </div>
-        )}
-      </div>
+      </PopupShell>
     </section>
   );
 }

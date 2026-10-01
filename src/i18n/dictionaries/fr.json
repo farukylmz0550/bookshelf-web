@@ -123,12 +123,10 @@
     "logPagesButton": "J'ai lu {count} pages",
     "logPagesToast": "{count} pages enregistrées · 🔥 série de {streak} jours",
     "logPagesError": "Impossible d'enregistrer la lecture",
-    "pagesLeft": "Il reste {count} pages",
     "bookFinishedToast": "Livre terminé !",
     "pagesPromptTitle": "Saisis le nombre de pages",
     "pagesPromptPlaceholder": "ex. 352",
     "pagesPromptInvalid": "Saisis un nombre de pages valide",
-    "nextBookCta": "Commencer un nouveau livre",
     "nextBookDialogTitle": "Commencer un nouveau livre",
     "nextBookEmpty": "Rien à lire — ta liste « à lire » est vide",
     "startBook": "Commencer",
@@ -238,7 +236,10 @@
     "overdues": "En retard",
     "dueLabel": "Retour le",
     "noPeople": "Aucune personne pour le moment",
-    "addPeople": "Ajouter depuis la page Personnes"
+    "addPeople": "Ajouter depuis la page Personnes",
+    "newPerson": "Nouvelle personne",
+    "save": "Enregistrer",
+    "personAdded": "Personne ajoutée"
   },
   "people": {
     "title": "Personnes",

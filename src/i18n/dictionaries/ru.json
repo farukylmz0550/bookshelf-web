@@ -123,12 +123,10 @@
     "logPagesButton": "Я прочитал {count} страниц",
     "logPagesToast": "{count} страниц записано · 🔥 серия {streak} дн.",
     "logPagesError": "Не удалось записать чтение",
-    "pagesLeft": "Осталось страниц: {count}",
     "bookFinishedToast": "Книга прочитана!",
     "pagesPromptTitle": "Введи число страниц",
     "pagesPromptPlaceholder": "напр. 352",
     "pagesPromptInvalid": "Введи корректное число страниц",
-    "nextBookCta": "Начать новую книгу",
     "nextBookDialogTitle": "Начать новый книгу",
     "nextBookEmpty": "Читать нечего — список «прочитать» пуст",
     "startBook": "Начать",
@@ -238,7 +236,10 @@
     "overdues": "Просрочено",
     "dueLabel": "До",
     "noPeople": "Пока нет людей",
-    "addPeople": "Добавить на странице «Люди»"
+    "addPeople": "Добавить на странице «Люди»",
+    "newPerson": "Новый человек",
+    "save": "Сохранить",
+    "personAdded": "Человек добавлен"
   },
   "people": {
     "title": "Люди",

@@ -4,6 +4,83 @@ All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
 
+## 3.14.0 — 2026-10-01
+
+### Added
+
+- **Popup system (PopupShell).** One opinionated popup pattern over the shadcn
+  Dialog (`ui/popup.tsx`): consistent 85 dvh max-height + scroll, safe-area
+  padding, standard header. The approved popup locations are documented in the
+  component header — decided with the user: QR login generation and TOTP entry
+  are SEPARATE popups (never merged); lending book selection stays a dropdown;
+  profile password change stays inline; `/pair/<token>` (phone side) stays a
+  full page; lending history/returns stay inline.
+
+- **QR login popup with a 30 s auto-renewing code.** The Settings card is now a
+  trigger only — generation happens in its own popup. Opening it generates a
+  session immediately; when the 30 s token expires the QR renews
+  automatically (the visible code is always in-window), and closing the popup
+  cancels the open session so a half-issued token can't stay confirmable.
+  `QR_LOGIN_TTL_SECONDS` is 60 → 30. Account binding was verified: the token
+  has always been scoped to the creating user's id (no change needed there).
+
+- **In-place borrower creation on /lending.** Creating a borrower no longer
+  navigates to /people — a popup on the lending page takes a name, creates
+  the person, pre-selects them in the dropdown (the action now returns the
+  fresh person) and toasts confirmation. This intentionally relaxes UI Design
+  Language §2 "One Place, One Purpose" (user decision, 2026-09-30): /people
+  remains the management page for rename/remove.
+
+### Changed
+
+- **TOTP entry redesigned — shared `TotpCodeInput` (×6 boxes).** Six digit
+  boxes with auto-advance, paste support, backspace-to-previous, invalid
+  state and auto-submit on the sixth digit. Replaces the four hand-rolled
+  single inputs: the login form's verification step (now its own popup with
+  the stashed credentials re-sent in the same signIn call), TOTP disable,
+  admin danger zone and the admin self-reset dialog.
+
+- **Mobile /books: locked toolbar, scrolling cards.** The page header,
+  page-log CTA, filter toolbar and the count/view row are pinned in ONE
+  sticky block below the mobile header (server-rendered header/CTA passed
+  into `BooksGrid` as slots); the card list is the only scrolling element.
+  Desktop keeps the plain flow (`md:static`).
+
+### Removed
+
+- **Dead-code sweep** (audit report: `~/.opencode/plan/dead-code-report.md`):
+  8 unused shadcn UI components (badge, card, separator, sheet, skeleton,
+  table, tabs, textarea); dead exports `importGoodreadsCsv`, `getTotpStatus`,
+  `verifyCallerTotp`, `hashSecretValue`, `invalidateAppConfigCache`, the
+  `void opdsBookEntryXml` suppressor; dead i18n keys `books.pagesLeft` /
+  `books.nextBookCta` (typed + fed in 4 server pages but never rendered) and
+  their unused `CardDict` fields; over-wide `gamification` re-exports trimmed.
+- **Dependencies:** `next-themes` removed (no ThemeProvider — its `useTheme`
+  in the Toaster was inert; colors are CSS-variable driven), `@types/bcryptjs`
+  removed (bcryptjs v3 ships its own types), `shadcn` CLI moved to
+  devDependencies. The licenses page attribution updated accordingly.
+
+### Fixed
+
+- **e2e infrastructure unblocked (57/57).** The Playwright `webServer` spawn
+  timed out because the machine has no `npm` binary on PATH (Fedora ships
+  nodejs without the npm package) — the command now runs the local
+  `node_modules/next/dist/bin/next` directly and probes `127.0.0.1`
+  (`localhost` resolves to `::1` first). `.env` no longer pins
+  `NEXTAUTH_URL` (Auth.js infers the origin; the pinned port-3000 URL would
+  have pointed auth callbacks at a foreign app when running on
+  `PLAYWRIGHT_PORT`). `challenges.spec.ts` switched its progress assertion
+  to an exact `0/2` match (the loose regex also matched the "11/30/2026"
+  date range and tripped strict mode).
+
+- **Settings → Notifications is now localized.** The card read
+  `dict.settings.notif*` keys that were never passed through from the server
+  page, so every locale silently fell back to hardcoded English. The keys
+  already existed in all 7 dictionaries — they are wired now.
+- `getConsent()` un-exported (internal helper of `hasConsent()`); test-only
+  parity exports (`parseRating`, `parseShelves`, `markQrLoginScanned`) kept —
+  legacy-parity contract, exercised by unit tests.
+
 ## 3.13.0 — 2026-09-29
 
 ### Added

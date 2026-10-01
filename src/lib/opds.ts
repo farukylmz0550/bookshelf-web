@@ -67,7 +67,7 @@ export type OpdsEntryBook = {
 };
 
 /** An acquisition feed entry: cover + EPUB download for one book. */
-export function opdsBookEntryXml(book: OpdsEntryBook): string {
+function opdsBookEntryXml(book: OpdsEntryBook): string {
   const authorXml = book.author
     ? `  <author>
     <name>${esc(book.author)}</name>

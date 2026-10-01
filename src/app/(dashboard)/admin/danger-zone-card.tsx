@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { TotpCodeInput } from "@/components/ui/totp-input";
 import { wipeNonAdminData } from "@/app/actions/admin";
 
 export function DangerZoneCard({ dict }: { dict: Record<string, string> }) {
@@ -58,17 +59,8 @@ export function DangerZoneCard({ dict }: { dict: Record<string, string> }) {
               <DialogTitle>{dict.wipeCta}</DialogTitle>
               <DialogDescription>{dict.wipeDesc}</DialogDescription>
             </DialogHeader>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                inputMode="numeric"
-                value={token}
-                onChange={(e) => setToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="123456"
-                maxLength={6}
-                aria-label={dict.wipeCodeLabel}
-                className="w-32 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 text-center font-mono text-sm tracking-[0.25em] text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-              />
+            <div className="flex flex-col items-center gap-3">
+              <TotpCodeInput value={token} onChange={setToken} disabled={pending} ariaLabel={dict.wipeCodeLabel} />
               <span className="font-[var(--font-sans)] text-xs text-muted-foreground">{dict.wipeCodeLabel}</span>
             </div>
             <div className="flex justify-end gap-2">

@@ -53,6 +53,12 @@ Supporting functionality is allowed only when it directly contributes to that pu
 
 This does **not** mean that information may exist on only one screen. For example, `Total Books` may appear on both Books and Stats when it serves different contextual purposes.
 
+**Exception (v3.14.0, user decision 2026-09-30):** borrower quick-creation lives
+in a popup on /lending, next to the flow that needs it — creating a borrower
+directly serves the lending purpose there. /people remains the management page
+(rename, remove, trusted history). Quick-create is *add-only*; full management
+stays in one place.
+
 ### Every Element Earns Its Place
 
 Every UI element must have a functional, navigational, or informational purpose.

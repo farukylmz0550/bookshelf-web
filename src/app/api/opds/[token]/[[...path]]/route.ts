@@ -14,7 +14,6 @@ import {
   OPDS_NAV_CONTENT_TYPE,
   OPDS_ACQ_CONTENT_TYPE,
   opdsAcquisitionFeed,
-  opdsBookEntryXml,
   opdsNavigationFeed,
   type OpdsEntryBook,
   type OpdsNavEntry,
@@ -136,4 +135,3 @@ export async function GET(request: Request, ctx: Ctx) {
 }
 
 export const runtime = "nodejs";
-void opdsBookEntryXml;

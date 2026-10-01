@@ -41,6 +41,7 @@ export default async function LendingPage() {
             ...dict.lending,
             noPeople: dict.lending.noPeople ?? dict.people.empty,
             addPeople: dict.lending.addPeople ?? dict.people.add,
+            save: dict.facts.save,
           }}
         />
       </div>

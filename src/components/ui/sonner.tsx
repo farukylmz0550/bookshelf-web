@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 "use client";
 
-import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react";
 
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+// Theme note: colors are CSS-variable driven (--popover / --border / --radius),
+// which already follow the app's own theme class on <html> (cookie + no-flash
+// script). next-themes was removed: it had no ThemeProvider, so its useTheme()
+// was inert. The `theme` prop stays at Sonner's default ("light") and has no
+// visual effect while styling is var-based.
 
+const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,

@@ -22,16 +22,6 @@ function totpAllowed(userId: string): boolean {
   return checkRateLimit(`totp:${userId}`, TOTP_ATTEMPTS);
 }
 
-export async function getTotpStatus() {
-  const userId = await requireUserId();
-  const user = await db.user.findUnique({
-    where: { id: userId },
-    select: { isAdmin: true, totpEnabled: true },
-  });
-  if (!user) return { ok: false as const, error: "NOT_FOUND" };
-  return { ok: true as const, isAdmin: user.isAdmin, totpEnabled: user.totpEnabled };
-}
-
 export async function startTotpEnrollment(): Promise<
   { ok: true; qrDataUrl: string; secret: string } | { ok: false; error: string }
 > {
@@ -84,20 +74,6 @@ export async function disableTotp(token: string): Promise<TotpActionResult> {
     data: { totpSecret: null, totpEnabled: false },
   });
   revalidatePath("/settings");
-  return { ok: true };
-}
-
-// Shared by the admin danger zone: fresh-code verification against the
-// caller's own TOTP secret. Returns the failure code so callers can localize.
-export async function verifyCallerTotp(token: string): Promise<TotpActionResult> {
-  const userId = await requireUserId();
-  if (!totpAllowed(userId)) return { ok: false, error: "RATE_LIMITED" };
-  const user = await db.user.findUnique({
-    where: { id: userId },
-    select: { totpSecret: true, totpEnabled: true },
-  });
-  if (!user || !user.totpEnabled || !user.totpSecret) return { ok: false, error: "NOT_ENABLED" };
-  if (verifyTotpCode(user.totpSecret, token) !== "VALID") return { ok: false, error: "INVALID_CODE" };
   return { ok: true };
 }
 

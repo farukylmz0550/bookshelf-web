@@ -81,6 +81,13 @@ export default async function SettingsPage() {
             goalReminders: dict.settings.goalReminders,
             aboutTitle: dict.settings.aboutTitle,
             licensesLink: dict.settings.licensesLink,
+            notifEnable: dict.settings.notifEnable,
+            notifStreak: dict.settings.notifStreak,
+            notifWeekly: dict.settings.notifWeekly,
+            notifGoal: dict.settings.notifGoal,
+            notifTestPush: dict.settings.notifTestPush,
+            notifTestOk: dict.settings.notifTestOk,
+            notifTestFail: dict.settings.notifTestFail,
           },
           backfill: {
             title: dict.settings.pageBackfillTitle,
