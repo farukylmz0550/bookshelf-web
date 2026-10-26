@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-only
 "use server";
 
+// v3.16.0 — profile actions delegate to the shared users service for the
+// profile name; password changes stay in the action layer because they verify
+// the current password and are deliberately not part of the API/token surface.
+
 import bcrypt from "bcryptjs";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
-import { revalidatePath } from "next/cache";
-
-const updateNameSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-});
+import { updateProfileName as updateProfileNameService } from "@/lib/services/users";
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -18,15 +19,8 @@ const changePasswordSchema = z.object({
 
 export async function updateProfileName(name: string) {
   const userId = await requireUserId();
-  const parsed = updateNameSchema.safeParse({ name });
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
-  }
-
-  await db.user.update({
-    where: { id: userId },
-    data: { name: parsed.data.name.trim() },
-  });
+  const result = await updateProfileNameService(userId, name);
+  if (!result.ok) return { error: result.error };
   revalidatePath("/profile");
   revalidatePath("/(dashboard)");
   return { ok: true };
@@ -48,9 +42,7 @@ export async function changePassword(input: { currentPassword: string; newPasswo
   const passwordHash = await bcrypt.hash(parsed.data.newPassword, 12);
   await db.user.update({
     where: { id: userId },
-    // v2.10.0 — a normal change also clears the forced-change flag.
     data: { passwordHash, mustChangePassword: false },
   });
-
   return { ok: true };
 }

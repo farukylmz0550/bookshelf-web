@@ -391,7 +391,28 @@ No device subscribed yet — open the app in the browser you want to receive pus
 
 - `503` = `CRON_SECRET` unset on the app (harmless but noisy — set it in `.env`).
 - `401` = secret mismatch between the cron service and the app.
-- These run once a day via the `cron` service in docker-compose.
+- These run once a day via the `cron` service in docker-compose, at `CRON_HOUR` (default 09:00 container-local), plus once on start (`CRON_RUN_ON_START`).
+
+### v3.16.0 — cron was silently redirected to `/login`
+
+Before v3.16.0, `/api/push/streak-remind`, `/api/push/goal-progress`, `/api/push/overdue-remind` and `/api/backup` were protected by the auth proxy (no `PUBLIC_PATHS` entry). The cron container sent only `Authorization: Bearer $CRON_SECRET`, so the proxy answered `302 /login` before the route ran. `fetch` followed the redirect, the log showed `200`, and no notification or backup was produced. The scheduler endpoints are now an exact allowlist in `src/lib/public-paths.ts`; `/api/push/subscribe` stays session-protected.
+
+Verify manually (from the host, with `CRON_SECRET` loaded):
+
+```bash
+curl -i -X POST -H "Authorization: Bearer $CRON_SECRET" \
+  http://localhost:1024/api/push/streak-remind
+```
+
+You should get JSON like `{"ok":true,"sent":1,"skipped":0}`, not an HTML login page. Then check:
+
+```bash
+docker compose logs --tail=50 cron
+```
+
+Expected lines: `app is ready`, `streak-remind: 200 {"ok":true,...}`, `next run in … min`.
+
+If the cron container exits immediately, `CRON_SECRET` is missing in its environment (`docker compose config` shows the resolved value). If the app was not ready, the script retries the health probe for ~2.5 minutes before exiting; Docker restarts it.
 
 ---
 
@@ -479,3 +500,11 @@ Documented so they are not mistaken for bugs:
 - Goodreads/ISBN enrichment depends on Open Library availability; metadata is never fabricated.
 - Sessions are JWTs valid ~30 days; signing out other devices is not possible (no server-side session store).
 - **Kobo Sync is simulation-verified only** (no hardware test yet): books deleted from the library are not removed from the device, and metadata edits made after a book's first sync are not re-pushed until re-rotating the sync token.
+
+## API tokens / MCP / Extensions (v3.16.0)
+
+- **401 on `/api/v1` or `/api/mcp`**: use `Authorization: Bearer bs_usr_...` or sign in with the same origin session. Ensure the token is not revoked/expired.
+- **403 insufficient_scope**: create a new token with the required scopes or use an admin token for admin endpoints.
+- **Cron jobs not running**: confirm `CRON_SECRET` matches, the cron container can reach the app, and `/api/health` returns 200. The sidecar logs each task.
+- **Extension install fails**: ZIP must include `manifest.json` at root, must be valid JSON, and server extensions require admin rights.
+- **Theme not applying**: the active theme comes from your enabled theme extension or the admin default; hard refresh after changes.

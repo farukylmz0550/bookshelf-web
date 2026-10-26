@@ -50,7 +50,7 @@ describe("dictionary parity (v3.13.0)", () => {
     });
   }
 
-  it("arabic: 600 keys — full parity with en (v3.15.0 adds groupExplore/groupMore/groupAccount, drops groupDiscover)", () => {
-    expect(flatten(ar).size).toBe(600);
+  it("arabic: 637 keys — full parity with en (v3.15.0 adds groupExplore/groupMore/groupAccount, drops groupDiscover; v3.16.0 adds extensions/apiTokens)", () => {
+    expect(flatten(ar).size).toBe(637);
   });
 });

@@ -95,6 +95,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const theme = await getResolvedTheme();
   const locale = await getLocale();
   const dict = await getDictionary();
+  const { getActiveExtensionTheme } = await import("@/lib/extensions/theme");
+  const extensionThemeCss = await getActiveExtensionTheme();
   // v3.13.0 — Arabic flows right-to-left; all other locales keep LTR.
   const dir = locale === "ar" ? "rtl" : "ltr";
   return (
@@ -131,6 +133,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {extensionThemeCss ? <style id="bs-extension-theme">{extensionThemeCss}</style> : null}
       </head>
       <body className="min-h-full flex flex-col">
         <SWRegister vapidPublicKey={process.env.VAPID_PUBLIC_KEY} />

@@ -56,6 +56,9 @@ COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=build --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=build --chown=nextjs:nodejs /app/prisma7.config.ts ./
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
+# v3.16.0 — scheduler sidecar script (docker-compose `cron` service overrides
+# the entrypoint with `node scripts/cron.mjs`).
+COPY --from=build --chown=nextjs:nodejs /app/scripts/cron.mjs ./scripts/cron.mjs
 COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
 # v3.0.0 — default config baked in; override with a volume mount
 # (-v ./config.yaml:/app/config.yaml:ro) to customize without rebuilding.

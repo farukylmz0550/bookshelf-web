@@ -10,7 +10,7 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.15.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.16.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -134,6 +134,18 @@ services:
       CRON_SECRET: ${CRON_SECRET:-}
     ports:
       - "${APP_PORT:-1024}:3000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     volumes:
       - app-data:/data
       # v3.0.0 — site-wide configuration (XP levels, backfill, Kobo)
@@ -143,26 +155,15 @@ services:
     image: ghcr.io/farukylmz0550/bookshelf:latest
     restart: unless-stopped
     depends_on:
-      - app
-    entrypoint: ["node", "-e"]
-    command: >
-      "const auth = 'Bearer ' + process.env.CRON_SECRET;
-       const urls = [
-         ['streak-remind', 'http://app:3000/api/push/streak-remind'],
-         ['overdue-remind', 'http://app:3000/api/push/overdue-remind']
-       ];
-       async function tick() {
-         for (const [name, url] of urls) {
-           try {
-             const res = await fetch(url, { method: 'POST', headers: { Authorization: auth } });
-             console.log('[cron]', name + ':', res.status);
-           } catch (err) { console.log('[cron] failed:', name, err.message); }
-         }
-       }
-       (async () => { await tick(); })();
-       setInterval(tick, 24 * 60 * 60 * 1000);"
+      app:
+        condition: service_healthy
+    entrypoint: ["node", "scripts/cron.mjs"]
     environment:
       CRON_SECRET: ${CRON_SECRET:-}
+      BOOKSHELF_URL: http://app:3000
+      CRON_HOUR: ${CRON_HOUR:-9}
+      CRON_RUN_ON_START: ${CRON_RUN_ON_START:-true}
+      TZ: ${TZ:-UTC}
 volumes:
   app-data:
 EOF
@@ -361,7 +362,10 @@ All mutations via `src/app/actions/` — `awardXp()` + `syncAchievements()` afte
 | `ALLOW_REGISTRATION` | No | `true` | `false` to disable public sign-up |
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | No | — | Web Push — `npx web-push generate-vapid-keys` |
 | `VAPID_SUBJECT` | No | `mailto:…` | Push contact URL |
-| `CRON_SECRET` | No | — | Bearer token for the cron service (`/api/push/streak-remind`) |
+| `CRON_SECRET` | No | — | Bearer token for the cron service (`/api/push/streak-remind`, `/api/backup`, …) |
+| `CRON_HOUR` | No | `9` | Hour (0-23, container-local) the scheduler runs each day |
+| `CRON_RUN_ON_START` | No | `true` | Run once when the cron container starts |
+| `TZ` | No | `UTC` | Container timezone; affects `CRON_HOUR` and goal-reminder day rules |
 
 > **v3.0.0 — config.yaml:** the `READ_EVENT_PAGES` / `XP_*` variables are gone. Reading, XP, backfill and Kobo values now live in [`config.yaml`](config.yaml) (repo root, mounted read-only into the container). See the file itself for every key and its default.
 
@@ -478,6 +482,8 @@ Every technology Book Shelf is built on, linked together with its original licen
 | [tw-animate-css](https://github.com/Wahbidev/tw-animate-css) | [MIT](https://github.com/wahbidev/tw-animate-css/blob/main/LICENSE) |
 | [Base UI](https://base-ui.com) | [MIT](https://github.com/mui/base-ui/blob/master/LICENSE) |
 | [Docker](https://www.docker.com) | [Apache-2.0](https://github.com/moby/moby/blob/master/LICENSE) |
+| [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk) | [MIT](https://github.com/modelcontextprotocol/typescript-sdk/blob/main/LICENSE) |
+| [jszip](https://stuk.github.io/jszip/) | [MIT](https://github.com/Stuk/jszip/blob/main/LICENSE.markdown) |
 
 <div align="center">
 
@@ -486,3 +492,9 @@ Every technology Book Shelf is built on, linked together with its original licen
 **[⬆ back to top](#book-shelf)**
 
 </div>
+
+### Integrations (v3.16.0)
+
+- **REST API**: token-authenticated v1 at `/api/v1` with scopes and OpenAPI (`/api/v1/openapi.json`). Create tokens in **Settings → API Tokens**.
+- **MCP**: remote Streamable HTTP at `/api/mcp` using the same personal tokens.
+- **Extensions**: install theme/UI/server packages as ZIPs from **Settings → Extensions** or **Admin → Extensions**. Server extensions are declarative only (HTTP providers + webhooks + cron).

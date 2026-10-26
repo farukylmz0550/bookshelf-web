@@ -2,27 +2,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { checkRateLimit, throttlingEnabled, DEFAULT_LIMITS, getRequestIp } from "@/lib/rate-limit";
-
-const PUBLIC_PATHS = [
-  "/login",
-  "/register",
-  "/setup",
-  // v3.12.0 — passwordless QR login: the phone opens this page right after
-  // scanning, before it holds any session cookie.
-  "/pair/",
-  "/manifest.json",
-  "/sw.js",
-  "/icon-192.png",
-  "/icon-512.png",
-  "/icon.png",
-  "/icon.svg",
-  "/logo.svg",
-  "/apple-touch-icon.png",
-  // v3.0.0 — Kobo eReader sync + v3.2.0 OPDS catalog: devices/apps cannot
-  // hold a NextAuth cookie; they authenticate via the per-user path token.
-  "/api/kobo/",
-  "/api/opds/",
-];
+import { isPublicPath } from "@/lib/public-paths";
 
 // NOTE: The limiter util holds a Map per runtime — proxy (middleware) and the
 // Node server are separate runtimes, so each has its own instance. That is by
@@ -63,7 +43,7 @@ export default auth(async (req) => {
     }
   }
 
-  const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+  const isPublic = isPublicPath(pathname);
 
   if (!req.auth && !isPublic) {
     return NextResponse.redirect(new URL("/login", req.nextUrl.origin));

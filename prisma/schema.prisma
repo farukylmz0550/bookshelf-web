@@ -57,6 +57,11 @@ model User {
   quotes          Quote[]
   qrLoginSessions QrLoginSession[]
 
+  // v3.16.0 — personal API tokens + extension installs
+  apiTokens         ApiToken[]
+  extensionInstalls ExtensionUser[]
+  extensionStorage  ExtensionStorage[]
+
   @@index([id])
 }
 
@@ -388,5 +393,98 @@ model QrLoginSession {
   scannedAt   DateTime?
   confirmedAt DateTime?
 
+  @@index([userId])
+}
+
+// v3.16.0 — personal API tokens. The raw token is shown once at creation; only
+// its SHA-256 hash is stored. USER tokens are scoped to their owner; ADMIN
+// tokens additionally unlock /api/v1/admin/* and cross-user access, and can
+// only be created by an admin (TOTP-confirmed when enabled).
+enum ApiTokenKind {
+  USER
+  ADMIN
+}
+
+model ApiToken {
+  id         String       @id @default(cuid())
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  kind       ApiTokenKind @default(USER)
+  tokenHash  String       @unique
+  prefix     String
+  scopes     String
+  createdAt  DateTime     @default(now())
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+
+  @@index([userId])
+}
+
+// v3.16.0 — Chrome-style extension packages. A package lives on disk
+// (<data>/extensions/<slug>/<version>) and its validated manifest is mirrored
+// here for listing, permission checks and the install UI.
+enum ExtensionType {
+  THEME
+  UI
+  SERVER
+}
+
+enum ExtensionScope {
+  USER
+  SERVER
+}
+
+model Extension {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  name           String
+  version        String
+  type           ExtensionType
+  scope          ExtensionScope @default(USER)
+  manifest       String
+  installPath    String
+  enabled        Boolean        @default(false)
+  isDefaultTheme Boolean        @default(false)
+  // v3.16.0 — per-package HMAC secret (server webhooks) and admin-editable
+  // declarative settings (JSON object matching manifest.server.settings).
+  secret         String?
+  settings       String?
+  installedById  String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  users   ExtensionUser[]
+  storage ExtensionStorage[]
+
+  @@index([type, scope])
+}
+
+model ExtensionUser {
+  id          String    @id @default(cuid())
+  extensionId String
+  extension   Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabled     Boolean   @default(true)
+  settings    String?
+  installedAt DateTime  @default(now())
+
+  @@unique([extensionId, userId])
+  @@index([userId])
+}
+
+model ExtensionStorage {
+  id          String    @id @default(cuid())
+  extensionId String
+  extension   Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key         String
+  value       String
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([extensionId, userId, key])
   @@index([userId])
 }

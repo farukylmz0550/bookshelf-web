@@ -52,7 +52,7 @@ export function LendingRow({
       {!record.returnedAt && (
         <button
           disabled={pending}
-          onClick={() => startTransition(() => returnLending(record.id))}
+          onClick={() => startTransition(async () => { await returnLending(record.id); })}
           className={`ml-3 rounded-[8px] px-3.5 py-1.5 font-[var(--font-sans)] text-[11px] font-medium shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
             overdue
               ? "bg-[var(--destructive)] text-white hover:opacity-90"

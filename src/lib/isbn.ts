@@ -16,8 +16,13 @@ export type IsbnLookupResult = {
 
 /** Looks up a single ISBN via the Open Library API. Returns null if not found. */
 export async function lookupIsbn(isbn: string): Promise<IsbnLookupResult | null> {
-  const { fetchBook } = await import("./books/openlibrary");
   const cleaned = isbn.replace(/[^0-9Xx]/g, "");
+  try {
+    const { fetchMetadataFromProviders } = await import("@/lib/extensions/server-providers");
+    const extensionHit = await fetchMetadataFromProviders(cleaned);
+    if (extensionHit && extensionHit.title) return extensionHit as IsbnLookupResult;
+  } catch {}
+  const { fetchBook } = await import("./books/openlibrary");
   const book = await fetchBook(cleaned);
   if (!book) return null;
   return {

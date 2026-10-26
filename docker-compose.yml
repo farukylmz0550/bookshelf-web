@@ -17,41 +17,42 @@ services:
       CRON_SECRET: ${CRON_SECRET:-}
     ports:
       - "${APP_PORT:-1024}:3000"
+    healthcheck:
+      # v3.16.0 — the cron service waits for this before its first tick.
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     volumes:
       - app-data:/data
       # v3.0.0 — site-wide configuration (XP levels, backfill, Kobo). Edit the
       # host copy and restart the container to apply.
       - ./config.yaml:/app/config.yaml:ro
 
-  # Daily streak push reminders — requires CRON_SECRET + VAPID keys.
-  # Uses the same image; node fetch loop (no extra tooling needed).
+  # v3.16.0 — scheduler sidecar. Waits for the app healthcheck, then runs the
+  # CRON_SECRET-protected endpoints once on start and every day at CRON_HOUR
+  # (default 09:00, container-local time). Requires CRON_SECRET + VAPID keys.
   cron:
     image: ghcr.io/farukylmz0550/bookshelf:latest
     build: .
     restart: unless-stopped
     depends_on:
-      - app
-    entrypoint: ["node", "-e"]
-    command: >
-      "const auth = 'Bearer ' + process.env.CRON_SECRET;
-       const urls = [
-         ['streak-remind', 'http://app:3000/api/push/streak-remind'],
-         ['overdue-remind', 'http://app:3000/api/push/overdue-remind'],
-         ['goal-progress', 'http://app:3000/api/push/goal-progress'],
-         ['backup', 'http://app:3000/api/backup']
-       ];
-       async function tick() {
-         for (const [name, url] of urls) {
-           try {
-             const res = await fetch(url, { method: 'POST', headers: { Authorization: auth } });
-             console.log('[cron]', name + ':', res.status);
-           } catch (err) { console.log('[cron] failed:', name, err.message); }
-         }
-       }
-       (async () => { await tick(); })();
-       setInterval(tick, 24 * 60 * 60 * 1000);"
+      app:
+        condition: service_healthy
+    entrypoint: ["node", "scripts/cron.mjs"]
     environment:
       CRON_SECRET: ${CRON_SECRET:-}
+      BOOKSHELF_URL: http://app:3000
+      CRON_HOUR: ${CRON_HOUR:-9}
+      CRON_RUN_ON_START: ${CRON_RUN_ON_START:-true}
+      TZ: ${TZ:-UTC}
 
 volumes:
   app-data:

@@ -1,5 +1,30 @@
 # Changelog
 
+
+## 3.16.0 — 2026-10-26
+
+### Added
+- **Token-based REST API**: versioned `/api/v1` with personal API tokens (USER/ADMIN), fine-grained scopes, session+Bearer auth, same-origin CSRF protection, OpenAPI at `/api/v1/openapi.json`. Admin tokens may operate across users with `admin:data`.
+- **Remote HTTP MCP**: stateless Streamable HTTP endpoint at `/api/mcp` authenticated with the same tokens; tools/resources filtered by scope.
+- **Extension platform (Chrome-like)**: install ZIP packages (`theme`, `ui`, `server`), manifest validation, permissions, per-user install/uninstall, asset serving with zip-slip guard. UI extensions run in a sandboxed iframe bridge model; server extensions are **declarative only** (no arbitrary server-side JS).
+- **Theme extensions**: validated token CSS injected into root layout; users select, admins can set a server default.
+- **Server extension providers**: HTTP metadata/import providers with path mapping and HMAC-signed webhooks, event/cron integration, admin-configurable declarative settings.
+- **Extension management UI**: Settings → Extensions (user) and Admin → Extensions (themes/UI/server + secrets + defaults).
+- **API Tokens UI**: Settings → API Tokens to create/list/revoke personal tokens.
+- **Service layer**: shared `src/lib/services/*` used by server actions, REST API, and MCP to avoid logic duplication.
+
+### Changed
+- **Architecture**: server actions refactored to thin session-aware adapters over the shared service layer.
+- **Cron/public paths**: `/api/push/*`, `/api/backup`, `/api/extensions/cron`, `/api/v1`, `/api/mcp`, `/api/health` are correctly public to cron/automation without redirecting to login.
+- **ISBN lookup**: extension metadata providers are tried before fallback sources.
+
+### Fixed
+- **Scheduled notifications**: cron-scheduled push reminders now run reliably (proxy no longer redirects cron paths; cron sidecar waits for health and logs task results).
+
+### Upgrade
+- Run Prisma migrations: `prisma migrate deploy` (adds ApiToken, Extension, ExtensionUser, ExtensionStorage and extension fields).
+- Add runtime deps if needed in production installs: `@modelcontextprotocol/sdk`, `jszip` (already tracked).
+
 All notable changes to **Book Shelf** are documented here.
 The 2.9.x feature-freeze was lifted with 2.10.0. The 3.x series starts with
 3.0.0 (breaking: site-wide values moved out of the database; see below).
