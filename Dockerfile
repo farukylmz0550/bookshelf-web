@@ -1,8 +1,5 @@
 FROM node:22-slim AS base
 WORKDIR /app
-# 2026-10-01 — multi-arch (user rule: every image is built for amd64 + arm64);
-# TARGETARCH selects the kepubify stage below (automatic buildx platform arg).
-ARG TARGETARCH
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -12,67 +9,25 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-# v3.4.0 — kepubify (static Go binary) for optional EPUB→KEPUB conversion in
-# the Kobo sync download path (config.yaml → kobo.kepubify).
-# v3.5.0 — pulled from the official GitHub release instead of the retired
-# ghcr.io/pgaskin/kepubify image (unpublished upstream → 3.4.0+ builds failed).
-# Pinned by SHA-256 (checksum verified by ADD during build).
-# 2026-10-01 — multi-arch (user rule: every image is built for amd64 + arm64):
-# one scratch stage per TARGETARCH, selected by the platform TARGETARCH buildx
-# provides. Both binaries are v4.0.4 from the same official release.
-FROM scratch AS kepubify-amd64
-ADD --chmod=0755 --checksum=sha256:37d7628d26c5c906f607f24b36f781f306075e7073a6fe7820a751bb60431fc5 \
-    https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-64bit \
-    /usr/local/bin/kepubify
-
-FROM scratch AS kepubify-arm64
-ADD --chmod=0755 --checksum=sha256:5a15b8f6f6a96216c69330601bca29638cfee50f7bf48712795cff88ae2d03a3 \
-    https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-arm64 \
-    /usr/local/bin/kepubify
-
-# FROM supports ARG expansion; COPY --from does not (buildkit limitation) —
-# this intermediate stage aliases the per-arch scratch stage.
-FROM kepubify-${TARGETARCH} AS kepubify
-
-FROM node:22-slim AS production
+FROM node:22-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
-
-LABEL org.opencontainers.image.source="https://github.com/farukylmz0550/bookshelf-web" \
-      org.opencontainers.image.title="Bookshelf" \
-      org.opencontainers.image.description="Self-hosted personal library manager" \
-      org.opencontainers.image.licenses="GPL-3.0"
-
-RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
-
-# Non-root user
-RUN groupadd -r nodejs && useradd -r -g nodejs -d /app -s /sbin/nologin nextjs
-
-COPY --from=build --chown=nextjs:nodejs /app/package.json /app/package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs nextjs && \
+    apt-get update && apt-get install -y --no-install-reprec nd openssl curl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=build --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=build --chown=nextjs:nodejs /app/prisma7.config.ts ./
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
-# v3.16.0 — scheduler sidecar script (docker-compose `cron` service overrides
-# the entrypoint with `node scripts/cron.mjs`).
 COPY --from=build --chown=nextjs:nodejs /app/scripts/cron.mjs ./scripts/cron.mjs
 COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
-# v3.0.0 — default config baked in; override with a volume mount
-# (-v ./config.yaml:/app/config.yaml:ro) to customize without rebuilding.
 COPY --from=build --chown=nextjs:nodejs /app/config.yaml ./config.yaml
-
-COPY --from=kepubify /usr/local/bin/kepubify /usr/local/bin/kepubify
-
+RUN curl -fsSL -o /usr/local/bin/kepubify https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-$(uname -m | sed 's/x86_64/64bit/;s/aarch64/arm64/') && chmod +x /usr/local/bin/kepubify || (curl -fsSL -o /usr/local/bin/kepubify https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-64bit && chmod +x /usr/local/bin/kepubify)
 RUN chmod +x docker-entrypoint.sh
-
-# SQLite data directory (DATABASE_URL=file:/data/bookshelf.db) must be
-# writable by the non-root user
 RUN mkdir -p /data && chown nextjs:nodejs /data
-
 USER nextjs
-
 EXPOSE 3000
 CMD ["./docker-entrypoint.sh"]
