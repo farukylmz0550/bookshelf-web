@@ -11,6 +11,7 @@ on:
 permissions:
   contents: read
   packages: write
+  actions: read
 
 env:
   REGISTRY: ghcr.io
@@ -18,6 +19,9 @@ env:
 jobs:
   build-bookshelf:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-qemu-action@v3
@@ -35,24 +39,3 @@ jobs:
           tags: |
             ghcr.io/farukylmz0550/bookshelf:v3.16.0
             ghcr.io/farukylmz0550/bookshelf:latest
-
-  build-bookshelf-web:
-    runs-on: ubuntu-latest
-    needs: build-bookshelf
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ghcr.io/farukylmz0550/bookshelf-web:v3.16.0
-            ghcr.io/farukylmz0550/bookshelf-web:latest
