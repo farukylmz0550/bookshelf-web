@@ -27,6 +27,8 @@ type Book = {
   currentPage?: number | null;
   numberOfPages?: string | null;
   groupIds?: string[];
+  locationIds?: string[];
+  hasUnassignedCopy?: boolean;
 };
 
 type CardDict = {
@@ -64,6 +66,7 @@ export function BooksGrid({
   cardDict: CardDict;
   pagesPerReadEvent: number;
   groups?: GroupInfo[];
+  locations?: { id: string; name: string }[];
   /** v3.14.0 — server-rendered page header (title + count + add dialog) and
    * the page-log CTA, pinned together with the toolbar in one sticky block on
    * mobile so only the card list scrolls. Unpinned (static) from md up. */
@@ -123,6 +126,7 @@ export function BooksGrid({
           tagsInUse={tagsInUse}
           dict={(dict as Record<string, unknown>).filter as Record<string, string>}
           groups={groups}
+          locations={locations}
         />
         <div className="mt-3 flex items-center justify-between gap-2">
           <p className="font-[var(--font-sans)] text-xs text-muted-foreground">

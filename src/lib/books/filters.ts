@@ -22,6 +22,7 @@ export type Filters = {
   status: string; // any | not_read | want_to_read | reading | read
   tag: string;
   groupId: string; // v2.8.0 — any | <groupId>
+  locationId: string; // v3.18.0 — any | unassigned | <locationId>
   sort: string; // title | rating | year
   asc: boolean;
 };
@@ -35,6 +36,7 @@ export const defaultFilters: Filters = {
   status: "any",
   tag: "any",
   groupId: "any",
+  locationId: "any",
   sort: SORT_TITLE,
   asc: true,
 };
@@ -82,6 +84,8 @@ export function allows(
     isbn?: string | null;
     publishers?: string | null;
     groupIds?: string[]; // v2.8.0 — memberships for group filtering
+    locationIds?: string[];
+    hasUnassignedCopy?: boolean;
   },
   lentOut: boolean,
   f: Filters,
@@ -96,6 +100,10 @@ export function allows(
   if (f.tag !== "any" && f.tag !== "" && !book.tags?.toLowerCase().includes(f.tag.toLowerCase())) return false;
   // v2.8.0 — group condition ANDs with the tag/status/search conditions above.
   if (f.groupId !== "any" && !book.groupIds?.includes(f.groupId)) return false;
+  if (f.locationId !== "any") {
+    if (f.locationId === "unassigned" ? !book.hasUnassignedCopy : !book.locationIds?.includes(f.locationId))
+      return false;
+  }
   if (f.search.trim()) {
     const q = f.search.toLowerCase();
     const hay = haystack(book as never, lentOut);

@@ -62,6 +62,8 @@
     "registerSubtitle": "Hesap olu\u015ftur"
   },
   "filter": {
+    "location": "Konum",
+    "noLocation": "Konumsuz",
     "search": "Ara...",
     "filters": "Filtreler",
     "allFields": "T\u00fcm alanlar",

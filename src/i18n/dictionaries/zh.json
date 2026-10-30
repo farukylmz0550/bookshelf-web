@@ -62,6 +62,8 @@
     "registerSubtitle": "\u521b\u5efa\u8d26\u53f7"
   },
   "filter": {
+    "location": "位置",
+    "noLocation": "未分配位置",
     "search": "\u641c\u7d22...",
     "filters": "\u7b5b\u9009",
     "allFields": "\u6240\u6709\u5b57\u6bb5",

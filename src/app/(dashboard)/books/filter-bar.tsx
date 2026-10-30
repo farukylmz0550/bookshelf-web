@@ -13,11 +13,13 @@ export function FilterBar({
   tagsInUse,
   dict,
   groups,
+  locations,
 }: {
   onChange: (f: Filters) => void;
   tagsInUse: string[];
   dict: Record<string, string>;
   groups?: { id: string; name: string; color: string | null }[];
+  locations?: { id: string; name: string }[];
 }) {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [expanded, setExpanded] = useState(false);
@@ -34,7 +36,8 @@ export function FilterBar({
     filters.lent !== "any" ||
     filters.status !== "any" ||
     filters.tag !== "any" ||
-    filters.groupId !== "any";
+    filters.groupId !== "any" ||
+    filters.locationId !== "any";
 
   return (
     // v3.8.0 — Faz 2 (§10): flat toolbar, no card wrapper — the content
@@ -168,6 +171,24 @@ export function FilterBar({
                 {groups.map((g) => (
                   <SelectItem key={g.id} value={g.id}>
                     {g.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {locations && locations.length > 0 && (
+            <Select value={filters.locationId} onValueChange={(v) => update({ locationId: v ?? "any" })}>
+              <SelectTrigger className={TRIGGER_CLS} aria-label={dict.location}>
+                <SelectValue>
+                  {locations.find((location) => location.id === filters.locationId)?.name ?? dict.location}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">{dict.location}</SelectItem>
+                <SelectItem value="unassigned">{dict.noLocation}</SelectItem>
+                {locations.map((location) => (
+                  <SelectItem key={location.id} value={location.id}>
+                    {location.name}
                   </SelectItem>
                 ))}
               </SelectContent>

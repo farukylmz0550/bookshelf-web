@@ -12,7 +12,7 @@ import Link from "next/link";
 export default async function BooksPage() {
   const userId = await requireUserId();
   const dict = await getDictionary();
-  const [books, groups, memberships, pagesPerReadEvent] = await Promise.all([
+  const [books, groups, memberships, pagesPerReadEvent, copies] = await Promise.all([
     db.book.findMany({ where: { userId }, orderBy: { addedAt: "desc" } }),
     db.bookGroup.findMany({
       where: { userId },
@@ -26,6 +26,7 @@ export default async function BooksPage() {
     }),
     // v3.5.1 — per-user "Read N pages" step (user setting → admin floor → site default).
     getPagesPerReadEventFor(userId),
+    db.bookCopy.findMany({ where: { userId }, select: { bookId: true, locationId: true, archivedAt: true } }),
   ]);
   const groupsByBook = new Map<string, string[]>();
   memberships.forEach((m) => {
@@ -34,6 +35,24 @@ export default async function BooksPage() {
     groupsByBook.set(m.bookId, list);
   });
   const booksWithGroups = books.map((b) => ({ ...b, groupIds: groupsByBook.get(b.id) ?? [] }));
+  const locationIdsByBook = new Map<string, string[]>();
+  const unassignedBooks = new Set<string>();
+  for (const copy of copies) {
+    if (copy.archivedAt) continue;
+    if (copy.locationId)
+      locationIdsByBook.set(copy.bookId, [...(locationIdsByBook.get(copy.bookId) ?? []), copy.locationId]);
+    else unassignedBooks.add(copy.bookId);
+  }
+  const booksWithLocations = booksWithGroups.map((book) => ({
+    ...book,
+    locationIds: locationIdsByBook.get(book.id) ?? [],
+    hasUnassignedCopy: unassignedBooks.has(book.id),
+  }));
+  const locations = await db.libraryLocation.findMany({
+    where: { userId, archivedAt: null },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: { id: true, name: true },
+  });
 
   const lentRecords = await db.lendingRecord.findMany({
     where: { book: { userId }, returnedAt: null },
@@ -49,7 +68,7 @@ export default async function BooksPage() {
           together with the filter toolbar in ONE sticky block on mobile, so
           the card list is the only scrolling element. Desktop unchanged. */}
       <BooksGrid
-        books={booksWithGroups as never}
+        books={booksWithLocations as never}
         lentMap={lentMap}
         headerSlot={
           <header className="flex flex-wrap items-center justify-between gap-2">
@@ -106,11 +125,12 @@ export default async function BooksPage() {
             toRead: dict.books.status.TO_READ,
             reading: dict.books.status.READING,
             finished: dict.books.status.FINISHED,
-            filter: dict.filter,
+            filter: { ...dict.filter, location: dict.locations.title, noLocation: dict.locations.unassigned },
           } as never
         }
         pagesPerReadEvent={pagesPerReadEvent}
         groups={groups}
+        locations={locations}
         cardDict={{
           lentOut: dict.filter.onLoan,
           signed: dict.books.signedBadge,

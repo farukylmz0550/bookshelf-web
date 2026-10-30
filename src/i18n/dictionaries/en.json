@@ -62,6 +62,8 @@
     "registerSubtitle": "Create account"
   },
   "filter": {
+    "location": "Location",
+    "noLocation": "No location",
     "search": "Search...",
     "filters": "Filters",
     "allFields": "All fields",
