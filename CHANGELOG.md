@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.7 — 2026-10-30
+
+### Fixed
+- **Container startup:** include the complete production dependency tree so Prisma CLI transitives such as `effect` are available during migrations.
+
+
 ## 3.19.6 — 2026-10-30
 
 ### Fixed

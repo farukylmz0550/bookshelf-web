@@ -26,8 +26,7 @@ COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=build --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=build --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=build --chown=nextjs:nodejs /app/scripts/cron.mjs ./scripts/cron.mjs
 COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
 COPY --from=build --chown=nextjs:nodejs /app/config.yaml ./config.yaml
