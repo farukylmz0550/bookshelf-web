@@ -57,6 +57,7 @@ export function BooksGrid({
   cardDict,
   pagesPerReadEvent,
   groups,
+  locations,
   headerSlot,
   ctaSlot,
 }: {

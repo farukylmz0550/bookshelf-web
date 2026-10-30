@@ -355,17 +355,26 @@ model SiteSettings {
 // books. Groups are NOT tags (metadata/genres remain on Book.tags); a book can
 // belong to multiple groups and a group can hold many books.
 model BookGroup {
-  id          String                @id @default(cuid())
-  userId      String
-  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String
-  color       String?
-  order       Int                   @default(0)
-  createdAt   DateTime              @default(now())
-  memberships BookGroupMembership[]
+  id                String                @id @default(cuid())
+  userId            String
+  user              User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name              String
+  color             String?
+  order             Int                   @default(0)
+  mode              BookGroupMode         @default(STATIC)
+  ruleJson          String?
+  lastEvaluatedAt   DateTime?
+  evaluationVersion Int                   @default(1)
+  createdAt         DateTime              @default(now())
+  memberships       BookGroupMembership[]
 
   @@unique([userId, name])
   @@index([userId])
+}
+
+enum BookGroupMode {
+  STATIC
+  SMART
 }
 
 model BookGroupMembership {

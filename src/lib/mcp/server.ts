@@ -20,6 +20,7 @@ import * as challenges from "@/lib/services/challenges";
 import * as stats from "@/lib/services/stats";
 import * as health from "@/lib/services/health";
 import * as locations from "@/lib/services/locations";
+import * as smartCollections from "@/lib/services/smart-collections";
 import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { json } from "@/lib/api/responses";
@@ -421,6 +422,30 @@ export function createMcpServer(context: AuthContext): McpServer {
         args.locationId as string | null,
       );
       return result.ok ? ok(result.copy) : fail(result.error);
+    },
+  );
+  register(
+    "preview_collection",
+    "books:read",
+    {
+      description: "Preview books matching an allow-listed smart collection rule.",
+      inputSchema: { rule: z.unknown() },
+    },
+    async (args) => {
+      const result = await smartCollections.previewSmartCollection(context.userId, args.rule);
+      return result.ok ? ok(result) : fail(result.error);
+    },
+  );
+  register(
+    "create_smart_collection",
+    "books:write",
+    {
+      description: "Create a smart collection using a validated rule AST.",
+      inputSchema: { name: z.string().min(1).max(60), rule: z.unknown(), color: z.string().optional() },
+    },
+    async (args) => {
+      const result = await smartCollections.createSmartCollection(context.userId, args.name, args.rule, args.color);
+      return result.ok ? ok(result) : fail(result.error);
     },
   );
 

@@ -21,6 +21,7 @@ import * as challenges from "@/lib/services/challenges";
 import * as stats from "@/lib/services/stats";
 import * as health from "@/lib/services/health";
 import * as locations from "@/lib/services/locations";
+import * as smartCollections from "@/lib/services/smart-collections";
 import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { db } from "@/lib/db";
@@ -275,7 +276,21 @@ async function route(request: Request, segments: string[], context: AuthContext)
     const userId = userIdOf(context, params);
     if (segments.length === 1 && method === "GET") return json({ data: await groups.listGroups(userId) });
     if (segments.length === 1 && method === "POST") {
-      const body = parseBody(z.object({ name: z.unknown(), color: z.unknown().optional() }), await readJson(request));
+      const body = parseBody(
+        z.object({
+          name: z.unknown(),
+          color: z.unknown().optional(),
+          mode: z.enum(["STATIC", "SMART"]).optional(),
+          rule: z.unknown().optional(),
+        }),
+        await readJson(request),
+      );
+      if (body.mode === "SMART") {
+        const result = await smartCollections.createSmartCollection(userId, body.name, body.rule, body.color);
+        if (!result.ok)
+          throw new ApiError(result.error === "DUPLICATE_NAME" ? 409 : 400, "invalid_group", result.error);
+        return json({ data: result.group }, { status: 201 });
+      }
       const result = await groups.createGroup(userId, body.name, body.color);
       if (!result.ok) throw new ApiError(400, "invalid_group", result.error);
       return json({ data: { id: result.groupId } }, { status: 201 });
@@ -290,6 +305,28 @@ async function route(request: Request, segments: string[], context: AuthContext)
       const result = await groups.deleteGroup(userId, segments[1]);
       if (!result.ok) throw new ApiError(404, "not_found", "Group not found");
       return noContent();
+    }
+    if (segments.length === 3 && segments[2] === "preview" && method === "POST") {
+      const group = await db.bookGroup.findFirst({
+        where: { id: segments[1], userId, mode: "SMART" },
+        select: { ruleJson: true },
+      });
+      if (!group) throw new ApiError(404, "not_found", "Smart collection not found");
+      let rule: unknown;
+      try {
+        rule = group.ruleJson ? JSON.parse(group.ruleJson) : null;
+      } catch {
+        throw new ApiError(422, "invalid_rule", "Smart collection rule is invalid");
+      }
+      const result = await smartCollections.previewSmartCollection(userId, rule);
+      if (!result.ok) throw new ApiError(422, "invalid_rule", result.error);
+      return json({ data: result });
+    }
+    if (segments.length === 3 && segments[2] === "rebuild" && method === "POST") {
+      const result = await smartCollections.rebuildSmartCollection(userId, segments[1]);
+      if (!result.ok)
+        throw new ApiError(result.error === "NOT_FOUND" ? 404 : 422, "smart_collection_rebuild_failed", result.error);
+      return json({ data: result });
     }
     if (segments.length === 4 && segments[2] === "books") {
       if (method === "POST") {
