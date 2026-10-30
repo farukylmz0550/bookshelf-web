@@ -18,24 +18,24 @@ enum BookStatus {
 }
 
 model User {
-  id                 String    @id @default(cuid())
-  email              String    @unique
-  passwordHash       String
-  name               String
-  isAdmin            Boolean   @default(false)
-  approved           Boolean   @default(false)
-  xp                 Int       @default(0)
-  showOnLeaderboard  Boolean   @default(true)
-  currentStreak      Int       @default(0)
-  longestStreak      Int       @default(0)
-  lastActiveDate     DateTime?
-  streakShieldCount  Int       @default(0)
-  createdAt          DateTime  @default(now())
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  name              String
+  isAdmin           Boolean   @default(false)
+  approved          Boolean   @default(false)
+  xp                Int       @default(0)
+  showOnLeaderboard Boolean   @default(true)
+  currentStreak     Int       @default(0)
+  longestStreak     Int       @default(0)
+  lastActiveDate    DateTime?
+  streakShieldCount Int       @default(0)
+  createdAt         DateTime  @default(now())
 
   // v2.10.0 — TOTP two-factor auth + forced password change
   totpSecret         String?
-  totpEnabled        Boolean   @default(false)
-  mustChangePassword Boolean   @default(false)
+  totpEnabled        Boolean @default(false)
+  mustChangePassword Boolean @default(false)
 
   // v3.0.0 — Kobo sync: per-user URL template the device downloads book files
   // from (e.g. "https://nas.local/books/{isbn}.epub"); placeholders are
@@ -61,6 +61,8 @@ model User {
   apiTokens         ApiToken[]
   extensionInstalls ExtensionUser[]
   extensionStorage  ExtensionStorage[]
+  libraryLocations  LibraryLocation[]
+  bookCopies        BookCopy[]
 
   @@index([id])
 }
@@ -111,35 +113,36 @@ model Book {
   finishedAt     DateTime?
 
   // Legacy parity — 17 fields
-  subtitle       String?
-  publishers     String?
-  publishDate    String?
-  publishPlaces  String?
-  editionName    String?
-  series         String?
-  numberOfPages  String?
-  languages      String?
-  isbn10         String?
-  isbn13         String?
-  subjects       String?
-  rating         Int        @default(0)
-  notes          String?
-  tags           String?    // csv lowercased
-  startedAt      DateTime?
-  signed        Boolean    @default(false)
-  copies        Int        @default(1)
+  subtitle      String?
+  publishers    String?
+  publishDate   String?
+  publishPlaces String?
+  editionName   String?
+  series        String?
+  numberOfPages String?
+  languages     String?
+  isbn10        String?
+  isbn13        String?
+  subjects      String?
+  rating        Int       @default(0)
+  notes         String?
+  tags          String? // csv lowercased
+  startedAt     DateTime?
+  signed        Boolean   @default(false)
+  copies        Int       @default(1)
   currentPage   Int?
 
   // v3.1.0 — Kobo device-reported reading time. SpentReadingMinutes is the
   // device's CUMULATIVE total for the book; the delta per sync feeds
   // DailyActivity.minutesRead. Remaining is informational only.
-  koboSpentMinutes     Int     @default(0)
+  koboSpentMinutes     Int  @default(0)
   koboRemainingMinutes Int?
 
   lendingRecords   LendingRecord[]
   readEvents       BookReadEvent[]
   groupMemberships BookGroupMembership[]
   quotes           Quote[]
+  copiesRecords    BookCopy[]
 
   @@index([userId])
   @@index([tags])
@@ -283,44 +286,44 @@ model UserAchievement {
 }
 
 model DailyActivity {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date       DateTime
-  count      Int      @default(1)
-  pagesRead  Int      @default(0)
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  count       Int      @default(1)
+  pagesRead   Int      @default(0)
   // v3.1.0 — device-reported reading minutes (Kobo SpentReadingMinutes delta)
-  minutesRead Int     @default(0)
-  createdAt  DateTime @default(now())
+  minutesRead Int      @default(0)
+  createdAt   DateTime @default(now())
 
   @@unique([userId, date])
   @@index([userId, date])
 }
 
 model StreakShield {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  usedAt    DateTime @default(now())
+  id     String   @id @default(cuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usedAt DateTime @default(now())
 
   @@index([userId])
 }
 
 model UserSettings {
-  id                    String  @id @default(cuid())
-  userId                String  @unique
-  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  notificationsEnabled  Boolean @default(true)
-  streakReminders       Boolean @default(true)
-  weeklyDigest          Boolean @default(false)
+  id                   String  @id @default(cuid())
+  userId               String  @unique
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notificationsEnabled Boolean @default(true)
+  streakReminders      Boolean @default(true)
+  weeklyDigest         Boolean @default(false)
   // v2.7.0 — calendar-based goal-progress push notifications
-  goalReminders         Boolean @default(true)
+  goalReminders        Boolean @default(true)
   // Per-user locale for localized push notifications (synced from the cookie)
-  locale                String?
+  locale               String?
   // v3.5.1 — per-user "I read N pages" step. NULL = follow the site-wide
   // config.yaml pagesPerReadEvent. Clamped by the admin's minPagesPerReadEvent
   // floor (see lib/reading-settings.ts).
-  pagesPerReadEvent     Int?
+  pagesPerReadEvent    Int?
 
   @@index([userId])
 }
@@ -352,13 +355,13 @@ model SiteSettings {
 // books. Groups are NOT tags (metadata/genres remain on Book.tags); a book can
 // belong to multiple groups and a group can hold many books.
 model BookGroup {
-  id        String                @id @default(cuid())
-  userId    String
-  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name      String
-  color     String?
-  order     Int                   @default(0)
-  createdAt DateTime              @default(now())
+  id          String                @id @default(cuid())
+  userId      String
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  color       String?
+  order       Int                   @default(0)
+  createdAt   DateTime              @default(now())
   memberships BookGroupMembership[]
 
   @@unique([userId, name])
@@ -376,6 +379,57 @@ model BookGroupMembership {
   @@unique([bookId, groupId])
   @@index([bookId])
   @@index([groupId])
+}
+
+// v3.18.0 — physical library locations and copy-level placement. The legacy
+// Book.copies field remains the compatibility count; copiesRecords is the
+// authoritative representation for location-aware features.
+enum LibraryLocationKind {
+  ROOM
+  SECTION
+  SHELF
+  BOX
+}
+
+model LibraryLocation {
+  id         String              @id @default(cuid())
+  userId     String
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentId   String?
+  parent     LibraryLocation?    @relation("LocationTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children   LibraryLocation[]   @relation("LocationTree")
+  kind       LibraryLocationKind
+  name       String
+  sortOrder  Int                 @default(0)
+  archivedAt DateTime?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  copies     BookCopy[]
+
+  @@unique([userId, parentId, name])
+  @@index([userId, parentId])
+  @@index([userId, archivedAt])
+}
+
+model BookCopy {
+  id         String           @id @default(cuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId     String
+  book       Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  copyNumber Int
+  barcode    String?
+  locationId String?
+  location   LibraryLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  condition  String           @default("GOOD")
+  createdAt  DateTime         @default(now())
+  archivedAt DateTime?
+
+  @@unique([userId, bookId, copyNumber])
+  @@unique([userId, barcode])
+  @@index([userId, bookId])
+  @@index([userId, locationId])
+  @@index([userId, barcode])
 }
 
 // v3.12.0 — passwordless QR login: single-use, short-lived (60 s) handoff

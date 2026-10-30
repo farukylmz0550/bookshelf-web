@@ -19,6 +19,7 @@ import * as goals from "@/lib/services/goals";
 import * as challenges from "@/lib/services/challenges";
 import * as stats from "@/lib/services/stats";
 import * as health from "@/lib/services/health";
+import * as locations from "@/lib/services/locations";
 import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { json } from "@/lib/api/responses";
@@ -369,6 +370,57 @@ export function createMcpServer(context: AuthContext): McpServer {
       return book
         ? ok({ book, findings: buildHealthReport([book]).findings, applySupported: false })
         : fail("Book not found");
+    },
+  );
+
+  register(
+    "list_locations",
+    "books:read",
+    { description: "List the caller's physical library locations.", inputSchema: {} },
+    async () => ok(await locations.listLocations(context.userId)),
+  );
+  register(
+    "create_location",
+    "books:write",
+    {
+      description: "Create a physical library location.",
+      inputSchema: {
+        name: z.string().min(1).max(120),
+        kind: z.enum(["ROOM", "SECTION", "SHELF", "BOX"]),
+        parentId: z.string().nullable().optional(),
+      },
+    },
+    async (args) => {
+      const result = await locations.createLocation(
+        context.userId,
+        args as { name: unknown; kind: unknown; parentId?: string | null },
+      );
+      return result.ok ? ok(result.location) : fail(result.error);
+    },
+  );
+  register(
+    "list_book_copies",
+    "books:read",
+    { description: "List physical copies for one book.", inputSchema: { bookId: z.string().min(1) } },
+    async (args) => {
+      const result = await locations.listBookCopies(context.userId, args.bookId as string);
+      return result.ok ? ok(result.copies) : fail(result.error);
+    },
+  );
+  register(
+    "assign_book_copy_location",
+    "books:write",
+    {
+      description: "Assign or clear a physical location for a book copy.",
+      inputSchema: { copyId: z.string().min(1), locationId: z.string().nullable() },
+    },
+    async (args) => {
+      const result = await locations.assignCopyLocation(
+        context.userId,
+        args.copyId as string,
+        args.locationId as string | null,
+      );
+      return result.ok ? ok(result.copy) : fail(result.error);
     },
   );
 

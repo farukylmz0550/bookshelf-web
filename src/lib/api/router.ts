@@ -20,6 +20,7 @@ import * as goals from "@/lib/services/goals";
 import * as challenges from "@/lib/services/challenges";
 import * as stats from "@/lib/services/stats";
 import * as health from "@/lib/services/health";
+import * as locations from "@/lib/services/locations";
 import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { db } from "@/lib/db";
@@ -78,6 +79,51 @@ async function route(request: Request, segments: string[], context: AuthContext)
       const report = buildHealthReport([book]);
       return json({ data: { book, findings: report.findings, applySupported: false } });
     }
+  }
+
+  // ------------------------------------------------------------- locations
+  if (segments[0] === "locations") {
+    const userId = userIdOf(context, params);
+    if (segments.length === 1 && method === "GET") return json({ data: await locations.listLocations(userId) });
+    if (segments.length === 1 && method === "POST") {
+      const result = await locations.createLocation(
+        userId,
+        (await readJson(request)) as { name: unknown; kind: unknown; parentId?: string | null },
+      );
+      if (!result.ok)
+        throw new ApiError(result.error === "DUPLICATE_NAME" ? 409 : 400, "location_create_failed", result.error);
+      return json({ data: result.location }, { status: 201 });
+    }
+    if (segments.length === 2 && (method === "PATCH" || method === "PUT")) {
+      const result = await locations.updateLocation(
+        userId,
+        segments[1],
+        (await readJson(request)) as { name?: unknown; parentId?: string | null; archived?: boolean },
+      );
+      if (!result.ok)
+        throw new ApiError(
+          result.error === "NOT_FOUND" || result.error === "PARENT_NOT_FOUND" ? 404 : 400,
+          "location_update_failed",
+          result.error,
+        );
+      return json({ data: result.location });
+    }
+  }
+
+  if (segments[0] === "books" && segments[1] && segments[2] === "copies") {
+    const userId = userIdOf(context, params);
+    if (segments.length === 3 && method === "GET") {
+      const result = await locations.listBookCopies(userId, segments[1]);
+      if (!result.ok) throw new ApiError(404, "not_found", "Book not found");
+      return json({ data: result.copies });
+    }
+  }
+
+  if (segments[0] === "copies" && segments[1] && segments[2] === "location" && method === "POST") {
+    const body = parseBody(z.object({ locationId: z.string().min(1).nullable() }), await readJson(request));
+    const result = await locations.assignCopyLocation(userIdOf(context, params), segments[1], body.locationId);
+    if (!result.ok) throw new ApiError(404, "not_found", result.error);
+    return json({ data: result.copy });
   }
 
   // ---------------------------------------------------------------- books
@@ -441,6 +487,10 @@ function requiredScope(method: string, segments: string[]): ApiScope {
   switch (root) {
     case "health":
       return "books:read";
+    case "locations":
+      return write ? "books:write" : "books:read";
+    case "copies":
+      return "books:write";
     case "books":
       return write ? "books:write" : "books:read";
     case "quotes":
