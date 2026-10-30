@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.6 — 2026-10-30
+
+### Fixed
+- **Container startup:** invoke the bundled Prisma CLI entrypoint directly instead of relying on an npm bin symlink omitted by the standalone runtime image.
+
+
 ## 3.19.5 — 2026-10-30
 
 ### Fixed
