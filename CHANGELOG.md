@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.3 — 2026-10-30
+
+### Fixed
+- **Container startup:** create and grant ownership of the `nextjs` home directory so the entrypoint can run Prisma migrations with npm’s cache under the non-root runtime user.
+
+
 ## 3.19.2 — 2026-10-30
 
 ### Fixed

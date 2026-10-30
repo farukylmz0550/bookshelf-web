@@ -30,7 +30,7 @@ COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
 COPY --from=build --chown=nextjs:nodejs /app/config.yaml ./config.yaml
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm64" ]; then curl -fsSL -o /usr/local/bin/kepubify https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-arm64; else curl -fsSL -o /usr/local/bin/kepubify https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-64bit; fi && chmod +x /usr/local/bin/kepubify
-RUN chmod +x docker-entrypoint.sh && mkdir -p /data && chown nextjs:nodejs /data
+RUN chmod +x docker-entrypoint.sh && mkdir -p /data /home/nextjs && chown -R nextjs:nodejs /data /home/nextjs
 USER nextjs
 EXPOSE 3000
 CMD ["./docker-entrypoint.sh"]
