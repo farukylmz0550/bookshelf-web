@@ -1,5 +1,6 @@
 {
   "nav": {
+    "health": "Sağlık",
     "books": "Kitaplar",
     "people": "Ki\u015filer",
     "lending": "\u00d6d\u00fcn\u00e7",
@@ -134,6 +135,26 @@
     "startBook": "Ba\u015fla",
     "reReadButton": "Yeniden oku",
     "earlyFinishBlocked": "\u00d6nce kalan sayfalar\u0131 oku \u2014 t\u00fcm sayfalar okununca kitap otomatik biter."
+  },
+  "health": {
+    "title": "Kütüphane sağlığı",
+    "description": "Kitaplarınızı değiştirmeden metadata ve veri kalitesi bulgularını inceleyin.",
+    "refresh": "Tekrar tara",
+    "summary": "Sağlık özeti",
+    "critical": "Kritik",
+    "warnings": "Uyarılar",
+    "missingMetadata": "Eksik metadata",
+    "duplicates": "Duplicate adayları",
+    "generatedAt": "Rapor zamanı",
+    "findings": "Bulgular",
+    "noFindings": "Kütüphanenizde raporlanan kalite sorunu yok.",
+    "suggestedAction": "Önerilen işlem",
+    "actions": {
+      "lookup_metadata": "Metadata lookup yap",
+      "repair_isbn": "ISBN’yi incele",
+      "review_duplicate": "Duplicate’i incele",
+      "review_book": "Kitabı incele"
+    }
   },
   "facts": {
     "title": "Ba\u015fl\u0131k *",

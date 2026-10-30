@@ -1,5 +1,6 @@
 {
   "nav": {
+    "health": "健康检查",
     "books": "\u4e66\u7c4d",
     "people": "\u4eba\u7269",
     "lending": "\u501f\u9605",
@@ -134,6 +135,26 @@
     "startBook": "\u5f00\u59cb",
     "reReadButton": "\u91cd\u65b0\u9605\u8bfb",
     "earlyFinishBlocked": "\u8bf7\u5148\u8bfb\u5b8c\u5269\u4f59\u9875\u6570\u2014\u2014\u8bfb\u5b8c\u6240\u6709\u9875\u6570\u540e\u4e66\u7c4d\u4f1a\u81ea\u52a8\u7ed3\u675f\u3002"
+  },
+  "health": {
+    "title": "图书馆健康检查",
+    "description": "检查元数据和数据质量，不会修改你的书籍。",
+    "refresh": "重新扫描",
+    "summary": "检查摘要",
+    "critical": "严重",
+    "warnings": "警告",
+    "missingMetadata": "缺少元数据",
+    "duplicates": "可能的重复项",
+    "generatedAt": "报告生成时间",
+    "findings": "发现的问题",
+    "noFindings": "没有发现质量问题。",
+    "suggestedAction": "建议操作",
+    "actions": {
+      "lookup_metadata": "查找元数据",
+      "repair_isbn": "检查 ISBN",
+      "review_duplicate": "检查重复项",
+      "review_book": "检查书籍"
+    }
   },
   "facts": {
     "title": "\u6807\u9898 *",

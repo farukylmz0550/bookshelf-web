@@ -18,6 +18,8 @@ import * as groups from "@/lib/services/groups";
 import * as goals from "@/lib/services/goals";
 import * as challenges from "@/lib/services/challenges";
 import * as stats from "@/lib/services/stats";
+import * as health from "@/lib/services/health";
+import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { json } from "@/lib/api/responses";
 
@@ -51,15 +53,19 @@ export function createMcpServer(context: AuthContext): McpServer {
     config: unknown,
     handler: (args: Record<string, unknown>) => Promise<ToolResult>,
   ) => {
-    (server as unknown as { registerTool: (...a: unknown[]) => void }).registerTool(name, config, async (args: Record<string, unknown>) => {
-      const missing = guard(context, scope);
-      if (missing) return fail(missing);
-      try {
-        return await handler(args);
-      } catch (error) {
-        return fail(error instanceof Error ? error.message : "Request failed");
-      }
-    });
+    (server as unknown as { registerTool: (...a: unknown[]) => void }).registerTool(
+      name,
+      config,
+      async (args: Record<string, unknown>) => {
+        const missing = guard(context, scope);
+        if (missing) return fail(missing);
+        try {
+          return await handler(args);
+        } catch (error) {
+          return fail(error instanceof Error ? error.message : "Request failed");
+        }
+      },
+    );
   };
 
   register(
@@ -336,6 +342,34 @@ export function createMcpServer(context: AuthContext): McpServer {
     "stats:read",
     { description: "Reading statistics for the caller.", inputSchema: {} },
     async () => ok(await stats.getStats(context.userId)),
+  );
+
+  register(
+    "books_health_report",
+    "books:read",
+    {
+      description: "Generate a deterministic data-quality report for the caller's books.",
+      inputSchema: { limit: z.number().int().min(1).max(500).optional(), offset: z.number().int().min(0).optional() },
+    },
+    async (args) =>
+      ok(
+        await health.getBooksHealthReport(context.userId, {
+          limit: args.limit as number | undefined,
+          offset: args.offset as number | undefined,
+        }),
+      ),
+  );
+
+  register(
+    "preview_book_repair",
+    "books:read",
+    { description: "Preview non-mutating repair suggestions for one book.", inputSchema: { id: z.string().min(1) } },
+    async (args) => {
+      const book = await health.getBookForRepairPreview(context.userId, args.id as string);
+      return book
+        ? ok({ book, findings: buildHealthReport([book]).findings, applySupported: false })
+        : fail("Book not found");
+    },
   );
 
   register(

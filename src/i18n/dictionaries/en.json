@@ -1,5 +1,6 @@
 {
   "nav": {
+    "health": "Health",
     "books": "Books",
     "people": "People",
     "lending": "Lending",
@@ -134,6 +135,26 @@
     "startBook": "Start",
     "reReadButton": "Read again",
     "earlyFinishBlocked": "Finish the remaining pages first \u2014 the book auto-finishes when all pages are read."
+  },
+  "health": {
+    "title": "Library health",
+    "description": "Review metadata and data-quality findings without changing your books.",
+    "refresh": "Scan again",
+    "summary": "Health summary",
+    "critical": "Critical",
+    "warnings": "Warnings",
+    "missingMetadata": "Missing metadata",
+    "duplicates": "Duplicate candidates",
+    "generatedAt": "Report generated",
+    "findings": "Findings",
+    "noFindings": "Your library has no reported quality issues.",
+    "suggestedAction": "Suggested action",
+    "actions": {
+      "lookup_metadata": "Look up metadata",
+      "repair_isbn": "Review ISBN",
+      "review_duplicate": "Review duplicate",
+      "review_book": "Review book"
+    }
   },
   "facts": {
     "title": "Title *",

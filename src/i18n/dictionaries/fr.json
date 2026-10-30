@@ -1,5 +1,6 @@
 {
   "nav": {
+    "health": "Santé",
     "books": "Livres",
     "people": "Personnes",
     "lending": "Pr\u00eats",
@@ -134,6 +135,26 @@
     "startBook": "Commencer",
     "reReadButton": "Relire",
     "earlyFinishBlocked": "Termine d'abord les pages restantes \u2014 le livre se termine automatiquement quand toutes les pages sont lues."
+  },
+  "health": {
+    "title": "Santé de la bibliothèque",
+    "description": "Examinez les métadonnées et la qualité sans modifier vos livres.",
+    "refresh": "Analyser à nouveau",
+    "summary": "Résumé de santé",
+    "critical": "Critique",
+    "warnings": "Avertissements",
+    "missingMetadata": "Métadonnées manquantes",
+    "duplicates": "Doublons possibles",
+    "generatedAt": "Rapport généré",
+    "findings": "Résultats",
+    "noFindings": "Aucun problème de qualité signalé.",
+    "suggestedAction": "Action suggérée",
+    "actions": {
+      "lookup_metadata": "Rechercher les métadonnées",
+      "repair_isbn": "Vérifier l’ISBN",
+      "review_duplicate": "Vérifier le doublon",
+      "review_book": "Vérifier le livre"
+    }
   },
   "facts": {
     "title": "Titre *",

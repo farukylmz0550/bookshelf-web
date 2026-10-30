@@ -19,6 +19,8 @@ import * as groups from "@/lib/services/groups";
 import * as goals from "@/lib/services/goals";
 import * as challenges from "@/lib/services/challenges";
 import * as stats from "@/lib/services/stats";
+import * as health from "@/lib/services/health";
+import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { db } from "@/lib/db";
 import { verifyTotpCode } from "@/lib/totp";
@@ -55,6 +57,28 @@ async function route(request: Request, segments: string[], context: AuthContext)
   const method = request.method.toUpperCase();
   const url = new URL(request.url);
   const params = url.searchParams;
+
+  // --------------------------------------------------------------- health
+  if (segments[0] === "health" && segments[1] === "books") {
+    const userId = userIdOf(context, params);
+    await requireUserExists(userId);
+    if (segments.length === 2 && (method === "GET" || method === "POST")) {
+      const result = await health.getBooksHealthReport(userId, {
+        limit: queryInt(params, "limit", 100),
+        offset: queryInt(params, "offset", 0),
+      });
+      return json({
+        data: result.findings,
+        meta: { generatedAt: result.generatedAt, summary: result.summary, limit: result.limit, offset: result.offset },
+      });
+    }
+    if (segments.length === 4 && segments[3] === "repair-preview" && method === "POST") {
+      const book = await health.getBookForRepairPreview(userId, segments[2]);
+      if (!book) throw new ApiError(404, "not_found", "Book not found");
+      const report = buildHealthReport([book]);
+      return json({ data: { book, findings: report.findings, applySupported: false } });
+    }
+  }
 
   // ---------------------------------------------------------------- books
   if (segments[0] === "books" && segments.length === 1) {
@@ -415,6 +439,8 @@ function requiredScope(method: string, segments: string[]): ApiScope {
   const write = method !== "GET" && method !== "HEAD";
   if (root === "admin") return "admin:data";
   switch (root) {
+    case "health":
+      return "books:read";
     case "books":
       return write ? "books:write" : "books:read";
     case "quotes":
@@ -476,6 +502,12 @@ function buildOpenApi(origin: string) {
       "/books": {
         get: { summary: "List books", parameters: [userParam], responses: { "200": { description: "OK" } } },
         post: { summary: "Create a book", responses: { "201": { description: "Created" } } },
+      },
+      "/health/books": {
+        get: { summary: "Generate a deterministic book health report", responses: { "200": { description: "OK" } } },
+      },
+      "/health/books/{id}/repair-preview": {
+        post: { summary: "Preview safe repair suggestions for a book", responses: { "200": { description: "OK" } } },
       },
       "/books/{id}": {
         get: {

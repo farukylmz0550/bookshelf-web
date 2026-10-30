@@ -7,6 +7,7 @@ import { BooksGrid } from "./books-grid";
 import { ExcelActions } from "./excel-actions";
 import { PageLogCta } from "./page-log-cta";
 import { AddBookDialog } from "./add-book-dialog";
+import Link from "next/link";
 
 export default async function BooksPage() {
   const userId = await requireUserId();
@@ -68,6 +69,12 @@ export default async function BooksPage() {
               label={dict.books.addBook}
               addedToastLabel={dict.books.addSuccess ?? ""}
             />
+            <Link
+              href="/books/health"
+              className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-foreground hover:bg-[var(--surface-elevated)]"
+            >
+              {dict.health.title}
+            </Link>
           </header>
         }
         ctaSlot={

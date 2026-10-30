@@ -1,5 +1,6 @@
 {
   "nav": {
+    "health": "Salud",
     "books": "Libros",
     "people": "Personas",
     "lending": "Pr\u00e9stamos",
@@ -134,6 +135,26 @@
     "startBook": "Empezar",
     "reReadButton": "Leer de nuevo",
     "earlyFinishBlocked": "Termina antes las p\u00e1ginas restantes: el libro se termina solo al leer todas las p\u00e1ginas."
+  },
+  "health": {
+    "title": "Salud de la biblioteca",
+    "description": "Revisa los metadatos y la calidad sin modificar tus libros.",
+    "refresh": "Volver a escanear",
+    "summary": "Resumen de salud",
+    "critical": "Crítico",
+    "warnings": "Advertencias",
+    "missingMetadata": "Metadatos faltantes",
+    "duplicates": "Posibles duplicados",
+    "generatedAt": "Informe generado",
+    "findings": "Hallazgos",
+    "noFindings": "No hay problemas de calidad reportados.",
+    "suggestedAction": "Acción sugerida",
+    "actions": {
+      "lookup_metadata": "Buscar metadatos",
+      "repair_isbn": "Revisar ISBN",
+      "review_duplicate": "Revisar duplicado",
+      "review_book": "Revisar libro"
+    }
   },
   "facts": {
     "title": "T\u00edtulo *",
