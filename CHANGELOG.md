@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.4 — 2026-10-30
+
+### Fixed
+- **Container startup:** include Prisma CLI, generated engines, schema, and migrations in the runtime image so database migrations do not trigger an external `npx` install.
+
+
 ## 3.19.3 — 2026-10-30
 
 ### Fixed
