@@ -2,6 +2,7 @@
   "nav": {
     "health": "Salud",
     "locations": "Ubicaciones",
+    "inventory": "Inventario",
     "books": "Libros",
     "people": "Personas",
     "lending": "Pr\u00e9stamos",
@@ -148,6 +149,23 @@
     "startBook": "Empezar",
     "reReadButton": "Leer de nuevo",
     "earlyFinishBlocked": "Termina antes las p\u00e1ginas restantes: el libro se termina solo al leer todas las p\u00e1ginas."
+  },
+  "inventory": {
+    "title": "Auditoría de inventario",
+    "description": "Verifica las copias físicas sin cambiar los registros.",
+    "start": "Iniciar auditoría",
+    "resume": "Reanudar auditoría",
+    "allLocations": "Todas las ubicaciones",
+    "scan": "Escanear copia",
+    "barcode": "Código o ID de copia",
+    "found": "Encontrados",
+    "missing": "Faltantes",
+    "wrongLocation": "Ubicación incorrecta",
+    "complete": "Completar auditoría",
+    "completed": "Completada",
+    "noAudits": "Aún no hay auditorías",
+    "copyNotFound": "Copia no encontrada",
+    "completedError": "No se pudo completar"
   },
   "locations": {
     "title": "Ubicaciones de la biblioteca",

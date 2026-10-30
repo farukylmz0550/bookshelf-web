@@ -2,6 +2,7 @@
   "nav": {
     "health": "Sağlık",
     "locations": "Konumlar",
+    "inventory": "Envanter",
     "books": "Kitaplar",
     "people": "Ki\u015filer",
     "lending": "\u00d6d\u00fcn\u00e7",
@@ -148,6 +149,23 @@
     "startBook": "Ba\u015fla",
     "reReadButton": "Yeniden oku",
     "earlyFinishBlocked": "\u00d6nce kalan sayfalar\u0131 oku \u2014 t\u00fcm sayfalar okununca kitap otomatik biter."
+  },
+  "inventory": {
+    "title": "Envanter denetimi",
+    "description": "Kitap kayıtlarını değiştirmeden fiziksel kopyaları doğrulayın.",
+    "start": "Denetim başlat",
+    "resume": "Denetime devam et",
+    "allLocations": "Tüm konumlar",
+    "scan": "Kopya tara",
+    "barcode": "Barkod veya kopya kimliği",
+    "found": "Bulundu",
+    "missing": "Eksik",
+    "wrongLocation": "Yanlış konum",
+    "complete": "Denetimi tamamla",
+    "completed": "Tamamlandı",
+    "noAudits": "Henüz denetim yok",
+    "copyNotFound": "Kopya bulunamadı",
+    "completedError": "Denetim tamamlanamadı"
   },
   "locations": {
     "title": "Kütüphane konumları",

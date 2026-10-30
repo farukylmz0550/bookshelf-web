@@ -20,6 +20,7 @@ import {
   Shield,
   HeartPulse,
   MapPinned,
+  ClipboardCheck,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
@@ -53,6 +54,7 @@ const EXPLORE_NAV: NavItem[] = [
 const MORE_NAV: NavItem[] = [
   { href: "/books/health", label: "health", icon: HeartPulse },
   { href: "/locations", label: "locations", icon: MapPinned },
+  { href: "/inventory", label: "inventory", icon: ClipboardCheck },
   { href: "/achievements", label: "achievements", icon: Trophy },
   { href: "/challenges", label: "challenges", icon: Flag },
   { href: "/leaderboard", label: "leaderboard", icon: Medal },

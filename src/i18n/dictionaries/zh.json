@@ -2,6 +2,7 @@
   "nav": {
     "health": "健康检查",
     "locations": "位置",
+    "inventory": "盘点",
     "books": "\u4e66\u7c4d",
     "people": "\u4eba\u7269",
     "lending": "\u501f\u9605",
@@ -148,6 +149,23 @@
     "startBook": "\u5f00\u59cb",
     "reReadButton": "\u91cd\u65b0\u9605\u8bfb",
     "earlyFinishBlocked": "\u8bf7\u5148\u8bfb\u5b8c\u5269\u4f59\u9875\u6570\u2014\u2014\u8bfb\u5b8c\u6240\u6709\u9875\u6570\u540e\u4e66\u7c4d\u4f1a\u81ea\u52a8\u7ed3\u675f\u3002"
+  },
+  "inventory": {
+    "title": "库存盘点",
+    "description": "验证实体副本，不修改图书记录。",
+    "start": "开始盘点",
+    "resume": "继续盘点",
+    "allLocations": "所有位置",
+    "scan": "扫描副本",
+    "barcode": "条码或副本 ID",
+    "found": "已找到",
+    "missing": "缺失",
+    "wrongLocation": "位置错误",
+    "complete": "完成盘点",
+    "completed": "已完成",
+    "noAudits": "暂无盘点",
+    "copyNotFound": "未找到副本",
+    "completedError": "无法完成盘点"
   },
   "locations": {
     "title": "图书馆位置",

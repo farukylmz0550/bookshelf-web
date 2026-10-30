@@ -2,6 +2,7 @@
   "nav": {
     "health": "Health",
     "locations": "Locations",
+    "inventory": "Inventory",
     "books": "Books",
     "people": "People",
     "lending": "Lending",
@@ -148,6 +149,23 @@
     "startBook": "Start",
     "reReadButton": "Read again",
     "earlyFinishBlocked": "Finish the remaining pages first \u2014 the book auto-finishes when all pages are read."
+  },
+  "inventory": {
+    "title": "Inventory audit",
+    "description": "Verify physical copies without changing book records.",
+    "start": "Start audit",
+    "resume": "Resume audit",
+    "allLocations": "All locations",
+    "scan": "Scan copy",
+    "barcode": "Barcode or copy id",
+    "found": "Found",
+    "missing": "Missing",
+    "wrongLocation": "Wrong location",
+    "complete": "Complete audit",
+    "completed": "Completed",
+    "noAudits": "No audits yet",
+    "copyNotFound": "Copy not found",
+    "completedError": "Could not complete audit"
   },
   "locations": {
     "title": "Library locations",

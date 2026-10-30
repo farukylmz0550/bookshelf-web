@@ -2,6 +2,7 @@
   "nav": {
     "health": "Santé",
     "locations": "Emplacements",
+    "inventory": "Inventaire",
     "books": "Livres",
     "people": "Personnes",
     "lending": "Pr\u00eats",
@@ -148,6 +149,23 @@
     "startBook": "Commencer",
     "reReadButton": "Relire",
     "earlyFinishBlocked": "Termine d'abord les pages restantes \u2014 le livre se termine automatiquement quand toutes les pages sont lues."
+  },
+  "inventory": {
+    "title": "Contrôle d'inventaire",
+    "description": "Vérifiez les exemplaires physiques sans modifier les livres.",
+    "start": "Démarrer le contrôle",
+    "resume": "Reprendre le contrôle",
+    "allLocations": "Tous les emplacements",
+    "scan": "Scanner l'exemplaire",
+    "barcode": "Code-barres ou ID",
+    "found": "Trouvés",
+    "missing": "Manquants",
+    "wrongLocation": "Mauvais emplacement",
+    "complete": "Terminer le contrôle",
+    "completed": "Terminé",
+    "noAudits": "Aucun contrôle",
+    "copyNotFound": "Exemplaire introuvable",
+    "completedError": "Échec de la clôture"
   },
   "locations": {
     "title": "Emplacements de la bibliothèque",

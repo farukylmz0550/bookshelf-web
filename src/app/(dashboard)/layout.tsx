@@ -66,6 +66,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     groupAdmin: dict.nav.groupAdmin,
     health: dict.nav.health,
     locations: dict.nav.locations,
+    inventory: dict.nav.inventory,
   };
 
   return (
