@@ -1,6 +1,19 @@
 # Changelog
 
 
+## 3.19.0 — 2026-10-30
+
+### Added
+- **Batch ISBN workflow:** paste or scan up to 50 ISBNs, review lookup results, distinguish invalid/duplicate/failed entries, and add selected matches with idempotent batch APIs and MCP tools.
+- **Physical locations and copies:** hierarchical locations, copy-level assignments, location filtering, and safe smart collection rules.
+- **Inventory audits:** scoped physical-copy audits with camera/manual scans, found/missing/wrong-location summaries, resumable audits, REST/MCP APIs, and a dedicated UI.
+- **Book health reports:** deterministic data-quality findings and repair previews.
+
+### Upgrade
+- Run `prisma migrate deploy` to apply the batch/location/smart-collection/inventory migrations.
+- The release image is published as a multi-architecture GHCR manifest for `linux/amd64` and `linux/arm64`.
+
+
 ## 3.16.0 — 2026-10-26
 
 ### Added
