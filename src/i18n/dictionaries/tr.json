@@ -150,6 +150,10 @@
     "archive": "Arşivle",
     "empty": "Henüz konum yok.",
     "copies": "kopya",
+    "copy": "Kopya",
+    "copiesTitle": "Kitap kopyaları",
+    "unassigned": "Konumsuz",
+    "saved": "Konum kaydedildi",
     "error": "Konum kaydedilemedi",
     "kinds": { "ROOM": "Oda", "SECTION": "Bölüm", "SHELF": "Raf", "BOX": "Kutu" }
   },

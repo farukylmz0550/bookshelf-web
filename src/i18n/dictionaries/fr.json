@@ -150,6 +150,10 @@
     "archive": "Archiver",
     "empty": "Aucun emplacement.",
     "copies": "exemplaires",
+    "copy": "Exemplaire",
+    "copiesTitle": "Exemplaires du livre",
+    "unassigned": "Sans emplacement",
+    "saved": "Emplacement enregistré",
     "error": "Impossible d’enregistrer l’emplacement",
     "kinds": { "ROOM": "Pièce", "SECTION": "Section", "SHELF": "Étagère", "BOX": "Boîte" }
   },

@@ -150,6 +150,10 @@
     "archive": "归档",
     "empty": "暂无位置。",
     "copies": "本",
+    "copy": "副本",
+    "copiesTitle": "书籍副本",
+    "unassigned": "未分配位置",
+    "saved": "位置已保存",
     "error": "无法保存位置",
     "kinds": { "ROOM": "房间", "SECTION": "区域", "SHELF": "书架", "BOX": "箱子" }
   },

@@ -11,6 +11,7 @@ import { BookLending } from "./book-lending";
 import { ReadingTimer } from "./reading-timer";
 import { BookQuotes } from "./book-quotes";
 import { ShareButton } from "@/components/share-button";
+import { BookCopies } from "./book-copies";
 
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,7 +20,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
   const book = await db.book.findFirst({ where: { id, userId } });
   if (!book) notFound();
 
-  const [lendings, persons, groups, memberships, quotes] = await Promise.all([
+  const [lendings, persons, groups, memberships, quotes, copies, locations] = await Promise.all([
     db.lendingRecord.findMany({ where: { bookId: id }, orderBy: { lentAt: "desc" } }),
     db.person.findMany({ where: { userId }, select: { id: true, name: true } }),
     db.bookGroup.findMany({
@@ -32,6 +33,16 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
       select: { groupId: true },
     }),
     db.quote.findMany({ where: { userId, bookId: id }, orderBy: { createdAt: "desc" } }),
+    db.bookCopy.findMany({
+      where: { userId, bookId: id },
+      orderBy: { copyNumber: "asc" },
+      select: { id: true, copyNumber: true, barcode: true, locationId: true, archivedAt: true },
+    }),
+    db.libraryLocation.findMany({
+      where: { userId },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: { id: true, name: true, archivedAt: true },
+    }),
   ]);
   const lentOut = lendings.filter((l) => !l.returnedAt).length;
   const memberGroupIds = new Set(memberships.map((m) => m.groupId));
@@ -88,6 +99,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
       </div>
 
       <BookFacts book={book} dict={dict.facts} />
+      <BookCopies bookId={book.id} copies={copies} locations={locations} dict={dict.locations} />
       {book.status === "READING" && <ReadingTimer bookId={book.id} dict={dict.timer} />}
       <BookPersonal book={book} dict={{ ...dict.personal, earlyFinishBlocked: dict.books.earlyFinishBlocked }} />
       <BookQuotes

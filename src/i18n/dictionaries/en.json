@@ -150,6 +150,10 @@
     "archive": "Archive",
     "empty": "No locations yet.",
     "copies": "copies",
+    "copy": "Copy",
+    "copiesTitle": "Book copies",
+    "unassigned": "No location",
+    "saved": "Location saved",
     "error": "Could not save location",
     "kinds": { "ROOM": "Room", "SECTION": "Section", "SHELF": "Shelf", "BOX": "Box" }
   },

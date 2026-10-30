@@ -51,6 +51,6 @@ describe("dictionary parity (v3.13.0)", () => {
   }
 
   it("arabic: full parity with en (v3.18.0 adds location management copy)", () => {
-    expect(flatten(ar).size).toBe(672);
+    expect(flatten(ar).size).toBe(676);
   });
 });
