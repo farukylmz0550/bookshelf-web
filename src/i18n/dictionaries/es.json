@@ -620,6 +620,31 @@
     "pickEmpty": "A\u00fan no hay libros en tu biblioteca.",
     "addedManyToast": "Se a\u00f1adieron {count} libros a la estanter\u00eda"
   },
+  "smartCollections": {
+    "create": "Colección inteligente",
+    "title": "Nueva colección inteligente",
+    "name": "Nombre",
+    "namePlaceholder": "p. ej. Leyendo ahora",
+    "field": "Campo",
+    "operator": "Operador",
+    "value": "Valor",
+    "preview": "Vista previa",
+    "matches": "libros coincidentes",
+    "save": "Crear",
+    "cancel": "Cancelar",
+    "error": "No se pudo guardar la colección",
+    "fields": {
+      "status": "Estado",
+      "rating": "Valoración",
+      "tag": "Etiqueta",
+      "series": "Serie",
+      "author": "Autor",
+      "language": "Idioma",
+      "publishYear": "Año de publicación",
+      "pages": "Páginas"
+    },
+    "operators": { "equals": "igual a", "contains": "contiene", "gte": "al menos", "lte": "como máximo" }
+  },
   "security": {
     "securityTitle": "Verificaci\u00f3n en dos pasos (TOTP)",
     "securityDesc": "Protege tu cuenta con c\u00f3digos de 6 d\u00edgitos generados por una app de autenticaci\u00f3n.",

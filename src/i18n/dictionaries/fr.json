@@ -620,6 +620,31 @@
     "pickEmpty": "Votre biblioth\u00e8que ne contient pas encore de livres.",
     "addedManyToast": "{count} livres ajout\u00e9s \u00e0 l'\u00e9tag\u00e8re"
   },
+  "smartCollections": {
+    "create": "Collection intelligente",
+    "title": "Nouvelle collection intelligente",
+    "name": "Nom",
+    "namePlaceholder": "ex. Lecture actuelle",
+    "field": "Champ",
+    "operator": "Opérateur",
+    "value": "Valeur",
+    "preview": "Aperçu",
+    "matches": "livres correspondants",
+    "save": "Créer",
+    "cancel": "Annuler",
+    "error": "Impossible d’enregistrer la collection",
+    "fields": {
+      "status": "Statut",
+      "rating": "Note",
+      "tag": "Étiquette",
+      "series": "Série",
+      "author": "Auteur",
+      "language": "Langue",
+      "publishYear": "Année de publication",
+      "pages": "Pages"
+    },
+    "operators": { "equals": "égal à", "contains": "contient", "gte": "au moins", "lte": "au plus" }
+  },
   "security": {
     "securityTitle": "Authentification \u00e0 deux facteurs (TOTP)",
     "securityDesc": "Prot\u00e9gez votre compte avec des codes \u00e0 6 chiffres g\u00e9n\u00e9r\u00e9s par une application d'authentification.",

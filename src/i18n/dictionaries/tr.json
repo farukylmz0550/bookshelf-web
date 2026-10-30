@@ -620,6 +620,31 @@
     "pickEmpty": "K\u00fct\u00fcphanenizde hen\u00fcz kitap yok.",
     "addedManyToast": "{count} kitap rafa eklendi"
   },
+  "smartCollections": {
+    "create": "Akıllı koleksiyon",
+    "title": "Yeni akıllı koleksiyon",
+    "name": "Koleksiyon adı",
+    "namePlaceholder": "örn. Şu an okuduklarım",
+    "field": "Alan",
+    "operator": "Operatör",
+    "value": "Değer",
+    "preview": "Önizle",
+    "matches": "eşleşen kitap",
+    "save": "Oluştur",
+    "cancel": "İptal",
+    "error": "Akıllı koleksiyon kaydedilemedi",
+    "fields": {
+      "status": "Durum",
+      "rating": "Puan",
+      "tag": "Etiket",
+      "series": "Seri",
+      "author": "Yazar",
+      "language": "Dil",
+      "publishYear": "Yayın yılı",
+      "pages": "Sayfa"
+    },
+    "operators": { "equals": "eşittir", "contains": "içerir", "gte": "en az", "lte": "en fazla" }
+  },
   "security": {
     "securityTitle": "\u0130ki ad\u0131ml\u0131 do\u011frulama (TOTP)",
     "securityDesc": "Hesab\u0131n\u0131z\u0131 kimlik do\u011frulay\u0131c\u0131 uygulamas\u0131n\u0131n \u00fcretti\u011fi 6 haneli kodlarla koruyun.",

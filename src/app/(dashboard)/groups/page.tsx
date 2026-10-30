@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { GroupsManager } from "./groups-manager";
+import { SmartCollectionForm } from "./smart-collection-form";
 
 export default async function GroupsPage() {
   const userId = await requireUserId();
@@ -24,9 +25,12 @@ export default async function GroupsPage() {
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <h1 className="font-[var(--font-serif)] text-2xl font-semibold tracking-tight text-foreground">
-          {dict.groups.title}
-        </h1>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="font-[var(--font-serif)] text-2xl font-semibold tracking-tight text-foreground">
+            {dict.groups.title}
+          </h1>
+          <SmartCollectionForm dict={dict.smartCollections} />
+        </div>
         <p className="font-[var(--font-sans)] text-sm text-muted-foreground">{dict.groups.subtitle}</p>
       </header>
       <GroupsManager

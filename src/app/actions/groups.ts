@@ -7,6 +7,7 @@
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/session";
 import * as groups from "@/lib/services/groups";
+import * as smartCollections from "@/lib/services/smart-collections";
 
 type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -68,5 +69,15 @@ export async function removeBookFromGroup(bookId: string, groupId: string): Prom
   const userId = await requireUserId();
   const result = await groups.removeBookFromGroup(userId, bookId, groupId);
   if (result.ok) revalidateGroups([bookId]);
+  return result;
+}
+
+export async function previewSmartCollection(rule: unknown) {
+  return smartCollections.previewSmartCollection(await requireUserId(), rule);
+}
+
+export async function createSmartCollection(name: string, rule: unknown, color?: string | null) {
+  const result = await smartCollections.createSmartCollection(await requireUserId(), name, rule, color);
+  if (result.ok) revalidateGroups();
   return result;
 }
