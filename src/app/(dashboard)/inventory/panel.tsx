@@ -35,28 +35,34 @@ export function InventoryPanel({ locations, audits, dict }: { locations: Locatio
   const isOpen = audit?.status === "OPEN";
 
   function begin() {
-    startTransition(async () => {
-      const result = await startInventoryAudit(scope || null);
-      if (!result.ok) return toast.error(result.error);
-      setAudit(result.audit as Audit);
+    startTransition(() => {
+      void (async () => {
+        const result = await startInventoryAudit(scope || null);
+        if (!result.ok) return toast.error(result.error);
+        setAudit(result.audit as Audit);
+      })();
     });
   }
   function scan(value: string) {
     if (!audit) return;
-    startTransition(async () => {
-      const result = await recordInventoryScan(audit.id, { barcode: value, source: "barcode" });
-      if (!result.ok) return toast.error(result.error === "COPY_NOT_FOUND" ? dict.copyNotFound : result.error);
-      setAudit((current) => (current ? { ...current, summary: result.summary } : current));
-      setBarcode("");
+    startTransition(() => {
+      void (async () => {
+        const result = await recordInventoryScan(audit.id, { barcode: value, source: "barcode" });
+        if (!result.ok) return toast.error(result.error === "COPY_NOT_FOUND" ? dict.copyNotFound : result.error);
+        setAudit((current) => (current ? { ...current, summary: result.summary } : current));
+        setBarcode("");
+      })();
     });
   }
   function finish() {
     if (!audit) return;
-    startTransition(async () => {
-      const result = await completeInventoryAudit(audit.id);
-      if (!result.ok) return toast.error(result.error || dict.completedError);
-      setAudit(result.audit as Audit);
-      toast.success(dict.completed);
+    startTransition(() => {
+      void (async () => {
+        const result = await completeInventoryAudit(audit.id);
+        if (!result.ok) return toast.error(result.error || dict.completedError);
+        setAudit(result.audit as Audit);
+        toast.success(dict.completed);
+      })();
     });
   }
 

@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.1 — 2026-10-30
+
+### Fixed
+- **Release build:** align inventory transitions with React 19 and complete the locations dictionary contract for archived copies.
+
+
 ## 3.19.0 — 2026-10-30
 
 ### Added
