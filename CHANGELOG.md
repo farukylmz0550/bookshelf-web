@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.9 — 2026-10-30
+
+### Fixed
+- **Container startup:** include Prisma’s `fast-check` and `pure-rand` transitives required by the bundled migration CLI.
+
+
 ## 3.19.8 — 2026-10-30
 
 ### Fixed
