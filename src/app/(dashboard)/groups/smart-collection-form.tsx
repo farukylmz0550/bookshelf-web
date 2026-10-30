@@ -62,19 +62,23 @@ export function SmartCollectionForm({ dict }: { dict: SmartCollectionDict }) {
   }
 
   function preview() {
-    startTransition(async () => {
-      const result = await previewSmartCollection(rule());
-      if (!result.ok) return toast.error(dict.error);
-      setMatchCount(result.total);
+    startTransition(() => {
+      void (async () => {
+        const result = await previewSmartCollection(rule());
+        if (!result.ok) return toast.error(dict.error);
+        setMatchCount(result.total);
+      })();
     });
   }
 
   function save() {
-    startTransition(async () => {
-      const result = await createSmartCollection(name, rule());
-      if (!result.ok) return toast.error(dict.error);
-      toast.success(dict.save);
-      reset();
+    startTransition(() => {
+      void (async () => {
+        const result = await createSmartCollection(name, rule());
+        if (!result.ok) return toast.error(dict.error);
+        toast.success(dict.save);
+        reset();
+      })();
     });
   }
 

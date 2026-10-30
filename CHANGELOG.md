@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.2 — 2026-10-30
+
+### Fixed
+- **Release build:** make smart collection preview/save transitions compatible with React 19.
+
+
 ## 3.19.1 — 2026-10-30
 
 ### Fixed
