@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.5 — 2026-10-30
+
+### Fixed
+- **Container build:** remove the unavailable generated `.prisma` runtime copy; Prisma’s runtime package and engines are bundled directly.
+
+
 ## 3.19.4 — 2026-10-30
 
 ### Fixed
