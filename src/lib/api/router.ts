@@ -22,6 +22,7 @@ import * as stats from "@/lib/services/stats";
 import * as health from "@/lib/services/health";
 import * as locations from "@/lib/services/locations";
 import * as smartCollections from "@/lib/services/smart-collections";
+import * as batchBooks from "@/lib/services/batch-books";
 import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { db } from "@/lib/db";
@@ -118,6 +119,30 @@ async function route(request: Request, segments: string[], context: AuthContext)
       if (!result.ok) throw new ApiError(404, "not_found", "Book not found");
       return json({ data: result.copies });
     }
+  }
+
+  // ---------------------------------------------------------- batch ISBNs
+  if (segments[0] === "books" && segments[1] === "batch-lookup" && segments.length === 2 && method === "POST") {
+    const body = parseBody(
+      z.object({ isbns: z.array(z.string().max(40)).min(1).max(batchBooks.MAX_BATCH_ISBNS) }),
+      await readJson(request),
+    );
+    return json({ data: await batchBooks.lookupBooksBatch(userIdOf(context, params), body.isbns) });
+  }
+  if (segments[0] === "books" && segments[1] === "batch-create" && segments.length === 2 && method === "POST") {
+    const body = parseBody(
+      z.object({
+        items: z.array(z.record(z.string(), z.unknown())).min(1).max(batchBooks.MAX_BATCH_ISBNS),
+        idempotencyKey: z.string().trim().min(1).max(120).optional(),
+      }),
+      await readJson(request),
+    );
+    return json(
+      {
+        data: await batchBooks.createBooksBatch(userIdOf(context, params), body.items as never[], body.idempotencyKey),
+      },
+      { status: 201 },
+    );
   }
 
   if (segments[0] === "copies" && segments[1] && segments[2] === "location" && method === "POST") {
@@ -529,6 +554,7 @@ function requiredScope(method: string, segments: string[]): ApiScope {
     case "copies":
       return "books:write";
     case "books":
+      if (id === "batch-lookup") return "books:read";
       return write ? "books:write" : "books:read";
     case "quotes":
       return write ? "quotes:write" : "quotes:read";

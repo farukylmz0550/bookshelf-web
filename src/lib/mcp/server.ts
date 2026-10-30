@@ -21,6 +21,7 @@ import * as stats from "@/lib/services/stats";
 import * as health from "@/lib/services/health";
 import * as locations from "@/lib/services/locations";
 import * as smartCollections from "@/lib/services/smart-collections";
+import * as batchBooks from "@/lib/services/batch-books";
 import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { json } from "@/lib/api/responses";
@@ -133,6 +134,36 @@ export function createMcpServer(context: AuthContext): McpServer {
       const result = await books.createBook(context.userId, args as books.AddBookInput);
       return result.ok ? ok(result.book) : fail(result.error);
     },
+  );
+
+  register(
+    "lookup_books_by_isbn",
+    "books:read",
+    {
+      description: `Look up up to ${batchBooks.MAX_BATCH_ISBNS} ISBNs and classify invalid, duplicate, and unresolved entries without changing the library.`,
+      inputSchema: { isbns: z.array(z.string().max(40)).min(1).max(batchBooks.MAX_BATCH_ISBNS) },
+    },
+    async (args) => ok(await batchBooks.lookupBooksBatch(context.userId, args.isbns as string[])),
+  );
+
+  register(
+    "add_books_batch",
+    "books:write",
+    {
+      description: `Add up to ${batchBooks.MAX_BATCH_ISBNS} reviewed ISBN lookup results. Existing ISBNs are skipped and retries are idempotent when an idempotency key is supplied.`,
+      inputSchema: {
+        items: z.array(z.record(z.string(), z.unknown())).min(1).max(batchBooks.MAX_BATCH_ISBNS),
+        idempotencyKey: z.string().min(1).max(120).optional(),
+      },
+    },
+    async (args) =>
+      ok(
+        await batchBooks.createBooksBatch(
+          context.userId,
+          args.items as never[],
+          args.idempotencyKey as string | undefined,
+        ),
+      ),
   );
 
   register(
