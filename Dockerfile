@@ -11,6 +11,7 @@ COPY . .
 RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
+RUN npm prune --omit=dev
 
 FROM node:22-slim AS runtime
 WORKDIR /app
@@ -26,11 +27,7 @@ COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=build --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=build --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=build --chown=nextjs:nodejs /app/node_modules/effect ./node_modules/effect
-COPY --from=build --chown=nextjs:nodejs /app/node_modules/fast-check ./node_modules/fast-check
-COPY --from=build --chown=nextjs:nodejs /app/node_modules/pure-rand ./node_modules/pure-rand
+COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=build --chown=nextjs:nodejs /app/scripts/cron.mjs ./scripts/cron.mjs
 COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
 COPY --from=build --chown=nextjs:nodejs /app/config.yaml ./config.yaml

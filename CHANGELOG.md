@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.10 — 2026-10-30
+
+### Fixed
+- **Container runtime:** prune development dependencies after build and include the complete production dependency tree so Prisma migrations have every transitive module without shipping dev packages.
+
+
 ## 3.19.9 — 2026-10-30
 
 ### Fixed
