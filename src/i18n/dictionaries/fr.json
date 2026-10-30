@@ -145,6 +145,8 @@
     "name": "Nom",
     "namePlaceholder": "ex. Étagère du salon",
     "kind": "Type",
+    "parent": "Emplacement parent",
+    "noParent": "Niveau supérieur",
     "save": "Enregistrer",
     "cancel": "Annuler",
     "archive": "Archiver",

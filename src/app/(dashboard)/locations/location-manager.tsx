@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { createLocation, updateLocation } from "@/app/actions/locations";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type LocationRow = {
   id: string;
@@ -38,6 +39,8 @@ export type LocationsDict = {
   empty: string;
   copies: string;
   error: string;
+  parent: string;
+  noParent: string;
   kinds: Record<string, string>;
 };
 
@@ -46,13 +49,15 @@ export function LocationManager({ locations, dict }: { locations: LocationRow[];
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [kind, setKind] = useState("SHELF");
+  const [parentId, setParentId] = useState("none");
   const [saving, startTransition] = useTransition();
 
   async function submit() {
-    const result = await createLocation(name, kind);
+    const result = await createLocation(name, kind, parentId === "none" ? null : parentId);
     if (!result.ok) return toast.error(dict.error);
     setOpen(false);
     setName("");
+    setParentId("none");
     toast.success(dict.save);
     startTransition(() => router.refresh());
   }
@@ -123,18 +128,36 @@ export function LocationManager({ locations, dict }: { locations: LocationRow[];
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="location-kind">{dict.kind}</Label>
-              <select
-                id="location-kind"
-                value={kind}
-                onChange={(event) => setKind(event.target.value)}
-                className="flex h-9 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground"
-              >
-                <option value="ROOM">{dict.kinds.ROOM}</option>
-                <option value="SECTION">{dict.kinds.SECTION}</option>
-                <option value="SHELF">{dict.kinds.SHELF}</option>
-                <option value="BOX">{dict.kinds.BOX}</option>
-              </select>
+              <Label>{dict.kind}</Label>
+              <Select value={kind} onValueChange={(value) => value && setKind(value)}>
+                <SelectTrigger className="w-full bg-background text-foreground">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ROOM">{dict.kinds.ROOM}</SelectItem>
+                  <SelectItem value="SECTION">{dict.kinds.SECTION}</SelectItem>
+                  <SelectItem value="SHELF">{dict.kinds.SHELF}</SelectItem>
+                  <SelectItem value="BOX">{dict.kinds.BOX}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{dict.parent}</Label>
+              <Select value={parentId} onValueChange={(value) => value && setParentId(value)}>
+                <SelectTrigger className="w-full bg-background text-foreground">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{dict.noParent}</SelectItem>
+                  {locations
+                    .filter((location) => !location.archivedAt)
+                    .map((location) => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>

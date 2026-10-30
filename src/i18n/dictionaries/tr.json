@@ -145,6 +145,8 @@
     "name": "Ad",
     "namePlaceholder": "örn. Salon rafı",
     "kind": "Tür",
+    "parent": "Üst konum",
+    "noParent": "Üst düzey",
     "save": "Kaydet",
     "cancel": "İptal",
     "archive": "Arşivle",

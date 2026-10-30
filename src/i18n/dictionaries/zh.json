@@ -145,6 +145,8 @@
     "name": "名称",
     "namePlaceholder": "例如：客厅书架",
     "kind": "类型",
+    "parent": "上级位置",
+    "noParent": "顶层",
     "save": "保存",
     "cancel": "取消",
     "archive": "归档",

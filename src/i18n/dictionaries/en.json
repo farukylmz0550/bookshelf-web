@@ -145,6 +145,8 @@
     "name": "Name",
     "namePlaceholder": "e.g. Living room shelf",
     "kind": "Type",
+    "parent": "Parent location",
+    "noParent": "Top level",
     "save": "Save",
     "cancel": "Cancel",
     "archive": "Archive",

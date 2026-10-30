@@ -145,6 +145,8 @@
     "name": "Nombre",
     "namePlaceholder": "p. ej. Estante del salón",
     "kind": "Tipo",
+    "parent": "Ubicación superior",
+    "noParent": "Nivel superior",
     "save": "Guardar",
     "cancel": "Cancelar",
     "archive": "Archivar",
