@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.19.8 — 2026-10-30
+
+### Fixed
+- **Container size:** include Prisma’s missing `effect` runtime dependency explicitly instead of copying the full development dependency tree.
+
+
 ## 3.19.7 — 2026-10-30
 
 ### Fixed
