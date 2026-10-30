@@ -22,6 +22,7 @@ import * as health from "@/lib/services/health";
 import * as locations from "@/lib/services/locations";
 import * as smartCollections from "@/lib/services/smart-collections";
 import * as batchBooks from "@/lib/services/batch-books";
+import * as inventory from "@/lib/services/inventory";
 import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { json } from "@/lib/api/responses";
@@ -454,6 +455,57 @@ export function createMcpServer(context: AuthContext): McpServer {
       );
       return result.ok ? ok(result.copy) : fail(result.error);
     },
+  );
+  register(
+    "start_inventory_audit",
+    "books:write",
+    {
+      description: "Start or resume a physical inventory audit for the library or a location tree.",
+      inputSchema: { scopeLocationId: z.string().nullable().optional() },
+    },
+    async (args) => {
+      const result = await inventory.startInventoryAudit(
+        context.userId,
+        args.scopeLocationId as string | null | undefined,
+      );
+      return result.ok ? ok(result.audit) : fail(result.error);
+    },
+  );
+  register(
+    "record_inventory_scan",
+    "books:write",
+    {
+      description: "Record an idempotent copy scan in an open inventory audit.",
+      inputSchema: {
+        auditId: z.string().min(1),
+        copyId: z.string().optional(),
+        barcode: z.string().optional(),
+        source: z.string().optional(),
+        note: z.string().optional(),
+      },
+    },
+    async (args) => {
+      const result = await inventory.recordInventoryScan(context.userId, args.auditId as string, args);
+      return result.ok ? ok(result) : fail(result.error);
+    },
+  );
+  register(
+    "complete_inventory_audit",
+    "books:write",
+    {
+      description: "Complete an inventory audit and mark unscanned expected copies as missing.",
+      inputSchema: { auditId: z.string().min(1) },
+    },
+    async (args) => {
+      const result = await inventory.completeInventoryAudit(context.userId, args.auditId as string);
+      return result.ok ? ok(result.audit) : fail(result.error);
+    },
+  );
+  register(
+    "get_inventory_summary",
+    "books:read",
+    { description: "List physical inventory audits and their found/missing summary.", inputSchema: {} },
+    async () => ok(await inventory.listInventoryAudits(context.userId)),
   );
   register(
     "preview_collection",

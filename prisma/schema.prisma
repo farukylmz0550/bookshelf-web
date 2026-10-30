@@ -63,6 +63,7 @@ model User {
   extensionStorage  ExtensionStorage[]
   libraryLocations  LibraryLocation[]
   bookCopies        BookCopy[]
+  inventoryAudits   InventoryAudit[]
 
   @@index([id])
 }
@@ -400,6 +401,19 @@ enum LibraryLocationKind {
   BOX
 }
 
+enum InventoryAuditStatus {
+  OPEN
+  COMPLETED
+}
+
+enum InventoryAuditItemState {
+  EXPECTED
+  FOUND
+  MISSING
+  UNEXPECTED
+  WRONG_LOCATION
+}
+
 model LibraryLocation {
   id         String              @id @default(cuid())
   userId     String
@@ -414,6 +428,7 @@ model LibraryLocation {
   createdAt  DateTime            @default(now())
   updatedAt  DateTime            @updatedAt
   copies     BookCopy[]
+  audits     InventoryAudit[]
 
   @@unique([userId, parentId, name])
   @@index([userId, parentId])
@@ -433,12 +448,45 @@ model BookCopy {
   condition  String           @default("GOOD")
   createdAt  DateTime         @default(now())
   archivedAt DateTime?
+  inventoryItems InventoryAuditItem[]
 
   @@unique([userId, bookId, copyNumber])
   @@unique([userId, barcode])
   @@index([userId, bookId])
   @@index([userId, locationId])
   @@index([userId, barcode])
+}
+
+model InventoryAudit {
+  id              String              @id @default(cuid())
+  userId          String
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scopeLocationId String?
+  scopeLocation   LibraryLocation?    @relation(fields: [scopeLocationId], references: [id], onDelete: SetNull)
+  status          InventoryAuditStatus @default(OPEN)
+  startedAt       DateTime            @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime            @default(now())
+  items           InventoryAuditItem[]
+
+  @@index([userId, status])
+  @@index([userId, scopeLocationId])
+}
+
+model InventoryAuditItem {
+  id        String                    @id @default(cuid())
+  auditId   String
+  audit     InventoryAudit            @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  copyId    String
+  copy      BookCopy                  @relation(fields: [copyId], references: [id], onDelete: Cascade)
+  state     InventoryAuditItemState   @default(EXPECTED)
+  scannedAt DateTime?
+  source    String?
+  note      String?
+
+  @@unique([auditId, copyId])
+  @@index([auditId, state])
+  @@index([copyId])
 }
 
 // v3.12.0 — passwordless QR login: single-use, short-lived (60 s) handoff

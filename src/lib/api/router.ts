@@ -23,6 +23,7 @@ import * as health from "@/lib/services/health";
 import * as locations from "@/lib/services/locations";
 import * as smartCollections from "@/lib/services/smart-collections";
 import * as batchBooks from "@/lib/services/batch-books";
+import * as inventory from "@/lib/services/inventory";
 import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { db } from "@/lib/db";
@@ -150,6 +151,58 @@ async function route(request: Request, segments: string[], context: AuthContext)
     const result = await locations.assignCopyLocation(userIdOf(context, params), segments[1], body.locationId);
     if (!result.ok) throw new ApiError(404, "not_found", result.error);
     return json({ data: result.copy });
+  }
+
+  // ------------------------------------------------------------ inventory
+  if (segments[0] === "inventory" && segments[1] === "audits") {
+    const userId = userIdOf(context, params);
+    if (segments.length === 2 && method === "GET") return json({ data: await inventory.listInventoryAudits(userId) });
+    if (segments.length === 2 && method === "POST") {
+      const body = parseBody(
+        z.object({ scopeLocationId: z.string().min(1).nullable().optional() }),
+        await readJson(request),
+      );
+      const result = await inventory.startInventoryAudit(userId, body.scopeLocationId);
+      if (!result.ok) throw new ApiError(404, "inventory_start_failed", result.error);
+      return json({ data: result.audit }, { status: 201 });
+    }
+    if (segments.length === 3 && method === "GET") {
+      const audit = await inventory.getInventoryAudit(userId, segments[2]);
+      if (!audit) throw new ApiError(404, "not_found", "Inventory audit not found");
+      return json({ data: audit });
+    }
+    if (segments.length === 4 && segments[3] === "items" && method === "GET") {
+      const result = await inventory.listInventoryItems(userId, segments[2]);
+      if (!result.ok) throw new ApiError(404, "not_found", "Inventory audit not found");
+      return json({ data: result.items });
+    }
+    if (segments.length === 4 && segments[3] === "items" && method === "POST") {
+      const body = parseBody(
+        z
+          .object({
+            copyId: z.string().min(1).optional(),
+            barcode: z.string().min(1).optional(),
+            source: z.string().max(40).optional(),
+            note: z.string().max(500).optional(),
+          })
+          .refine((value) => value.copyId || value.barcode, "copyId or barcode is required"),
+        await readJson(request),
+      );
+      const result = await inventory.recordInventoryScan(userId, segments[2], body);
+      if (!result.ok)
+        throw new ApiError(
+          result.error === "NOT_FOUND" ? 404 : result.error === "AUDIT_COMPLETED" ? 409 : 404,
+          "inventory_scan_failed",
+          result.error,
+        );
+      return json({ data: result });
+    }
+    if (segments.length === 4 && segments[3] === "complete" && method === "POST") {
+      const result = await inventory.completeInventoryAudit(userId, segments[2]);
+      if (!result.ok)
+        throw new ApiError(result.error === "NOT_FOUND" ? 404 : 409, "inventory_complete_failed", result.error);
+      return json({ data: result.audit });
+    }
   }
 
   // ---------------------------------------------------------------- books
@@ -550,6 +603,8 @@ function requiredScope(method: string, segments: string[]): ApiScope {
     case "health":
       return "books:read";
     case "locations":
+      return write ? "books:write" : "books:read";
+    case "inventory":
       return write ? "books:write" : "books:read";
     case "copies":
       return "books:write";
