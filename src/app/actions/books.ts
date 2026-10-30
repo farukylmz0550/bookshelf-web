@@ -8,6 +8,7 @@
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/session";
 import type { IsbnLookupResult } from "@/lib/isbn";
+import { lookupBooksBatch, createBooksBatch } from "@/lib/services/batch-books";
 import {
   addBookSchema,
   backfillPageCounts as backfillPageCountsService,
@@ -39,6 +40,30 @@ export async function lookupIsbnAction(
     return { ok: true, data: result };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Lookup failed" };
+  }
+}
+
+export async function lookupBooksBatchAction(
+  isbns: string[],
+): Promise<{ ok: true; data: Awaited<ReturnType<typeof lookupBooksBatch>> } | { ok: false; error: string }> {
+  const userId = await requireUserId();
+  try {
+    return { ok: true, data: await lookupBooksBatch(userId, isbns) };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Batch lookup failed" };
+  }
+}
+
+export async function createBooksBatchAction(
+  items: IsbnLookupResult[],
+): Promise<{ ok: true; data: Awaited<ReturnType<typeof createBooksBatch>> } | { ok: false; error: string }> {
+  const userId = await requireUserId();
+  try {
+    const result = await createBooksBatch(userId, items, `ui-${crypto.randomUUID()}`);
+    revalidatePath("/books");
+    return { ok: true, data: result };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Batch add failed" };
   }
 }
 

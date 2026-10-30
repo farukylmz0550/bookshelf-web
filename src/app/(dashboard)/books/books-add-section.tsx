@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { AddBookForm } from "./add-book-form";
 import { DetailedAddForm } from "./detailed-add-form";
+import { BatchIsbnImporter } from "./batch-isbn-importer";
 
 type Dict = {
   isbn: string;
@@ -22,6 +23,16 @@ type Dict = {
   detailedAdd?: string;
   addDetailed?: string;
   orWithAllFields?: string;
+  batchTitle: string;
+  batchHint: string;
+  batchLookup: string;
+  batchAdd: string;
+  batchReady: string;
+  batchDuplicate: string;
+  batchInvalid: string;
+  batchFailed: string;
+  batchEmpty: string;
+  batchAdded: string;
 };
 
 export function BooksAddSection({
@@ -64,6 +75,7 @@ export function BooksAddSection({
         </div>
       )}
       <div className="mt-4">{excel}</div>
+      <BatchIsbnImporter dict={dict} onAdded={onAdded} />
     </div>
   );
 }
