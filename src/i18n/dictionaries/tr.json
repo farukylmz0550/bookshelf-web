@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "Sağlık",
+    "locations": "Konumlar",
     "books": "Kitaplar",
     "people": "Ki\u015filer",
     "lending": "\u00d6d\u00fcn\u00e7",
@@ -135,6 +136,22 @@
     "startBook": "Ba\u015fla",
     "reReadButton": "Yeniden oku",
     "earlyFinishBlocked": "\u00d6nce kalan sayfalar\u0131 oku \u2014 t\u00fcm sayfalar okununca kitap otomatik biter."
+  },
+  "locations": {
+    "title": "Kütüphane konumları",
+    "description": "Oda, raf ve kutularınızı düzenleyin.",
+    "create": "Konum ekle",
+    "newTitle": "Yeni konum",
+    "name": "Ad",
+    "namePlaceholder": "örn. Salon rafı",
+    "kind": "Tür",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "archive": "Arşivle",
+    "empty": "Henüz konum yok.",
+    "copies": "kopya",
+    "error": "Konum kaydedilemedi",
+    "kinds": { "ROOM": "Oda", "SECTION": "Bölüm", "SHELF": "Raf", "BOX": "Kutu" }
   },
   "health": {
     "title": "Kütüphane sağlığı",

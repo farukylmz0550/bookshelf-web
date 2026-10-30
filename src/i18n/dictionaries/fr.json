@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "Santé",
+    "locations": "Emplacements",
     "books": "Livres",
     "people": "Personnes",
     "lending": "Pr\u00eats",
@@ -135,6 +136,22 @@
     "startBook": "Commencer",
     "reReadButton": "Relire",
     "earlyFinishBlocked": "Termine d'abord les pages restantes \u2014 le livre se termine automatiquement quand toutes les pages sont lues."
+  },
+  "locations": {
+    "title": "Emplacements de la bibliothèque",
+    "description": "Organisez vos étagères, pièces et boîtes.",
+    "create": "Ajouter un emplacement",
+    "newTitle": "Nouvel emplacement",
+    "name": "Nom",
+    "namePlaceholder": "ex. Étagère du salon",
+    "kind": "Type",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "archive": "Archiver",
+    "empty": "Aucun emplacement.",
+    "copies": "exemplaires",
+    "error": "Impossible d’enregistrer l’emplacement",
+    "kinds": { "ROOM": "Pièce", "SECTION": "Section", "SHELF": "Étagère", "BOX": "Boîte" }
   },
   "health": {
     "title": "Santé de la bibliothèque",

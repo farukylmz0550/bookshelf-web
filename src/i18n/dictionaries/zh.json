@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "健康检查",
+    "locations": "位置",
     "books": "\u4e66\u7c4d",
     "people": "\u4eba\u7269",
     "lending": "\u501f\u9605",
@@ -135,6 +136,22 @@
     "startBook": "\u5f00\u59cb",
     "reReadButton": "\u91cd\u65b0\u9605\u8bfb",
     "earlyFinishBlocked": "\u8bf7\u5148\u8bfb\u5b8c\u5269\u4f59\u9875\u6570\u2014\u2014\u8bfb\u5b8c\u6240\u6709\u9875\u6570\u540e\u4e66\u7c4d\u4f1a\u81ea\u52a8\u7ed3\u675f\u3002"
+  },
+  "locations": {
+    "title": "图书馆位置",
+    "description": "整理房间、书架和箱子。",
+    "create": "添加位置",
+    "newTitle": "新位置",
+    "name": "名称",
+    "namePlaceholder": "例如：客厅书架",
+    "kind": "类型",
+    "save": "保存",
+    "cancel": "取消",
+    "archive": "归档",
+    "empty": "暂无位置。",
+    "copies": "本",
+    "error": "无法保存位置",
+    "kinds": { "ROOM": "房间", "SECTION": "区域", "SHELF": "书架", "BOX": "箱子" }
   },
   "health": {
     "title": "图书馆健康检查",

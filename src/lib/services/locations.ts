@@ -109,6 +109,29 @@ export async function listBookCopies(userId: string, bookId: string) {
   };
 }
 
+/** Keep active copy rows aligned with the legacy Book.copies compatibility count. */
+export async function syncBookCopies(userId: string, bookId: string, count: number) {
+  const normalizedCount = Math.min(999, Math.max(1, Math.floor(count)));
+  const book = await db.book.findFirst({ where: { id: bookId, userId }, select: { id: true } });
+  if (!book) return { ok: false as const, error: "NOT_FOUND" };
+  const active = await db.bookCopy.findMany({
+    where: { userId, bookId, archivedAt: null },
+    orderBy: { copyNumber: "asc" },
+    select: { id: true, copyNumber: true },
+  });
+  await db.$transaction(async (tx) => {
+    if (active.length < normalizedCount) {
+      for (let copyNumber = active.length + 1; copyNumber <= normalizedCount; copyNumber += 1) {
+        await tx.bookCopy.create({ data: { userId, bookId, copyNumber } });
+      }
+    } else if (active.length > normalizedCount) {
+      const surplus = active.slice(normalizedCount).map((copy) => copy.id);
+      await tx.bookCopy.updateMany({ where: { userId, id: { in: surplus } }, data: { archivedAt: new Date() } });
+    }
+  });
+  return { ok: true as const };
+}
+
 export async function assignCopyLocation(userId: string, copyId: string, locationId: string | null) {
   const copy = await db.bookCopy.findFirst({ where: { id: copyId, userId }, select: { id: true } });
   if (!copy) return { ok: false as const, error: "NOT_FOUND" };

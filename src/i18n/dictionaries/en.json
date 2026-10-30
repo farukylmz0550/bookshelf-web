@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "Health",
+    "locations": "Locations",
     "books": "Books",
     "people": "People",
     "lending": "Lending",
@@ -135,6 +136,22 @@
     "startBook": "Start",
     "reReadButton": "Read again",
     "earlyFinishBlocked": "Finish the remaining pages first \u2014 the book auto-finishes when all pages are read."
+  },
+  "locations": {
+    "title": "Library locations",
+    "description": "Organize your physical shelves, rooms and boxes.",
+    "create": "Add location",
+    "newTitle": "New location",
+    "name": "Name",
+    "namePlaceholder": "e.g. Living room shelf",
+    "kind": "Type",
+    "save": "Save",
+    "cancel": "Cancel",
+    "archive": "Archive",
+    "empty": "No locations yet.",
+    "copies": "copies",
+    "error": "Could not save location",
+    "kinds": { "ROOM": "Room", "SECTION": "Section", "SHELF": "Shelf", "BOX": "Box" }
   },
   "health": {
     "title": "Library health",

@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "Salud",
+    "locations": "Ubicaciones",
     "books": "Libros",
     "people": "Personas",
     "lending": "Pr\u00e9stamos",
@@ -135,6 +136,22 @@
     "startBook": "Empezar",
     "reReadButton": "Leer de nuevo",
     "earlyFinishBlocked": "Termina antes las p\u00e1ginas restantes: el libro se termina solo al leer todas las p\u00e1ginas."
+  },
+  "locations": {
+    "title": "Ubicaciones de la biblioteca",
+    "description": "Organiza tus estantes, habitaciones y cajas.",
+    "create": "Añadir ubicación",
+    "newTitle": "Nueva ubicación",
+    "name": "Nombre",
+    "namePlaceholder": "p. ej. Estante del salón",
+    "kind": "Tipo",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "archive": "Archivar",
+    "empty": "Aún no hay ubicaciones.",
+    "copies": "copias",
+    "error": "No se pudo guardar la ubicación",
+    "kinds": { "ROOM": "Habitación", "SECTION": "Sección", "SHELF": "Estante", "BOX": "Caja" }
   },
   "health": {
     "title": "Salud de la biblioteca",

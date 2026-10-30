@@ -13,6 +13,7 @@ import {
   Users,
   User,
   HeartPulse,
+  MapPinned,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -51,6 +52,7 @@ export default async function MorePage() {
       heading: dict.nav.groupMore,
       items: [
         { href: "/books/health", icon: HeartPulse, label: dict.nav.health },
+        { href: "/locations", icon: MapPinned, label: dict.nav.locations },
         { href: "/achievements", icon: Trophy, label: dict.nav.achievements },
         { href: "/challenges", icon: Flag, label: dict.nav.challenges },
         { href: "/leaderboard", icon: TrendingUp, label: dict.nav.leaderboard },

@@ -207,6 +207,10 @@ export async function createBook(userId: string, input: AddBookInput) {
   try {
     const book = await db.book.create({ data: { userId, ...parsed.data } });
     try {
+      const { syncBookCopies } = await import("./locations");
+      await syncBookCopies(userId, book.id, book.copies);
+    } catch {}
+    try {
       const settings = await getAppConfig();
       await awardXp(userId, settings.xpBookAdded);
     } catch {}
@@ -241,6 +245,12 @@ export async function updateBook(userId: string, bookId: string, data: UpdateBoo
     else update[k] = typeof v === "string" ? v.trim() : v;
   }
   const updated = await db.book.update({ where: { id: bookId }, data: update });
+  if (typeof update.copies === "number") {
+    try {
+      const { syncBookCopies } = await import("./locations");
+      await syncBookCopies(userId, bookId, update.copies);
+    } catch {}
+  }
   return { ok: true as const, book: updated };
 }
 
