@@ -5,7 +5,7 @@
 
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { lookupIsbn, lookupIsbns, type IsbnLookupResult } from "@/lib/isbn";
+import { lookupIsbn, lookupIsbns, lookupBookByTitle, type IsbnLookupResult } from "@/lib/isbn";
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppConfig } from "@/lib/app-config";
 import { getPagesPerReadEventFor } from "@/lib/reading-settings";
@@ -377,44 +377,25 @@ export async function backfillPageCounts(userId: string): Promise<{
   error?: string;
 }> {
   try {
-    const cfg = await getAppConfig();
     const missing = await db.book.findMany({
-      where: { userId, numberOfPages: null, isbn: { not: null } },
-      select: { isbn: true },
+      where: { userId, OR: [{ numberOfPages: null }, { numberOfPages: "" }] },
+      select: { id: true, isbn: true, title: true, author: true },
       orderBy: { addedAt: "asc" },
     });
     const remaining = missing.length;
-    const batchIsbns = [
-      ...new Set(missing.map((b) => (b.isbn as string).replace(/[^0-9Xx]/g, "")).filter((v) => v.length > 0)),
-    ].slice(0, cfg.backfillMaxBatch);
-    if (batchIsbns.length === 0) return { ok: true, filled: 0, notFound: 0, remaining: 0 };
-
-    const pagesByIsbn = new Map<string, string>();
+    if (missing.length === 0) return { ok: true, filled: 0, notFound: 0, remaining: 0 };
     let failed = 0;
-    for (let i = 0; i < batchIsbns.length; i += cfg.backfillChunkSize) {
-      const chunk = batchIsbns.slice(i, i + cfg.backfillChunkSize);
-      const found = await lookupIsbns(chunk).catch(() => [] as IsbnLookupResult[]);
-      let chunkFailures = 0;
-      for (const isbn of chunk) {
-        const hit = found.find((f) => f.isbn === isbn);
-        if (hit?.numberOfPages) pagesByIsbn.set(isbn, hit.numberOfPages);
-        else chunkFailures++;
-      }
-      failed += chunkFailures;
-      if (chunkFailures === chunk.length && chunk.length > 5) break;
-    }
-
-    const rows = await db.book.findMany({
-      where: { userId, numberOfPages: null, isbn: { not: null } },
-      select: { id: true, isbn: true },
-    });
     let filled = 0;
-    for (const row of rows) {
-      const pages = pagesByIsbn.get((row.isbn as string).replace(/[^0-9Xx]/g, ""));
+    for (const row of missing) {
+      const isbn = row.isbn?.replace(/[^0-9Xx]/g, "");
+      const hit = isbn ? await lookupIsbn(isbn).catch(() => null) : await lookupBookByTitle(row.title, row.author).catch(() => null);
+      const pages = hit?.numberOfPages;
       if (!pages) continue;
       const n = parseInt(pages, 10);
-      if (isNaN(n) || n <= 0) continue;
-      await db.book.update({ where: { id: row.id }, data: { numberOfPages: String(n) } });
+      if (isNaN(n) || n <= 0) { failed++; continue; }
+      // Only fill genuinely missing values; never overwrite a user's edit.
+      const updated = await db.book.updateMany({ where: { id: row.id, userId, OR: [{ numberOfPages: null }, { numberOfPages: "" }] }, data: { numberOfPages: String(n) } });
+      if (updated.count === 0) continue;
       filled++;
     }
     return { ok: true, filled, notFound: failed, remaining: Math.max(0, remaining - filled) };

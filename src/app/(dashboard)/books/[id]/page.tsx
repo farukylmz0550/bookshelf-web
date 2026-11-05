@@ -45,6 +45,8 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
     }),
   ]);
   const lentOut = lendings.filter((l) => !l.returnedAt).length;
+  const locationNames = await db.bookCopy.findMany({ where: { userId, bookId: id, archivedAt: null, locationId: { not: null } }, select: { location: { select: { name: true } } } });
+  const locationLabel = [...new Set(locationNames.map((copy) => copy.location?.name).filter(Boolean))].join(", ");
   const memberGroupIds = new Set(memberships.map((m) => m.groupId));
   const memberGroups = groups.filter((g) => memberGroupIds.has(g.id));
 
@@ -74,6 +76,9 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
           {book.author && <p className="text-muted-foreground">{book.author}</p>}
           {book.isbn && <p className="text-sm font-mono text-muted-foreground">{book.isbn}</p>}
           <div className="flex gap-2 text-xs">
+            {locationLabel && (
+              <span className="rounded-[8px] bg-[var(--accent-soft)] px-2 py-1 text-[var(--accent)]">📍 {locationLabel}</span>
+            )}
             {book.status && (
               <span className="rounded-[8px] bg-[var(--secondary)] px-2 py-1 text-[var(--secondary-foreground)]">
                 {(dict.books.status as Record<string, string>)[book.status] ?? book.status}

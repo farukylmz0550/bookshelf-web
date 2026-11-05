@@ -36,6 +36,10 @@ export function BookPersonal({ book, dict }: { book: Book; dict: Record<string, 
     save(() => updateBook(book.id, { currentPage: page }));
   });
 
+  function saveTagsAndNotes() {
+    save(() => updateBook(book.id, { tags: tagsField.value, notes: notesField.value }));
+  }
+
   function onStatusChange(status: "TO_READ" | "READING" | "FINISHED") {
     if (status === "FINISHED") hapticFeedback("medium");
     save(async () => {
@@ -141,7 +145,7 @@ export function BookPersonal({ book, dict }: { book: Book; dict: Record<string, 
             className="flex-1 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
           />
           <button
-            onClick={tagsField.commit}
+            onClick={saveTagsAndNotes}
             disabled={pending}
             className="rounded-[8px] border border-[var(--border)] px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-[var(--accent-soft)] disabled:opacity-50"
           >
@@ -164,13 +168,6 @@ export function BookPersonal({ book, dict }: { book: Book; dict: Record<string, 
           placeholder={dict.notesPlaceholder}
           className="w-full rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
         />
-        <button
-          onClick={notesField.commit}
-          disabled={pending}
-          className="rounded-[8px] bg-[var(--primary)] px-3 py-1.5 text-sm text-[var(--primary-foreground)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50"
-        >
-          {dict.saveNotes}
-        </button>
         {notesField.value && (
           <div className="rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3 text-sm">
             <p className="mb-1 text-xs text-muted-foreground">{dict.preview}</p>

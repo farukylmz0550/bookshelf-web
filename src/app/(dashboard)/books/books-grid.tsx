@@ -56,6 +56,7 @@ export function BooksGrid({
   dict,
   cardDict,
   pagesPerReadEvent,
+  pageMode,
   groups,
   locations,
   headerSlot,
@@ -66,6 +67,7 @@ export function BooksGrid({
   dict: { empty: string; noResults?: string; filter?: { status?: string } } & Record<string, string>;
   cardDict: CardDict;
   pagesPerReadEvent: number;
+  pageMode?: "FIXED" | "VARIABLE";
   groups?: GroupInfo[];
   locations?: { id: string; name: string }[];
   /** v3.14.0 — server-rendered page header (title + count + add dialog) and
@@ -74,6 +76,7 @@ export function BooksGrid({
   headerSlot?: React.ReactNode;
   ctaSlot?: React.ReactNode;
 }) {
+  pageMode = pageMode ?? "FIXED";
   const router = useRouter();
   // v2.7.0 — "start a new book" flow after finishing one
   const [nextBookOpen, setNextBookOpen] = useState(false);
@@ -181,6 +184,7 @@ export function BooksGrid({
                 lentOut={!!lentMap[book.id]}
                 statusLabels={statusLabels}
                 pagesPerReadEvent={pagesPerReadEvent}
+                pageMode={pageMode}
                 groups={groups}
                 dict={{
                   toRead: statusLabels.toRead,

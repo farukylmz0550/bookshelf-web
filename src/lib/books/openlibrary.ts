@@ -123,6 +123,15 @@ export async function fetchBook(isbn: string): Promise<OpenLibraryBook | null> {
   };
 }
 
+export async function searchBook(title: string, author?: string | null): Promise<OpenLibraryBook | null> {
+  const q = encodeURIComponent([title, author].filter(Boolean).join(" "));
+  const data = (await fetchJsonWithRetry(`https://openlibrary.org/search.json?q=${q}&limit=1&fields=title,author_name,number_of_pages_median,isbn`)) as { docs?: Array<Record<string, unknown>> } | null;
+  const row = data?.docs?.[0];
+  if (!row || typeof row.title !== "string") return null;
+  const pages = typeof row.number_of_pages_median === "number" ? String(row.number_of_pages_median) : undefined;
+  return { title: row.title, authors: Array.isArray(row.author_name) ? row.author_name.join(", ") : undefined, numberOfPages: pages };
+}
+
 export async function fetchBooksWithThrottle(isbns: string[]): Promise<OpenLibraryBook[]> {
   const results: OpenLibraryBook[] = [];
   let consecutiveFailures = 0;

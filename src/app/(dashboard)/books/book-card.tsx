@@ -51,6 +51,7 @@ export function BookCard({
   lentOut,
   statusLabels,
   pagesPerReadEvent,
+  pageMode,
   dict,
   groups,
   onFinished,
@@ -59,6 +60,7 @@ export function BookCard({
   lentOut: boolean;
   statusLabels?: StatusLabels;
   pagesPerReadEvent: number;
+  pageMode: "FIXED" | "VARIABLE";
   dict: CardDict;
   groups?: GroupInfo[];
   onFinished?: (title: string) => void;
@@ -106,7 +108,7 @@ export function BookCard({
     hapticFeedback("light");
     // v2.9.6 — books without a page count ask for it first; the count is
     // saved and the reading is logged for that book in the same step.
-    if (!knownPages) {
+    if (pageMode === "VARIABLE" || !knownPages) {
       setPageInput("");
       setPagesPromptOpen(true);
       return;
@@ -130,8 +132,8 @@ export function BookCard({
   }
 
   function confirmPageCount() {
-    const total = parseInt(pageInput, 10);
-    if (isNaN(total) || total < 1) {
+    const entered = parseInt(pageInput, 10);
+    if (isNaN(entered) || entered < 1) {
       setPagePromptError(true);
       return;
     }
@@ -139,6 +141,18 @@ export function BookCard({
     setPagesPromptOpen(false);
     hapticFeedback("light");
     startTransition(async () => {
+      if (pageMode === "VARIABLE") {
+        const amount = knownPages ? Math.min(entered, Math.max(1, pagesLeft ?? entered)) : entered;
+        const res = await logPagesRead(book.id, amount);
+        if (!res.ok) {
+          toast.error(dict.logPagesError);
+          return;
+        }
+        toast.success(res.finished ? dict.bookFinishedToast : dict.logPagesToast.replace("{count}", String(res.logged ?? amount)).replace("{streak}", String(res.streak ?? 0)));
+        router.refresh();
+        return;
+      }
+      const total = entered;
       await updateBook(book.id, { numberOfPages: String(total) });
       const remaining = total - (book.currentPage ?? 0);
       if (remaining > 0) {

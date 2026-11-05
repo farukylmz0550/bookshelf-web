@@ -39,10 +39,12 @@ export type PageLogCtaDict = {
 export function PageLogCta({
   books,
   pagesPerReadEvent,
+  pageMode,
   dict,
 }: {
   books: ReadingBookInfo[];
   pagesPerReadEvent: number;
+  pageMode: "FIXED" | "VARIABLE";
   dict: PageLogCtaDict;
 }) {
   const router = useRouter();
@@ -67,7 +69,7 @@ export function PageLogCta({
 
   function logFor(book: ReadingBookInfo) {
     hapticFeedback("light");
-    if (totalPages(book) === null) {
+    if (pageMode === "VARIABLE" || totalPages(book) === null) {
       setPageInput("");
       setPromptError(false);
       setPickerOpen(false);
@@ -92,8 +94,8 @@ export function PageLogCta({
   }
 
   function confirmPageCount() {
-    const total = parseInt(pageInput, 10);
-    if (isNaN(total) || total < 1 || !promptFor) {
+    const entered = parseInt(pageInput, 10);
+    if (isNaN(entered) || entered < 1 || !promptFor) {
       setPromptError(true);
       return;
     }
@@ -101,6 +103,19 @@ export function PageLogCta({
     setPromptFor(null);
     hapticFeedback("light");
     startTransition(async () => {
+      if (pageMode === "VARIABLE") {
+        const total = totalPages(promptFor);
+        const amount = total === null ? entered : Math.min(entered, Math.max(1, total - (promptFor.currentPage ?? 0)));
+        const res = await logPagesRead(promptFor.id, amount);
+        if (!res.ok) {
+          toast.error(dict.logPagesError);
+          return;
+        }
+        toast.success(res.finished ? dict.bookFinishedToast : dict.logPagesToast.replace("{count}", String(res.logged ?? amount)).replace("{streak}", String(res.streak ?? 0)));
+        router.refresh();
+        return;
+      }
+      const total = entered;
       await updateBook(promptFor.id, { numberOfPages: String(total) });
       const remaining = total - (promptFor.currentPage ?? 0);
       if (remaining > 0) {

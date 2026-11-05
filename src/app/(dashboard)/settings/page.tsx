@@ -12,6 +12,7 @@ import { getAppConfig } from "@/lib/app-config";
 import { getMinPagesPerReadEvent } from "@/lib/reading-settings";
 import { ReadingStepCard } from "@/components/settings/reading-step-card";
 import { AccountCard } from "@/components/settings/account-card";
+import { DeleteAccountCard } from "@/components/settings/delete-account-card";
 
 export default async function SettingsPage() {
   const dict = await getDictionary();
@@ -43,6 +44,7 @@ export default async function SettingsPage() {
       </header>
       <ReadingStepCard
         initialValue={settings.pagesPerReadEvent}
+        initialMode={settings.readingPageMode}
         adminFloor={adminFloor}
         siteDefault={siteConfig.pagesPerReadEvent}
         dict={{
@@ -53,6 +55,9 @@ export default async function SettingsPage() {
           save: dict.facts.save,
           saved: dict.kobo.saved,
           invalid: dict.settings.readingStepInvalid,
+          mode: dict.settings.readingMode,
+          fixed: dict.settings.readingModeFixed,
+          variable: dict.settings.readingModeVariable,
         }}
       />
       {user && (
@@ -65,6 +70,12 @@ export default async function SettingsPage() {
             logoutConfirm: dict.settings.logoutConfirm,
             loggingOut: dict.auth.signingIn,
           }}
+        />
+      )}
+      {user && !user.isAdmin && (
+        <DeleteAccountCard
+          totpEnabled={user.totpEnabled}
+          dict={dict.settings.deleteAccount}
         />
       )}
       <SettingsForm

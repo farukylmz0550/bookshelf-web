@@ -30,6 +30,9 @@ model User {
   longestStreak     Int       @default(0)
   lastActiveDate    DateTime?
   streakShieldCount Int       @default(0)
+  streakShieldBalance Int     @default(0)
+  streakShieldPurchases Int   @default(0)
+  streakShieldRewardLevel Int @default(0)
   createdAt         DateTime  @default(now())
 
   // v2.10.0 — TOTP two-factor auth + forced password change
@@ -325,8 +328,14 @@ model UserSettings {
   // config.yaml pagesPerReadEvent. Clamped by the admin's minPagesPerReadEvent
   // floor (see lib/reading-settings.ts).
   pagesPerReadEvent    Int?
+  readingPageMode      ReadingPageMode @default(FIXED)
 
   @@index([userId])
+}
+
+enum ReadingPageMode {
+  FIXED
+  VARIABLE
 }
 
 model PushSubscription {

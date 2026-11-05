@@ -19,6 +19,7 @@ const MIN = 1;
 const MAX = 1000;
 
 export const DEFAULT_PAGES_PER_READ_EVENT = 20;
+export type ReadingPageMode = "FIXED" | "VARIABLE";
 
 export function clampPages(value: number | null | undefined): number {
   if (value === null || value === undefined) return DEFAULT_PAGES_PER_READ_EVENT;
@@ -59,4 +60,9 @@ export async function getPagesPerReadEventFor(userId: string): Promise<number> {
   ]);
   const floor = await getMinPagesPerReadEvent();
   return resolvePagesPerReadEvent(settings?.pagesPerReadEvent ?? null, floor, config.pagesPerReadEvent);
+}
+
+export async function getReadingPageModeFor(userId: string): Promise<ReadingPageMode> {
+  const settings = await db.userSettings.findUnique({ where: { userId }, select: { readingPageMode: true } });
+  return settings?.readingPageMode === "VARIABLE" ? "VARIABLE" : "FIXED";
 }

@@ -101,7 +101,7 @@ export function isTodayActive(activities: { date: Date }[]): boolean {
 export async function getStreakInfo(userId: string) {
   const user = await db.user.findUnique({
     where: { id: userId },
-    select: { currentStreak: true, longestStreak: true, lastActiveDate: true, streakShieldCount: true, xp: true },
+    select: { currentStreak: true, longestStreak: true, lastActiveDate: true, streakShieldCount: true, streakShieldBalance: true, streakShieldPurchases: true, xp: true },
   });
   if (!user) return null;
 
@@ -111,9 +111,9 @@ export async function getStreakInfo(userId: string) {
     where: { userId_date: { userId, date: today } },
   });
 
-  const cost = calcShieldCost(user.streakShieldCount);
+  const cost = calcShieldCost(user.streakShieldPurchases);
   const canAfford = user.xp >= cost;
-  const canUseShield = !todayActivity && user.currentStreak > 0 && canAfford;
+  const canUseShield = !todayActivity && user.currentStreak > 0 && user.streakShieldBalance > 0;
 
   return {
     currentStreak: user.currentStreak,
@@ -121,8 +121,10 @@ export async function getStreakInfo(userId: string) {
     lastActiveDate: user.lastActiveDate,
     isTodayActive: !!todayActivity,
     shieldCount: user.streakShieldCount,
+    shieldBalance: user.streakShieldBalance,
     shieldCost: cost,
     canUseShield,
+    canPurchaseShield: canAfford,
     xp: user.xp,
   };
 }

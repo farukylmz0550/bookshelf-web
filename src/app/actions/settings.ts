@@ -12,6 +12,7 @@ export type UserSettingsData = {
   weeklyDigest: boolean;
   goalReminders: boolean;
   pagesPerReadEvent: number | null;
+  readingPageMode: "FIXED" | "VARIABLE";
 };
 
 export async function getSettings(): Promise<UserSettingsData> {
@@ -26,6 +27,7 @@ export async function getSettings(): Promise<UserSettingsData> {
       weeklyDigest: false,
       goalReminders: true,
       pagesPerReadEvent: null,
+      readingPageMode: "FIXED",
     };
   }
   return {
@@ -34,7 +36,15 @@ export async function getSettings(): Promise<UserSettingsData> {
     weeklyDigest: settings.weeklyDigest,
     goalReminders: settings.goalReminders,
     pagesPerReadEvent: settings.pagesPerReadEvent ?? null,
+    readingPageMode: settings.readingPageMode === "VARIABLE" ? "VARIABLE" : "FIXED",
   };
+}
+
+export async function updateReadingPageMode(value: "FIXED" | "VARIABLE") {
+  const userId = await requireUserId();
+  await db.userSettings.upsert({ where: { userId }, update: { readingPageMode: value }, create: { userId, readingPageMode: value } });
+  revalidatePath("/settings");
+  revalidatePath("/books");
 }
 
 export async function updateSettings(data: Partial<UserSettingsData>) {

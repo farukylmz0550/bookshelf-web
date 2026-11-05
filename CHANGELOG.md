@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.20.0 — 2026-11-05
+
+### Added
+- Streak shields can be purchased with XP; every tenth level grants one free shield.
+- Fixed and variable page-reading modes can be selected from general settings.
+- Page backfill now covers all empty page-count fields, including title/author lookup when ISBN is absent.
+- Book locations are shown on the book detail header, and category/notes share one save action without overwriting user input.
+- Added a Rust reading-core crate for deterministic page-credit and shield-reward rules.
+
+
 
 ## 3.19.10 — 2026-10-30
 

@@ -66,3 +66,9 @@ export async function lookupIsbns(isbns: string[]): Promise<IsbnLookupResult[]> 
   const results = await Promise.all(isbns.map((isbn) => lookupIsbn(isbn).catch(() => null)));
   return results.filter((r): r is IsbnLookupResult => r !== null);
 }
+
+export async function lookupBookByTitle(title: string, author?: string | null): Promise<IsbnLookupResult | null> {
+  const { searchBook } = await import("./books/openlibrary");
+  const book = await searchBook(title, author);
+  return book?.numberOfPages ? { isbn: "", title: book.title, author: book.authors, numberOfPages: book.numberOfPages } : null;
+}

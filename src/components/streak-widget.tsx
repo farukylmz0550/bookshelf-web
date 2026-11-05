@@ -11,6 +11,8 @@ interface StreakWidgetProps {
   isTodayActive: boolean;
   shieldCost: number;
   canUseShield: boolean;
+  shieldBalance: number;
+  canPurchaseShield: boolean;
   shieldConfirmLabel: string;
 }
 
@@ -21,6 +23,8 @@ export function StreakWidget({
   shieldCost,
   canUseShield,
   shieldConfirmLabel,
+  shieldBalance,
+  canPurchaseShield,
 }: StreakWidgetProps) {
   const [isPending, startTransition] = useTransition();
 
@@ -32,6 +36,13 @@ export function StreakWidget({
       await mod.useStreakShield();
     });
   }, [shieldConfirmLabel]);
+
+  const buyShield = useCallback(() => {
+    startTransition(async () => {
+      const mod = await import("@/app/actions/streak");
+      await mod.purchaseStreakShield();
+    });
+  }, []);
 
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
   const today = new Date().getDay();
@@ -102,6 +113,14 @@ export function StreakWidget({
           Use streak shield ({shieldCost} XP)
         </button>
       )}
+      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+        <span>Shields: {shieldBalance}</span>
+        {canPurchaseShield && (
+          <button onClick={buyShield} disabled={isPending} className="rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-foreground hover:bg-[var(--surface-elevated)]">
+            Buy shield ({shieldCost} XP)
+          </button>
+        )}
+      </div>
     </div>
   );
 }

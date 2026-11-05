@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { getPagesPerReadEventFor } from "@/lib/reading-settings";
+import { getPagesPerReadEventFor, getReadingPageModeFor } from "@/lib/reading-settings";
 import { BooksGrid } from "./books-grid";
 import { ExcelActions } from "./excel-actions";
 import { PageLogCta } from "./page-log-cta";
@@ -12,7 +12,7 @@ import Link from "next/link";
 export default async function BooksPage() {
   const userId = await requireUserId();
   const dict = await getDictionary();
-  const [books, groups, memberships, pagesPerReadEvent, copies] = await Promise.all([
+  const [books, groups, memberships, pagesPerReadEvent, readingPageMode, copies] = await Promise.all([
     db.book.findMany({ where: { userId }, orderBy: { addedAt: "desc" } }),
     db.bookGroup.findMany({
       where: { userId },
@@ -26,6 +26,7 @@ export default async function BooksPage() {
     }),
     // v3.5.1 — per-user "Read N pages" step (user setting → admin floor → site default).
     getPagesPerReadEventFor(userId),
+    getReadingPageModeFor(userId),
     db.bookCopy.findMany({ where: { userId }, select: { bookId: true, locationId: true, archivedAt: true } }),
   ]);
   const groupsByBook = new Map<string, string[]>();
@@ -105,6 +106,7 @@ export default async function BooksPage() {
                 .filter((b) => b.status === "READING")
                 .map((b) => ({ id: b.id, title: b.title, numberOfPages: b.numberOfPages, currentPage: b.currentPage }))}
               pagesPerReadEvent={pagesPerReadEvent}
+              pageMode={readingPageMode}
               dict={{
                 label: dict.books.logPagesButton,
                 logPagesToast: dict.books.logPagesToast,
@@ -129,6 +131,7 @@ export default async function BooksPage() {
           } as never
         }
         pagesPerReadEvent={pagesPerReadEvent}
+        pageMode={readingPageMode}
         groups={groups}
         locations={locations}
         cardDict={{

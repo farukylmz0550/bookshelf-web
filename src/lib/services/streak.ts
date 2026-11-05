@@ -7,7 +7,7 @@
 
 import { db } from "@/lib/db";
 import { calculateStreak, startOfUtcDay } from "@/lib/streak";
-import { calculateFinishXp, shieldCost as calcShieldCost } from "@/lib/gamification-pure";
+import { calculateFinishXp, shieldCost as calcShieldCost, levelForXp } from "@/lib/gamification-pure";
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppConfig } from "@/lib/app-config";
 
@@ -92,12 +92,11 @@ export async function finishBookWithXpFor(userId: string, bookId: string, pages:
 export async function useStreakShieldFor(userId: string): Promise<{ shieldUsed: true; cost: number }> {
   const user = await db.user.findUnique({
     where: { id: userId },
-    select: { xp: true, streakShieldCount: true, currentStreak: true },
+    select: { xp: true, streakShieldCount: true, streakShieldBalance: true, currentStreak: true },
   });
   if (!user) throw new Error("User not found");
 
-  const cost = calcShieldCost(user.streakShieldCount);
-  if (user.xp < cost) throw new Error("Not enough XP");
+  if (user.streakShieldBalance < 1) throw new Error("No streak shield available");
   if (user.currentStreak === 0) throw new Error("No active streak to protect");
 
   const today = startOfUtcDay();
@@ -109,11 +108,32 @@ export async function useStreakShieldFor(userId: string): Promise<{ shieldUsed: 
   await db.$transaction(async (tx) => {
     await tx.user.update({
       where: { id: userId },
-      data: { xp: { decrement: cost }, streakShieldCount: { increment: 1 } },
+      data: { streakShieldBalance: { decrement: 1 } },
     });
     await tx.streakShield.create({ data: { userId } });
     await tx.dailyActivity.create({ data: { userId, date: today, count: 0, pagesRead: 0 } });
   });
 
-  return { shieldUsed: true, cost };
+  return { shieldUsed: true, cost: 0 };
+}
+
+export async function purchaseStreakShieldFor(userId: string) {
+  const user = await db.user.findUnique({ where: { id: userId }, select: { xp: true, streakShieldPurchases: true } });
+  if (!user) throw new Error("User not found");
+  const cost = calcShieldCost(user.streakShieldPurchases);
+  if (user.xp < cost) throw new Error("Not enough XP");
+  await db.user.update({ where: { id: userId }, data: { xp: { decrement: cost }, streakShieldBalance: { increment: 1 }, streakShieldPurchases: { increment: 1 } } });
+  return { purchased: true as const, cost };
+}
+
+export async function syncFreeShieldRewardsFor(userId: string) {
+  const [user, config] = await Promise.all([
+    db.user.findUnique({ where: { id: userId }, select: { xp: true, streakShieldRewardLevel: true } }),
+    getAppConfig(),
+  ]);
+  if (!user) return;
+  const level = levelForXp(user.xp, config.xpPerLevelBase);
+  const target = Math.floor(level / 10);
+  if (target <= user.streakShieldRewardLevel) return;
+  await db.user.update({ where: { id: userId }, data: { streakShieldBalance: { increment: target - user.streakShieldRewardLevel }, streakShieldRewardLevel: target } });
 }

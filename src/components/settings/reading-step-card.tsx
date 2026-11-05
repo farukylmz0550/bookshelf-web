@@ -7,15 +7,17 @@
 // action, matching the other Settings cards.
 
 import { useState, useTransition } from "react";
-import { updatePagesPerReadEvent } from "@/app/actions/settings";
+import { updatePagesPerReadEvent, updateReadingPageMode } from "@/app/actions/settings";
 
 export function ReadingStepCard({
   initialValue,
+  initialMode,
   adminFloor,
   siteDefault,
   dict,
 }: {
   initialValue: number | null;
+  initialMode: "FIXED" | "VARIABLE";
   adminFloor: number;
   siteDefault: number;
   dict: {
@@ -26,11 +28,15 @@ export function ReadingStepCard({
     save: string;
     saved: string;
     invalid: string;
+    mode: string;
+    fixed: string;
+    variable: string;
   };
 }) {
   const [value, setValue] = useState(String(initialValue ?? ""));
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [mode, setMode] = useState<"FIXED" | "VARIABLE">(initialMode);
 
   const effectiveFloor = Math.max(1, adminFloor);
   const min = effectiveFloor;
@@ -53,6 +59,21 @@ export function ReadingStepCard({
     <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-4">
       <p className="font-[var(--font-sans)] text-sm font-medium text-foreground">{dict.title}</p>
       <p className="mt-1 font-[var(--font-sans)] text-sm text-muted-foreground">{dict.desc}</p>
+      <label className="mt-3 block max-w-sm space-y-1 text-sm">
+        <span className="text-muted-foreground">{dict.mode}</span>
+        <select
+          value={mode}
+          onChange={(e) => {
+            const next = e.target.value as "FIXED" | "VARIABLE";
+            setMode(next);
+            void updateReadingPageMode(next);
+          }}
+          className="w-full rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-2 text-foreground"
+        >
+          <option value="FIXED">{dict.fixed}</option>
+          <option value="VARIABLE">{dict.variable}</option>
+        </select>
+      </label>
       <div className="mt-3 flex items-end gap-3">
         <div>
           <label className="mb-1 block font-[var(--font-sans)] text-[11px] font-medium uppercase tracking-widest text-muted-foreground">

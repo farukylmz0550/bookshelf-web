@@ -16,10 +16,12 @@ import { GoalForms } from "./goal-forms";
 import { StreakWidget } from "@/components/streak-widget";
 import { ActivityHeatmap } from "@/components/activity-heatmap";
 import { AnnualSummary } from "./annual-summary";
+import { syncFreeShieldRewardsFor } from "@/lib/services/streak";
 
 export default async function StatsPage({ searchParams }: { searchParams?: Promise<{ year?: string }> }) {
   const userId = await requireUserId();
   const dict = await getDictionary();
+  await syncFreeShieldRewardsFor(userId);
   const theme = await getTheme();
   const locale = await getLocale();
 
@@ -102,6 +104,8 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
           isTodayActive={streakInfo.isTodayActive}
           shieldCost={streakInfo.shieldCost}
           canUseShield={streakInfo.canUseShield}
+          shieldBalance={streakInfo.shieldBalance}
+          canPurchaseShield={streakInfo.canPurchaseShield}
           shieldConfirmLabel={dict.stats.streakShieldConfirm ?? "Use streak protection?"}
         />
       )}
