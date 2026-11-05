@@ -11,20 +11,28 @@ on:
 permissions:
   contents: read
   packages: write
-  actions: read
 
 env:
-  REGISTRY: ghcr.io
+  IMAGE: ghcr.io/farukylmz0550/bookshelf
 
 jobs:
-  build-bookshelf:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+            suffix: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -34,12 +42,30 @@ jobs:
       - uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}
           push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ env.IMAGE }}:${{ inputs.tag }}-${{ matrix.suffix }}
+          cache-from: type=gha,scope=${{ matrix.suffix }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.suffix }}
           provenance: mode=max
           sbom: true
-          tags: |
-            ghcr.io/farukylmz0550/bookshelf:${{ inputs.tag }}
-            ghcr.io/farukylmz0550/bookshelf:latest
+
+  publish-manifest:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish multi-arch manifest
+        run: |
+          docker buildx imagetools create \
+            --tag "${IMAGE}:${{ inputs.tag }}" \
+            --tag "${IMAGE}:latest" \
+            "${IMAGE}:${{ inputs.tag }}-amd64" \
+            "${IMAGE}:${{ inputs.tag }}-arm64"
