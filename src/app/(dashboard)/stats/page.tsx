@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary, getLocale } from "@/i18n/get-dictionary";
 import { getTheme } from "@/lib/theme";
-import { levelProgress, levelName } from "@/lib/gamification";
+import { levelProgress, levelName, syncUserLevelFor } from "@/lib/gamification";
 import { monthlyFinishCounts, formatReadingMinutes } from "@/lib/stats";
 import { finishedInMonth, finishedInYear } from "@/lib/goals";
 import { getStreakInfo } from "@/lib/streak";
@@ -21,6 +21,7 @@ import { syncFreeShieldRewardsFor } from "@/lib/services/streak";
 export default async function StatsPage({ searchParams }: { searchParams?: Promise<{ year?: string }> }) {
   const userId = await requireUserId();
   const dict = await getDictionary();
+  const persistentLevel = await syncUserLevelFor(userId);
   await syncFreeShieldRewardsFor(userId);
   const theme = await getTheme();
   const locale = await getLocale();
@@ -43,7 +44,7 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
 
   const [user, totalBooks, reading, finishedCount, goal, streakInfo, dailyActivities, readEventDates] =
     await Promise.all([
-      db.user.findUniqueOrThrow({ where: { id: userId }, select: { xp: true } }),
+      db.user.findUniqueOrThrow({ where: { id: userId }, select: { xp: true, level: true } }),
       db.book.count({ where: { userId } }),
       db.book.count({ where: { userId, status: "READING" } }),
       db.book.count({ where: { userId, status: "FINISHED" } }),
@@ -66,7 +67,7 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
   const doneYear = finishedInYear(readDates, now.getFullYear());
   const doneMonth = finishedInMonth(readDates, now.getFullYear(), now.getMonth());
 
-  const { level } = levelProgress(user.xp, (await getAppConfig()).xpPerLevelBase);
+  const level = Math.max(persistentLevel, user.level);
   const customLevelName = levelName(level, (await getAppConfig()).xpLevelNames);
   const chartData = monthlyFinishCounts(readDates);
 

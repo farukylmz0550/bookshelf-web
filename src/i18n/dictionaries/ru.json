@@ -423,7 +423,8 @@
     "rank": "\u041c\u0435\u0441\u0442\u043e",
     "name": "\u0418\u043c\u044f",
     "level": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c",
-    "xp": "XP"
+    "xp": "XP",
+    "booksRead": "Books read"
   },
   "profile": {
     "title": "\u041f\u0440\u043e\u0444\u0438\u043b\u044c",

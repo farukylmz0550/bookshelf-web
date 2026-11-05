@@ -128,12 +128,12 @@ export async function purchaseStreakShieldFor(userId: string) {
 
 export async function syncFreeShieldRewardsFor(userId: string) {
   const [user, config] = await Promise.all([
-    db.user.findUnique({ where: { id: userId }, select: { xp: true, streakShieldRewardLevel: true } }),
+    db.user.findUnique({ where: { id: userId }, select: { xp: true, level: true, streakShieldRewardLevel: true } }),
     getAppConfig(),
   ]);
   if (!user) return;
-  const level = levelForXp(user.xp, config.xpPerLevelBase);
+  const level = Math.max(user.level, levelForXp(user.xp, config.xpPerLevelBase));
   const target = Math.floor(level / 10);
   if (target <= user.streakShieldRewardLevel) return;
-  await db.user.update({ where: { id: userId }, data: { streakShieldBalance: { increment: target - user.streakShieldRewardLevel }, streakShieldRewardLevel: target } });
+  await db.user.update({ where: { id: userId }, data: { level, streakShieldBalance: { increment: target - user.streakShieldRewardLevel }, streakShieldRewardLevel: target } });
 }

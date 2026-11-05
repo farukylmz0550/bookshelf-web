@@ -423,7 +423,8 @@
     "rank": "Puesto",
     "name": "Nombre",
     "level": "Nivel",
-    "xp": "XP"
+    "xp": "XP",
+    "booksRead": "Books read"
   },
   "profile": {
     "title": "Perfil",

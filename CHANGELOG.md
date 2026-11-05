@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.20.1 — 2026-11-05
+
+### Changed
+- XP spending no longer lowers a user's level.
+- Leaderboard now shows level and finished books instead of XP.
+
+
 ## 3.20.0 — 2026-11-05
 
 ### Added

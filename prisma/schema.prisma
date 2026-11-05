@@ -25,6 +25,7 @@ model User {
   isAdmin           Boolean   @default(false)
   approved          Boolean   @default(false)
   xp                Int       @default(0)
+  level             Int       @default(1)
   showOnLeaderboard Boolean   @default(true)
   currentStreak     Int       @default(0)
   longestStreak     Int       @default(0)

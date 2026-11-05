@@ -11,8 +11,8 @@ export default async function LeaderboardPage() {
 
   const users = await db.user.findMany({
     where: { showOnLeaderboard: true },
-    select: { id: true, name: true, xp: true },
-    orderBy: { xp: "desc" },
+    select: { id: true, name: true, xp: true, level: true, _count: { select: { books: { where: { status: "FINISHED" } } } } },
+    orderBy: [{ level: "desc" }, { xp: "desc" }],
   });
 
   const config = await getAppConfig();
@@ -24,11 +24,11 @@ export default async function LeaderboardPage() {
           {dict.leaderboard.title}
         </h1>
         <p className="font-[var(--font-sans)] text-sm text-muted-foreground">
-          {dict.leaderboard.rank} · {dict.leaderboard.xp}
+          {dict.leaderboard.rank}
         </p>
       </header>
       <LeaderboardTable
-        users={users}
+        users={users.map((user) => ({ id: user.id, name: user.name, xp: user.xp, level: user.level, booksRead: user._count.books }))}
         currentUserId={userId}
         dict={dict.leaderboard}
         xpPerLevelBase={config.xpPerLevelBase}

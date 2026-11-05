@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { db } from "@/lib/db";
-import { ACHIEVEMENT_XP, currentPeriodKey, evaluateAchievements, periodBounds } from "./gamification-pure";
+import { ACHIEVEMENT_XP, currentPeriodKey, evaluateAchievements, periodBounds, levelForXp } from "./gamification-pure";
+import { getAppConfig } from "./app-config";
 
 export {
   XP_REWARDS,
@@ -19,10 +20,26 @@ export {
 } from "./gamification-pure";
 
 export async function awardXp(userId: string, amount: number) {
+  const [user, config] = await Promise.all([
+    db.user.findUnique({ where: { id: userId }, select: { xp: true, level: true } }),
+    getAppConfig(),
+  ]);
+  if (!user) throw new Error("User not found");
   return db.user.update({
     where: { id: userId },
-    data: { xp: { increment: amount } },
+    data: { xp: { increment: amount }, level: Math.max(user.level, levelForXp(user.xp + amount, config.xpPerLevelBase)) },
   });
+}
+
+export async function syncUserLevelFor(userId: string) {
+  const [user, config] = await Promise.all([
+    db.user.findUnique({ where: { id: userId }, select: { xp: true, level: true } }),
+    getAppConfig(),
+  ]);
+  if (!user) return 1;
+  const level = Math.max(user.level, levelForXp(user.xp, config.xpPerLevelBase));
+  if (level !== user.level) await db.user.update({ where: { id: userId }, data: { level } });
+  return level;
 }
 
 async function collectAchievementStats(userId: string) {

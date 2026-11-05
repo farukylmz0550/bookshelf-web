@@ -423,7 +423,8 @@
     "rank": "S\u0131ra",
     "name": "Ad",
     "level": "Seviye",
-    "xp": "XP"
+    "xp": "XP",
+    "booksRead": "Okunan kitap"
   },
   "profile": {
     "title": "Profil",
