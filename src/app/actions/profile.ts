@@ -11,6 +11,8 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { updateProfileName as updateProfileNameService } from "@/lib/services/users";
+import { checkRateLimit, throttlingEnabled } from "@/lib/rate-limit";
+import { verifyTotpCode } from "@/lib/totp";
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -45,4 +47,40 @@ export async function changePassword(input: { currentPassword: string; newPasswo
     data: { passwordHash, mustChangePassword: false },
   });
   return { ok: true };
+}
+
+/**
+ * Permanently deletes the authenticated user's account and all owned data.
+ * Admin accounts are intentionally not eligible for self-deletion.
+ */
+export async function deleteOwnAccount(input: { password: string; totp?: string }) {
+  const userId = await requireUserId();
+  const parsed = z.object({ password: z.string().min(1), totp: z.string().optional() }).safeParse(input);
+  if (!parsed.success) return { ok: false as const, error: "INVALID_INPUT" };
+
+  if (throttlingEnabled() && !checkRateLimit(`account-delete:${userId}`, { max: 5, windowMs: 5 * 60 * 1000 })) {
+    return { ok: false as const, error: "RATE_LIMITED" };
+  }
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { passwordHash: true, isAdmin: true, totpEnabled: true, totpSecret: true },
+  });
+  if (!user) return { ok: false as const, error: "NOT_FOUND" };
+  if (user.isAdmin) return { ok: false as const, error: "ADMIN_CANNOT_DELETE" };
+  if (!(await bcrypt.compare(parsed.data.password, user.passwordHash))) {
+    return { ok: false as const, error: "INVALID_PASSWORD" };
+  }
+  if (user.totpEnabled) {
+    if (!user.totpSecret || verifyTotpCode(user.totpSecret, parsed.data.totp ?? "") !== "VALID") {
+      return { ok: false as const, error: "INVALID_TOTP" };
+    }
+  }
+
+  // Push subscriptions do not have a cascading relation in older databases.
+  await db.$transaction(async (tx) => {
+    await tx.pushSubscription.deleteMany({ where: { userId } });
+    await tx.user.delete({ where: { id: userId } });
+  });
+  return { ok: true as const };
 }

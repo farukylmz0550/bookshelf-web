@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.20.3 — 2026-11-05
+
+### Fixed
+- Include the account deletion action required by the settings UI so production Docker builds complete.
+
 ## 3.20.2 — 2026-11-05
 
 ### Fixed

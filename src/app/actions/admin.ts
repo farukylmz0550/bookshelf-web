@@ -90,6 +90,7 @@ export async function deleteUser(userId: string) {
       const adminCount = await tx.user.count({ where: { isAdmin: true } });
       if (adminCount <= 1) throw new Error("Cannot delete the last admin");
     }
+    await tx.pushSubscription.deleteMany({ where: { userId } });
     await tx.user.delete({ where: { id: userId } });
   });
   return { ok: true };
