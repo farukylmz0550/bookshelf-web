@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.20.2 — 2026-11-05
+
+### Fixed
+- Multi-architecture Docker releases now use the requested release tag instead of a hardcoded image tag.
+
 ## 3.20.1 — 2026-11-05
 
 ### Changed
