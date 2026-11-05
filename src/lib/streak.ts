@@ -2,6 +2,39 @@
 import { db } from "@/lib/db";
 import { shieldCost as calcShieldCost } from "./gamification-pure";
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Automatically spend one shield after exactly one missed UTC day. */
+async function autoUseStreakShieldFor(userId: string): Promise<boolean> {
+  const today = startOfUtcDay();
+  const yesterday = new Date(today.getTime() - DAY_MS);
+
+  return db.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({
+      where: { id: userId },
+      select: { currentStreak: true, longestStreak: true, lastActiveDate: true, streakShieldBalance: true },
+    });
+    if (!user || user.currentStreak < 1 || user.streakShieldBalance < 1 || !user.lastActiveDate) return false;
+    if (startOfUtcDay(user.lastActiveDate).getTime() !== yesterday.getTime()) return false;
+    const todayActivity = await tx.dailyActivity.findUnique({ where: { userId_date: { userId, date: today } } });
+    if (todayActivity) return false;
+
+    const nextStreak = user.currentStreak + 1;
+    await tx.user.update({
+      where: { id: userId },
+      data: {
+        streakShieldBalance: { decrement: 1 },
+        currentStreak: nextStreak,
+        longestStreak: Math.max(user.longestStreak, nextStreak),
+        lastActiveDate: today,
+      },
+    });
+    await tx.streakShield.create({ data: { userId } });
+    await tx.dailyActivity.create({ data: { userId, date: today, count: 0, pagesRead: 0 } });
+    return true;
+  });
+}
+
 /** Start of the current UTC day — day boundaries are timezone-independent (UTC). */
 export function startOfUtcDay(date: Date = new Date()): Date {
   const d = new Date(date.getTime() - date.getUTCMilliseconds());
@@ -99,6 +132,7 @@ export function isTodayActive(activities: { date: Date }[]): boolean {
 
 /** Get streak info for a user. */
 export async function getStreakInfo(userId: string) {
+  await autoUseStreakShieldFor(userId);
   const user = await db.user.findUnique({
     where: { id: userId },
     select: { currentStreak: true, longestStreak: true, lastActiveDate: true, streakShieldCount: true, streakShieldBalance: true, streakShieldPurchases: true, xp: true },
@@ -120,6 +154,7 @@ export async function getStreakInfo(userId: string) {
     longestStreak: user.longestStreak,
     lastActiveDate: user.lastActiveDate,
     isTodayActive: !!todayActivity,
+    isTodayShielded: todayActivity?.count === 0,
     shieldCount: user.streakShieldCount,
     shieldBalance: user.streakShieldBalance,
     shieldCost: cost,

@@ -54,7 +54,6 @@ export async function recordActivityFor(userId: string, pagesRead?: number, minu
   });
   return { current, longest };
 }
-
 /** Award finish XP + activity for an already-FINISHED book. Returns XP (0 = no-op). */
 export async function finishBookWithXpFor(userId: string, bookId: string, pages: number | null): Promise<number> {
   const book = await db.book.findFirst({

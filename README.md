@@ -1,5 +1,3 @@
-<h2 align="center">This Project Is Made Entirely With AI!</h2>
-
 <div align="center">
 
 <img src="public/icon.svg" width="80" height="80" alt="Book Shelf" />
@@ -23,6 +21,12 @@
 
 ---
 
+**AI-Generated Project Disclosure**
+
+All application code, visuals, and other assets in this project, excluding third-party components, were created using artificial intelligence.
+
+The original concept, creative direction, project management, and development decisions are human-led.
+
 > **Book Shelf** — Personal digital library experience. Track your books, lending history, goals and stats in a **warm, calm, timeless** interface. With Duolingo-style gamification.
 
 ---
@@ -40,7 +44,7 @@
 | 🤝 **Lending** | Lend / return, copy-aware · borrower picked from your People via dropdown — people are created on `/people` only (v3.5.1) |
 | 👥 **People** | Trust scores + lending history |
 | 📊 **Stats** | Total/finished/reading, avg days, monthly chart, streak widget, heatmap |
-| 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level (+ optional custom level names via `config.yaml`, v3.1.0) · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge · device reading-time write-back (Kobo minutes → Stats tile + heatmap tooltips) |
+| 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level (+ optional custom level names via `config.yaml`, v3.1.0) · streak shields are purchased with XP and automatically consumed after one missed reading day · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge · device reading-time write-back (Kobo minutes → Stats tile + heatmap tooltips) |
 | 🏆 **Leaderboard** | Top ranking, opt-out |
 | 🎯 **Goals** | Yearly / monthly targets |
 | 🏁 **Challenges** *(v3.3.0)* | Seasonal reading challenges — custom window + target, read-event progress, exactly-once completion XP (`/challenges`) |
@@ -492,9 +496,3 @@ Every technology Book Shelf is built on, linked together with its original licen
 **[⬆ back to top](#book-shelf)**
 
 </div>
-
-### Integrations (v3.16.0)
-
-- **REST API**: token-authenticated v1 at `/api/v1` with scopes and OpenAPI (`/api/v1/openapi.json`). Create tokens in **Settings → API Tokens**.
-- **MCP**: remote Streamable HTTP at `/api/mcp` using the same personal tokens.
-- **Extensions**: install theme/UI/server packages as ZIPs from **Settings → Extensions** or **Admin → Extensions**. Server extensions are declarative only (HTTP providers + webhooks + cron).

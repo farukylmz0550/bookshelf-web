@@ -119,7 +119,7 @@ User ──────┬── Book ──────── LendingRecord
 
 | Model | Key Fields |
 |-------|------------|
-| **User** | email, passwordHash, name, isAdmin, approved, xp, currentStreak, longestStreak, lastActiveDate, streakShieldCount |
+| **User** | email, passwordHash, name, isAdmin, approved, xp, currentStreak, longestStreak, lastActiveDate, streakShieldCount, streakShieldBalance, streakShieldPurchases, streakShieldRewardLevel |
 | **Book** | isbn, title, author, coverUrl, status, rating, tags, copies, subtitle, publishers, publishDate, publishPlaces, numberOfPages, languages, isbn10/13, subjects, 17 legacy fields |
 | **Person** | name (unique per user); created on /people only (v3.5.1: lending takes a personId, no auto-create) |
 | **LendingRecord** | book, borrower, lentAt, returnedAt, denormalized bookTitle, personId |
@@ -206,6 +206,11 @@ npm run format:check  # prettier
 ---
 
 ## 9. Important Commit History (Web Rewrite)
+
+### Current behavior notes
+
+- **Automatic streak protection:** when a user has an active streak, has not recorded reading for exactly the previous UTC day, and owns an available shield, the next streak-info request atomically consumes one shield and creates a synthetic protected activity for the current day. Repeated requests are idempotent. The streak widget no longer exposes a manual shield-use button; shield purchasing remains available from the widget/Market.
+- **Metadata repair:** Settings scans books through Open Library for missing metadata. The Turkish action label is **“Eksik bilgileri tanımla”** (“Identify missing information”), reflecting that the operation can fill more than page counts.
 
 | Date | Commit | Description |
 |-------|--------|----------|

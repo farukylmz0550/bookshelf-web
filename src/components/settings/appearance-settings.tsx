@@ -24,6 +24,9 @@ const LOCALES: { value: Locale; label: string }[] = [
   { value: "ru", label: "Русский" },
   { value: "zh", label: "中文" },
   { value: "ar", label: "العربية" },
+  { value: "de", label: "Deutsch" },
+  { value: "it", label: "Italiano" },
+  { value: "pt", label: "Português" },
 ];
 
 export function AppearanceSettings({

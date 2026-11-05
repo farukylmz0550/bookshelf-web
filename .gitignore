@@ -70,5 +70,11 @@ prisma/*.db-journal
 
 # rust
 crates/*/target/
+rust/reading_core/target/
+
+# local Docker/build scratch files
+Dockerfile.bak
+prisma/*.db-shm
+prisma/*.db-wal
 
 *.webm

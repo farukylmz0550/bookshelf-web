@@ -18,7 +18,7 @@ import {
   User,
   Settings,
   Shield,
-  HeartPulse,
+  ShoppingBag,
   MapPinned,
   ClipboardCheck,
   PanelLeftClose,
@@ -52,7 +52,7 @@ const EXPLORE_NAV: NavItem[] = [
 ];
 
 const MORE_NAV: NavItem[] = [
-  { href: "/books/health", label: "health", icon: HeartPulse },
+  { href: "/market", label: "market", icon: ShoppingBag },
   { href: "/locations", label: "locations", icon: MapPinned },
   { href: "/inventory", label: "inventory", icon: ClipboardCheck },
   { href: "/achievements", label: "achievements", icon: Trophy },

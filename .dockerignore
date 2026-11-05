@@ -1,4 +1,10 @@
-node_modules
-.next
 .git
-.env
+.github
+.next
+node_modules
+rust/reading_core/target
+prisma/*.db
+prisma/*.db-shm
+prisma/*.db-wal
+Dockerfile.bak
+*.log

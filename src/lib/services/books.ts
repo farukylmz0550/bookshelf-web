@@ -11,6 +11,7 @@ import { getAppConfig } from "@/lib/app-config";
 import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { defaultFilters, arrange, type Filters } from "@/lib/books/filters";
 import { recordActivityFor, finishBookWithXpFor } from "./streak";
+import { queueOpenLibrarySubmission } from "./openlibrary-submissions";
 
 export const bookStatusSchema = z.enum(["TO_READ", "READING", "FINISHED"]);
 export type BookStatusValue = z.infer<typeof bookStatusSchema>;
@@ -206,6 +207,19 @@ export async function createBook(userId: string, input: AddBookInput) {
   }
   try {
     const book = await db.book.create({ data: { userId, ...parsed.data } });
+    // Manual entries that cannot be matched are retained locally and queued
+    // for a future authenticated Open Library submission worker.
+    const isbn = parsed.data.isbn?.replace(/[^0-9Xx]/g, "");
+    const found = isbn
+      ? await lookupIsbn(isbn).catch(() => null)
+      : await lookupBookByTitle(parsed.data.title, parsed.data.author).catch(() => null);
+    if (!found) {
+      await queueOpenLibrarySubmission(book.id, {
+        ...parsed.data,
+        source: "manual",
+        createdAt: new Date().toISOString(),
+      }).catch(() => {});
+    }
     try {
       const { syncBookCopies } = await import("./locations");
       await syncBookCopies(userId, book.id, book.copies);
@@ -378,7 +392,27 @@ export async function backfillPageCounts(userId: string): Promise<{
 }> {
   try {
     const missing = await db.book.findMany({
-      where: { userId, OR: [{ numberOfPages: null }, { numberOfPages: "" }] },
+      where: {
+        userId,
+        OR: [
+          { author: null },
+          { author: "" },
+          { coverUrl: null },
+          { coverUrl: "" },
+          { numberOfPages: null },
+          { numberOfPages: "" },
+          { publishers: null },
+          { publishers: "" },
+          { publishDate: null },
+          { publishDate: "" },
+          { subjects: null },
+          { subjects: "" },
+          { isbn10: null },
+          { isbn10: "" },
+          { isbn13: null },
+          { isbn13: "" },
+        ],
+      },
       select: { id: true, isbn: true, title: true, author: true },
       orderBy: { addedAt: "asc" },
     });
@@ -388,13 +422,33 @@ export async function backfillPageCounts(userId: string): Promise<{
     let filled = 0;
     for (const row of missing) {
       const isbn = row.isbn?.replace(/[^0-9Xx]/g, "");
-      const hit = isbn ? await lookupIsbn(isbn).catch(() => null) : await lookupBookByTitle(row.title, row.author).catch(() => null);
-      const pages = hit?.numberOfPages;
-      if (!pages) continue;
-      const n = parseInt(pages, 10);
-      if (isNaN(n) || n <= 0) { failed++; continue; }
+      const hit = isbn
+        ? await lookupIsbn(isbn).catch(() => null)
+        : await lookupBookByTitle(row.title, row.author).catch(() => null);
+      if (!hit) {
+        failed++;
+        continue;
+      }
+      const current = await db.book.findFirst({ where: { id: row.id, userId } });
+      if (!current) continue;
+      const data = Object.fromEntries(
+        Object.entries({
+          author: hit.author,
+          coverUrl: hit.coverUrl,
+          numberOfPages: hit.numberOfPages,
+          publishers: hit.publishers,
+          publishDate: hit.publishDate,
+          subjects: hit.subjects,
+          isbn10: hit.isbn10,
+          isbn13: hit.isbn13,
+        }).filter(
+          ([key, value]) =>
+            value && (!current[key as keyof typeof current] || current[key as keyof typeof current] === ""),
+        ),
+      );
+      if (Object.keys(data).length === 0) continue;
       // Only fill genuinely missing values; never overwrite a user's edit.
-      const updated = await db.book.updateMany({ where: { id: row.id, userId, OR: [{ numberOfPages: null }, { numberOfPages: "" }] }, data: { numberOfPages: String(n) } });
+      const updated = await db.book.updateMany({ where: { id: row.id, userId }, data });
       if (updated.count === 0) continue;
       filled++;
     }

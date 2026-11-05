@@ -70,5 +70,18 @@ export async function lookupIsbns(isbns: string[]): Promise<IsbnLookupResult[]> 
 export async function lookupBookByTitle(title: string, author?: string | null): Promise<IsbnLookupResult | null> {
   const { searchBook } = await import("./books/openlibrary");
   const book = await searchBook(title, author);
-  return book?.numberOfPages ? { isbn: "", title: book.title, author: book.authors, numberOfPages: book.numberOfPages } : null;
+  return book
+    ? {
+        isbn: "",
+        title: book.title,
+        author: book.authors,
+        numberOfPages: book.numberOfPages,
+        publishers: book.publishers,
+        publishDate: book.publishDate,
+        subjects: book.subjects,
+        isbn10: book.isbn10,
+        isbn13: book.isbn13,
+        coverUrl: book.coverUrl,
+      }
+    : null;
 }

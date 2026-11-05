@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "Salud",
+    "market": "Mercado",
     "locations": "Ubicaciones",
     "inventory": "Inventario",
     "books": "Libros",
@@ -209,6 +210,18 @@
       "review_duplicate": "Revisar duplicado",
       "review_book": "Revisar libro"
     }
+  },
+  "market": {
+    "title": "Mercado",
+    "description": "Canjea XP por recompensas que protegen tu racha.",
+    "shield": "Protección de racha",
+    "shieldDescription": "Protege tu racha cuando te saltas un día.",
+    "inventory": "En inventario",
+    "buy": "Comprar por {cost} XP",
+    "buying": "Comprando…",
+    "success": "Protección de racha comprada",
+    "insufficientXp": "No tienes suficiente XP para este artículo.",
+    "buyMore": "Compra más en Mercado"
   },
   "facts": {
     "title": "T\u00edtulo *",
@@ -584,9 +597,9 @@
   },
   "settings": {
     "goalReminders": "Recordatorios de progreso de objetivos",
-    "pageBackfillTitle": "Relleno de p\u00e1ginas",
-    "pageBackfillDesc": "Busca en Open Library los libros sin n\u00famero de p\u00e1ginas y rellena las que falten (solo libros con ISBN). Vuelve a pulsar mientras queden libros.",
-    "pageBackfillRun": "Rellenar p\u00e1ginas que faltan",
+    "pageBackfillTitle": "Completar metadatos faltantes",
+    "pageBackfillDesc": "Busca tus libros en Open Library y completa p\u00e1ginas, autores, editoriales, fechas, temas, ISBN y portadas faltantes.",
+    "pageBackfillRun": "Completar p\u00e1ginas faltantes",
     "pageBackfillRunning": "Buscando\u2026",
     "pageBackfillDone": "A\u00f1adido a {filled} libros \u00b7 {missing} no encontrados",
     "readingStepTitle": "Paso de lectura",

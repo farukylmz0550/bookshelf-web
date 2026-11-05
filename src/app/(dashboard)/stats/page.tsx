@@ -104,10 +104,10 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
           longestStreak={streakInfo.longestStreak}
           isTodayActive={streakInfo.isTodayActive}
           shieldCost={streakInfo.shieldCost}
-          canUseShield={streakInfo.canUseShield}
+          isTodayShielded={streakInfo.isTodayShielded}
           shieldBalance={streakInfo.shieldBalance}
           canPurchaseShield={streakInfo.canPurchaseShield}
-          shieldConfirmLabel={dict.stats.streakShieldConfirm ?? "Use streak protection?"}
+          buyMoreLabel={dict.market.buyMore}
         />
       )}
 

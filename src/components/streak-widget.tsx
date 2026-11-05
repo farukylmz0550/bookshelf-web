@@ -3,17 +3,16 @@
 
 import { useTransition, useCallback } from "react";
 import { Flame, Shield } from "lucide-react";
-import { hapticFeedback } from "@/lib/haptic";
 
 interface StreakWidgetProps {
   currentStreak: number;
   longestStreak: number;
   isTodayActive: boolean;
   shieldCost: number;
-  canUseShield: boolean;
+  isTodayShielded: boolean;
   shieldBalance: number;
   canPurchaseShield: boolean;
-  shieldConfirmLabel: string;
+  buyMoreLabel: string;
 }
 
 export function StreakWidget({
@@ -21,21 +20,12 @@ export function StreakWidget({
   longestStreak,
   isTodayActive,
   shieldCost,
-  canUseShield,
-  shieldConfirmLabel,
+  isTodayShielded,
   shieldBalance,
   canPurchaseShield,
+  buyMoreLabel,
 }: StreakWidgetProps) {
   const [isPending, startTransition] = useTransition();
-
-  const handleUseShield = useCallback(() => {
-    if (!confirm(shieldConfirmLabel)) return;
-    hapticFeedback("heavy");
-    startTransition(async () => {
-      const mod = await import("@/app/actions/streak");
-      await mod.useStreakShield();
-    });
-  }, [shieldConfirmLabel]);
 
   const buyShield = useCallback(() => {
     startTransition(async () => {
@@ -96,30 +86,29 @@ export function StreakWidget({
       </div>
 
       <div className="mt-3 text-center text-xs">
-        {isTodayActive ? (
+        {isTodayShielded ? (
+          <span className="flex items-center justify-center gap-1 font-medium text-[var(--warning-text)]">
+            <Shield size={12} /> Streak protected today
+          </span>
+        ) : isTodayActive ? (
           <span className="font-medium text-[var(--success)]">Read today!</span>
         ) : (
           <span className="text-[var(--error-text)]">Not read today</span>
         )}
       </div>
 
-      {canUseShield && (
-        <button
-          onClick={handleUseShield}
-          disabled={isPending}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--warning-soft)] px-3 py-2.5 text-xs font-medium text-[var(--warning-text)] transition-colors hover:bg-[var(--warning-soft)]/70 disabled:opacity-50"
-        >
-          <Shield size={14} />
-          Use streak shield ({shieldCost} XP)
-        </button>
-      )}
       <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <span>Shields: {shieldBalance}</span>
         {canPurchaseShield && (
-          <button onClick={buyShield} disabled={isPending} className="rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-foreground hover:bg-[var(--surface-elevated)]">
+          <button
+            onClick={buyShield}
+            disabled={isPending}
+            className="rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-foreground hover:bg-[var(--surface-elevated)] disabled:opacity-50"
+          >
             Buy shield ({shieldCost} XP)
           </button>
         )}
+        {!canPurchaseShield && <span>{buyMoreLabel}</span>}
       </div>
     </div>
   );

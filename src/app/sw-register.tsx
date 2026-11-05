@@ -17,13 +17,24 @@ function urlBase64ToUint8Array(base64String: string): BufferSource {
 
 async function subscribeToPush(reg: ServiceWorkerRegistration, vapidPublicKey: string): Promise<void> {
   try {
-    const existing = await reg.pushManager.getSubscription();
+    let existing = await reg.pushManager.getSubscription();
+    // A subscription is bound to the VAPID application server key. If the
+    // deployment rotates keys, reusing the old browser subscription makes all
+    // scheduled sends fail with an invalid VAPID signature.
+    const storageKey = "bookshelf-vapid-public-key";
+    const previousKey = window.localStorage.getItem(storageKey);
+    if (existing && previousKey && previousKey !== vapidPublicKey) {
+      await existing.unsubscribe();
+      existing = null;
+    }
     const subscription =
       existing ??
       (await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
       }));
+
+    window.localStorage.setItem(storageKey, vapidPublicKey);
 
     await fetch("/api/push/subscribe", {
       method: "POST",

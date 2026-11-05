@@ -6,7 +6,7 @@ on:
       tag:
         description: "Tag"
         required: true
-        default: "v3.20.2"
+        default: "v3.21.0"
 
 permissions:
   contents: read
@@ -36,6 +36,10 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: mode=max
+          sbom: true
           tags: |
             ghcr.io/farukylmz0550/bookshelf:${{ inputs.tag }}
             ghcr.io/farukylmz0550/bookshelf:latest

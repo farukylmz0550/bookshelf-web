@@ -1,5 +1,6 @@
-FROM --platform=$BUILDPLATFORM node:22-slim AS base
-ARG TARGETARCH
+# Keep dependency installation on the target platform. Native packages such as
+# better-sqlite3 and Prisma's generated engines must match the image's CPU.
+FROM node:22-slim AS base
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./

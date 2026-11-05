@@ -157,7 +157,7 @@ All counters are in-memory: restarting the container clears them.
 
 ### "Something went wrong" full-page error
 
-Some server actions throw instead of returning a structured error (notably the **lending form** and the streak-shield widget). The Next.js error screen shows the raw message plus a **Try again** button — reloading the page is always safe; failed actions did not partially commit anything user-visible.
+Some server actions throw instead of returning a structured error (notably the **lending form** and streak-protection operations). The streak widget no longer has a manual “use shield” action: when exactly one UTC reading day was missed, an available shield is consumed automatically on the next streak-info request. The Next.js error screen shows the raw message plus a **Try again** button — reloading the page is always safe; failed actions did not partially commit anything user-visible.
 
 ### "Page not found" for a valid-looking URL
 

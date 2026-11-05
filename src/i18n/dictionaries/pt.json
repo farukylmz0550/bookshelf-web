@@ -1,0 +1,28 @@
+{
+  "nav": { "health": "Biblioteca", "market": "Loja", "books": "Livros", "settings": "Definições", "more": "Mais", "stats": "Estatísticas", "groups": "Estantes", "lending": "Empréstimos" },
+  "theme": { "light": "Claro", "dark": "Escuro", "system": "Sistema" },
+  "market": {
+    "title": "Loja",
+    "description": "Troca XP por recompensas que protegem a tua sequência de leitura.",
+    "shield": "Proteção da sequência",
+    "shieldDescription": "Protege a tua sequência quando falhas um dia.",
+    "inventory": "Em stock",
+    "buy": "Comprar por {cost} XP",
+    "buying": "A comprar…",
+    "success": "Proteção da sequência comprada",
+    "insufficientXp": "Não tens XP suficiente para este item.",
+    "buyMore": "Comprar mais na Loja"
+  },
+  "settings": {
+    "pageBackfillTitle": "Completar metadados em falta",
+    "pageBackfillDesc": "Procura os teus livros na Open Library e completa páginas, autores, editoras, datas, assuntos, ISBN e capas em falta.",
+    "pageBackfillRun": "Completar páginas em falta",
+    "pageBackfillRunning": "A procurar…",
+    "pageBackfillDone": "Adicionado a {filled} livros · {missing} não encontrado(s)"
+  },
+  "notify": {
+    "goalMonthStart": "Começou um novo mês. O teu objetivo de leitura este mês é de {target} livros.",
+    "goalProgressMid": "Leste {count} livros este mês. Estás a {percent}% do teu objetivo.",
+    "goalProgressFinal": "Faltam {remaining} livros para atingir o teu objetivo."
+  }
+}
