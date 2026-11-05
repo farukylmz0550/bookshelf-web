@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "健康检查",
+    "market": "商店",
     "locations": "位置",
     "inventory": "盘点",
     "books": "\u4e66\u7c4d",
@@ -209,6 +210,18 @@
       "review_duplicate": "检查重复项",
       "review_book": "检查书籍"
     }
+  },
+  "market": {
+    "title": "商店",
+    "description": "用 XP 兑换保护阅读连胜的奖励。",
+    "shield": "连胜保护",
+    "shieldDescription": "错过一天时保护你的连胜记录。",
+    "inventory": "库存",
+    "buy": "用 {cost} XP 购买",
+    "buying": "购买中…",
+    "success": "已购买连胜保护",
+    "insufficientXp": "XP 不足，无法购买此物品。",
+    "buyMore": "在商店购买更多"
   },
   "facts": {
     "title": "\u6807\u9898 *",
@@ -584,8 +597,8 @@
   },
   "settings": {
     "goalReminders": "\u76ee\u6807\u8fdb\u5ea6\u63d0\u9192",
-    "pageBackfillTitle": "\u9875\u6570\u56de\u586b",
-    "pageBackfillDesc": "\u5728 Open Library \u4e0a\u67e5\u627e\u6ca1\u6709\u9875\u6570\u7684\u56fe\u4e66\u5e76\u8865\u5168\u7f3a\u5931\u9875\u6570\uff08\u4ec5\u9650\u6709 ISBN \u7684\u56fe\u4e66\uff09\u3002\u4ecd\u6709\u56fe\u4e66\u65f6\u53ef\u4ee5\u518d\u6b21\u70b9\u51fb\u3002",
+    "pageBackfillTitle": "\u8865\u5168\u7f3a\u5931\u5143\u6570\u636e",
+    "pageBackfillDesc": "\u5728 Open Library \u4e2d\u67e5\u627e\u4f60\u7684\u56fe\u4e66\uff0c\u8865\u5168\u7f3a\u5931\u7684\u9875\u6570\u3001\u4f5c\u8005\u3001\u51fa\u7248\u793e\u3001\u65e5\u671f\u3001\u4e3b\u9898\u3001ISBN \u548c\u5c01\u9762\u3002",
     "pageBackfillRun": "\u8865\u5168\u7f3a\u5931\u9875\u6570",
     "pageBackfillRunning": "\u67e5\u8be2\u4e2d\u2026",
     "pageBackfillDone": "\u5df2\u4e3a {filled} \u672c\u56fe\u4e66\u6dfb\u52a0 \u00b7 {missing} \u672c\u672a\u627e\u5230",

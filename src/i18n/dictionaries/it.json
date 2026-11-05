@@ -1,0 +1,28 @@
+{
+  "nav": { "health": "Biblioteca", "market": "Negozio", "books": "Libri", "settings": "Impostazioni", "more": "Altro", "stats": "Statistiche", "groups": "Scaffali", "lending": "Prestiti" },
+  "theme": { "light": "Chiaro", "dark": "Scuro", "system": "Sistema" },
+  "market": {
+    "title": "Negozio",
+    "description": "Scambia XP con ricompense che proteggono la tua serie di lettura.",
+    "shield": "Protezione della serie",
+    "shieldDescription": "Protegge la serie quando salti un giorno.",
+    "inventory": "Disponibili",
+    "buy": "Acquista per {cost} XP",
+    "buying": "Acquisto…",
+    "success": "Protezione della serie acquistata",
+    "insufficientXp": "Non hai abbastanza XP per questo oggetto.",
+    "buyMore": "Acquista altro nel Negozio"
+  },
+  "settings": {
+    "pageBackfillTitle": "Completa i metadati mancanti",
+    "pageBackfillDesc": "Cerca i tuoi libri su Open Library e completa pagine, autori, editori, date, soggetti, ISBN e copertine mancanti.",
+    "pageBackfillRun": "Completa le pagine mancanti",
+    "pageBackfillRunning": "Ricerca…",
+    "pageBackfillDone": "Aggiornati {filled} libri · {missing} non trovati"
+  },
+  "notify": {
+    "goalMonthStart": "È iniziato un nuovo mese. Il tuo obiettivo di lettura è di {target} libri.",
+    "goalProgressMid": "Hai letto {count} libri questo mese. Sei al {percent}% del tuo obiettivo.",
+    "goalProgressFinal": "Mancano {remaining} libri al tuo obiettivo."
+  }
+}

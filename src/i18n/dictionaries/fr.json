@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "Santé",
+    "market": "Boutique",
     "locations": "Emplacements",
     "inventory": "Inventaire",
     "books": "Livres",
@@ -209,6 +210,18 @@
       "review_duplicate": "Vérifier le doublon",
       "review_book": "Vérifier le livre"
     }
+  },
+  "market": {
+    "title": "Boutique",
+    "description": "Échangez vos XP contre des récompenses qui protègent votre série.",
+    "shield": "Protection de série",
+    "shieldDescription": "Protège votre série lorsque vous manquez un jour.",
+    "inventory": "En stock",
+    "buy": "Acheter pour {cost} XP",
+    "buying": "Achat en cours…",
+    "success": "Protection de série achetée",
+    "insufficientXp": "Vous n’avez pas assez d’XP pour cet article.",
+    "buyMore": "Acheter davantage dans la boutique"
   },
   "facts": {
     "title": "Titre *",
@@ -584,8 +597,8 @@
   },
   "settings": {
     "goalReminders": "Rappels de progression d'objectif",
-    "pageBackfillTitle": "Compl\u00e9ment de pages",
-    "pageBackfillDesc": "Recherche sur Open Library les livres sans nombre de pages et compl\u00e8te les pages manquantes (livres avec ISBN uniquement). Rappuie tant qu'il reste des livres.",
+    "pageBackfillTitle": "Compl\u00e9ter les m\u00e9tadonn\u00e9es manquantes",
+    "pageBackfillDesc": "Recherche vos livres sur Open Library et compl\u00e8te les pages, auteurs, \u00e9diteurs, dates, sujets, ISBN et couvertures manquants.",
     "pageBackfillRun": "Compl\u00e9ter les pages manquantes",
     "pageBackfillRunning": "Recherche\u2026",
     "pageBackfillDone": "Ajout\u00e9 \u00e0 {filled} livres \u00b7 {missing} introuvables",

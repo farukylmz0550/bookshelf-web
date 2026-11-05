@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "Sağlık",
+    "market": "Market",
     "locations": "Konumlar",
     "inventory": "Envanter",
     "books": "Kitaplar",
@@ -209,6 +210,18 @@
       "review_duplicate": "Duplicate’i incele",
       "review_book": "Kitabı incele"
     }
+  },
+  "market": {
+    "title": "Market",
+    "description": "XP puanlarını serini koruyacak ödüllerle takas et.",
+    "shield": "Seri koruması",
+    "shieldDescription": "Bir günü kaçırdığında serini korur.",
+    "inventory": "Envanter",
+    "buy": "{cost} XP ile al",
+    "buying": "Satın alınıyor…",
+    "success": "Seri koruması satın alındı",
+    "insufficientXp": "Bu ürünü almak için yeterli XP yok.",
+    "buyMore": "Daha fazlasını Market'ten al"
   },
   "facts": {
     "title": "Ba\u015fl\u0131k *",
@@ -584,9 +597,9 @@
   },
   "settings": {
     "goalReminders": "Hedef ilerleme bildirimleri",
-    "pageBackfillTitle": "Sayfa say\u0131s\u0131 doldurma",
-    "pageBackfillDesc": "Sayfa say\u0131s\u0131 olmayan kitaplar\u0131 Open Library'de arar ve eksik sayfa say\u0131lar\u0131n\u0131 doldurur (yaln\u0131zca ISBN'li kitaplar). Kitap kald\u0131k\u00e7a tekrar basabilirsin.",
-    "pageBackfillRun": "Eksik sayfa say\u0131lar\u0131n\u0131 doldur",
+    "pageBackfillTitle": "Eksik metadata",
+    "pageBackfillDesc": "Open Library'de kitaplarınızı arar ve eksik sayfa, yazar, yayınevi, tarih, konu, ISBN ve kapak bilgilerini tamamlar.",
+    "pageBackfillRun": "Eksik sayfaları tamamla",
     "pageBackfillRunning": "Sorgulan\u0131yor\u2026",
     "pageBackfillDone": "{filled} kitaba eklendi \u00b7 {missing} bulunamad\u0131",
     "readingStepTitle": "Okuma ad\u0131m\u0131",

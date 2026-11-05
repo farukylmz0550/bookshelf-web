@@ -106,8 +106,8 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
           shieldCost={streakInfo.shieldCost}
           canUseShield={streakInfo.canUseShield}
           shieldBalance={streakInfo.shieldBalance}
-          canPurchaseShield={streakInfo.canPurchaseShield}
           shieldConfirmLabel={dict.stats.streakShieldConfirm ?? "Use streak protection?"}
+          buyMoreLabel={dict.market.buyMore}
         />
       )}
 

@@ -143,6 +143,10 @@ model Book {
   koboSpentMinutes     Int  @default(0)
   koboRemainingMinutes Int?
 
+  // Manual books that are not yet present in Open Library are queued for a
+  // future authenticated Open Library submission flow.
+  openLibrarySubmission OpenLibrarySubmission?
+
   lendingRecords   LendingRecord[]
   readEvents       BookReadEvent[]
   groupMemberships BookGroupMembership[]
@@ -151,6 +155,26 @@ model Book {
 
   @@index([userId])
   @@index([tags])
+}
+
+enum OpenLibrarySubmissionStatus {
+  PENDING
+  SUBMITTED
+  FAILED
+}
+
+model OpenLibrarySubmission {
+  id          String                       @id @default(cuid())
+  bookId      String                       @unique
+  book        Book                         @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  status      OpenLibrarySubmissionStatus  @default(PENDING)
+  payload     String
+  attempts    Int                          @default(0)
+  lastError   String?
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+
+  @@index([status, createdAt])
 }
 
 // v3.1.0 — per-book Kobo sync state: metadata hash for change detection and

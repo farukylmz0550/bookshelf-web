@@ -125,11 +125,27 @@ export async function fetchBook(isbn: string): Promise<OpenLibraryBook | null> {
 
 export async function searchBook(title: string, author?: string | null): Promise<OpenLibraryBook | null> {
   const q = encodeURIComponent([title, author].filter(Boolean).join(" "));
-  const data = (await fetchJsonWithRetry(`https://openlibrary.org/search.json?q=${q}&limit=1&fields=title,author_name,number_of_pages_median,isbn`)) as { docs?: Array<Record<string, unknown>> } | null;
+  const data = (await fetchJsonWithRetry(
+    `https://openlibrary.org/search.json?q=${q}&limit=1&fields=title,author_name,number_of_pages_median,isbn,isbn10,isbn13,publisher,first_publish_year,subject,cover_i`,
+  )) as { docs?: Array<Record<string, unknown>> } | null;
   const row = data?.docs?.[0];
   if (!row || typeof row.title !== "string") return null;
   const pages = typeof row.number_of_pages_median === "number" ? String(row.number_of_pages_median) : undefined;
-  return { title: row.title, authors: Array.isArray(row.author_name) ? row.author_name.join(", ") : undefined, numberOfPages: pages };
+  const isbn10 = Array.isArray(row.isbn10) ? String(row.isbn10[0] ?? "") : undefined;
+  const isbn13 = Array.isArray(row.isbn13) ? String(row.isbn13[0] ?? "") : undefined;
+  const coverUrl =
+    typeof row.cover_i === "number" ? `https://covers.openlibrary.org/b/id/${row.cover_i}-M.jpg` : undefined;
+  return {
+    title: row.title,
+    authors: Array.isArray(row.author_name) ? row.author_name.join(", ") : undefined,
+    numberOfPages: pages,
+    publishers: Array.isArray(row.publisher) ? String(row.publisher[0] ?? "") : undefined,
+    publishDate: typeof row.first_publish_year === "number" ? String(row.first_publish_year) : undefined,
+    subjects: Array.isArray(row.subject) ? row.subject.slice(0, 15).join(", ") : undefined,
+    isbn10,
+    isbn13,
+    coverUrl,
+  };
 }
 
 export async function fetchBooksWithThrottle(isbns: string[]): Promise<OpenLibraryBook[]> {

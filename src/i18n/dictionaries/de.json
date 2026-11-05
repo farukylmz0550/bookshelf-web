@@ -1,0 +1,28 @@
+{
+  "nav": { "health": "Bibliothek", "market": "Shop", "books": "Bücher", "settings": "Einstellungen", "more": "Mehr", "stats": "Statistiken", "groups": "Regale", "lending": "Ausleihe" },
+  "theme": { "light": "Hell", "dark": "Dunkel", "system": "System" },
+  "market": {
+    "title": "Shop",
+    "description": "Tausche XP gegen Belohnungen zum Schutz deiner Leseserie.",
+    "shield": "Serienschutz",
+    "shieldDescription": "Schützt deine Serie, wenn du einen Tag verpasst.",
+    "inventory": "Bestand",
+    "buy": "Für {cost} XP kaufen",
+    "buying": "Wird gekauft…",
+    "success": "Serienschutz gekauft",
+    "insufficientXp": "Du hast nicht genug XP für diesen Artikel.",
+    "buyMore": "Mehr im Shop kaufen"
+  },
+  "settings": {
+    "pageBackfillTitle": "Fehlende Metadaten ergänzen",
+    "pageBackfillDesc": "Sucht deine Bücher in Open Library und ergänzt fehlende Seiten, Autoren, Verlage, Daten, Themen, ISBNs und Cover.",
+    "pageBackfillRun": "Fehlende Seiten ergänzen",
+    "pageBackfillRunning": "Suche…",
+    "pageBackfillDone": "Bei {filled} Büchern ergänzt · {missing} nicht gefunden"
+  },
+  "notify": {
+    "goalMonthStart": "Ein neuer Monat hat begonnen. Dein Leseziel für diesen Monat sind {target} Bücher.",
+    "goalProgressMid": "Du hast diesen Monat {count} Bücher gelesen. Du bist bei {percent}% deines Ziels.",
+    "goalProgressFinal": "Noch {remaining} Bücher bis zu deinem Ziel."
+  }
+}

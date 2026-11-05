@@ -89,12 +89,6 @@ export default async function BooksPage() {
               label={dict.books.addBook}
               addedToastLabel={dict.books.addSuccess ?? ""}
             />
-            <Link
-              href="/books/health"
-              className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-foreground hover:bg-[var(--surface-elevated)]"
-            >
-              {dict.health.title}
-            </Link>
           </header>
         }
         ctaSlot={

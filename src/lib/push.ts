@@ -51,7 +51,15 @@ export async function sendPushToUser(userId: string, payload: PushPayload): Prom
         sent += 1;
       } catch (error) {
         const statusCode = (error as { statusCode?: number }).statusCode;
-        if (statusCode === 404 || statusCode === 410) {
+        // 400/401/403 are also terminal for the stored subscription when the
+        // VAPID key was rotated or the browser invalidated its credentials.
+        if (
+          statusCode === 400 ||
+          statusCode === 401 ||
+          statusCode === 403 ||
+          statusCode === 404 ||
+          statusCode === 410
+        ) {
           await db.pushSubscription.deleteMany({ where: { userId, endpoint: sub.endpoint } });
         }
       }

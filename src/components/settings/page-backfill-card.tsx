@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { backfillPageCounts } from "@/app/actions/books";
 
 /**
- * v2.9.6 — fills missing page counts from Open Library for the caller's books.
+ * Fills missing book metadata from Open Library for the caller's books.
  * Chunked server action: press again while books remain without a count.
  * v3.0.0 — moved from Admin to Settings (it is user-scoped, not admin power).
  */

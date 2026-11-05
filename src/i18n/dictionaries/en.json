@@ -1,6 +1,7 @@
 {
   "nav": {
     "health": "Health",
+    "market": "Market",
     "locations": "Locations",
     "inventory": "Inventory",
     "books": "Books",
@@ -209,6 +210,18 @@
       "review_duplicate": "Review duplicate",
       "review_book": "Review book"
     }
+  },
+  "market": {
+    "title": "Market",
+    "description": "Trade XP for rewards that help protect your reading streak.",
+    "shield": "Streak shield",
+    "shieldDescription": "Protects your streak when you miss a day.",
+    "inventory": "In stock",
+    "buy": "Buy for {cost} XP",
+    "buying": "Buying…",
+    "success": "Streak shield purchased",
+    "insufficientXp": "You do not have enough XP for this item.",
+    "buyMore": "Buy more in Market"
   },
   "facts": {
     "title": "Title *",
@@ -584,9 +597,9 @@
   },
   "settings": {
     "goalReminders": "Goal progress reminders",
-    "pageBackfillTitle": "Page-count backfill",
-    "pageBackfillDesc": "Looks up books without a page count on Open Library and fills the missing page numbers (only for books with an ISBN). Press again while books remain.",
-    "pageBackfillRun": "Fill missing page counts",
+    "pageBackfillTitle": "Complete missing metadata",
+    "pageBackfillDesc": "Looks up your books on Open Library and fills missing pages, authors, publishers, dates, subjects, ISBNs and covers.",
+    "pageBackfillRun": "Complete missing pages",
     "pageBackfillRunning": "Looking up\u2026",
     "pageBackfillDone": "Added to {filled} books \u00b7 {missing} not found",
     "readingStepTitle": "Reading step",

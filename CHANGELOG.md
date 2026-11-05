@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.20.4 — 2026-11-05
+
+### Added
+- Added the Market page for purchasing streak shields with XP.
+- Added German, Italian and Portuguese locale support with localized core flows.
+- Added an Open Library submission queue foundation for manually added books.
+
+### Changed
+- Completed missing book metadata from Open Library through Settings.
+- Removed the Library Health page from the user interface.
+- Fixed scheduled Web Push delivery after VAPID key rotation and cleaned invalid subscriptions.
+- Published the release image for `linux/amd64` and `linux/arm64`.
+
 ## 3.20.3 — 2026-11-05
 
 ### Fixed
