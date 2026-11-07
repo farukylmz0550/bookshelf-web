@@ -322,13 +322,13 @@ describe("levelForXp", () => {
    (`v` prefix — signed annotated tags; the tag no longer triggers CI since v3.11.0)
 3. **Every tag gets a matching GitHub Release** — create it right after the tag
    lands: `gh release create vX.Y.Z --title "X.Y.Z" --notes "<changelog excerpt>"`
-4. **Docker images are always built and pushed locally, for BOTH amd64 and
-   arm64** — CI does not publish images (the `Docker Publish` workflow was
-   removed in v3.11.0; multi-arch rule since 2026-10-01, see
-   `Project_Rules.md → Docker image rule`):
+4. **Trigger the multi-arch Docker workflow** after the tag lands. It builds
+   and pushes BOTH amd64 and arm64 images, verifies the Rust data processor for
+   both targets, and publishes the version plus `latest` manifest to GHCR:
    ```bash
-   docker buildx build --platform linux/amd64,linux/arm64 --push \
-     -t ghcr.io/<owner>/bookshelf:X.Y.Z -t ghcr.io/<owner>/bookshelf:latest .
+   gh workflow run docker-multiarch.yml --repo <owner>/bookshelf-web \
+     --ref vX.Y.Z -f tag=vX.Y.Z
+   gh run list --workflow docker-multiarch.yml --limit 1
    ```
 5. Update the deployment (`docker compose pull && up -d`) unless the user
    asked otherwise
