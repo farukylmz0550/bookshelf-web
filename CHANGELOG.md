@@ -1,16 +1,30 @@
 # Changelog
 
+## 3.22.1 — 2026-11-07
+
+### Added
+- Monthly leaderboard reset with distinct completed-book counts and a one-time 150 XP champion reward.
+- Reworked long-press book actions with open, share and copy-link shortcuts.
+
+### Fixed
+- Book-copy location selectors now show the location name instead of the internal alphanumeric ID.
+- Docker builds keep a stable Server Action encryption key across recreated containers.
+
 ## 3.22.0 — 2026-11-07
 
 ### Added
 - Goodreads CSV parsing and normalization now runs through a Rust data-processing binary.
 - Rust import processing is built for both `linux/amd64` and `linux/arm64` images.
 - Manual book metadata can be submitted to Open Library through the authenticated import queue.
+- The leaderboard now resets by UTC calendar month and ranks users by distinct books completed in that month.
+- The previous month's winner receives a one-time 150 XP monthly champion reward.
+- Long-press book actions were reworked into a mobile-friendly action sheet with open, share and copy-link actions.
 
 ### Fixed
 - Reading actions no longer claim a fixed page count when the reading mode is variable.
 - Completed books cannot receive additional page credit, and large page/XP values are overflow-safe.
 - Scheduler and Open Library submission routes are protected by exact cron-path matching.
+- Book-copy location selectors now display the location name instead of an internal alphanumeric location ID.
 
 ## 3.21.0 — 2026-11-05
 

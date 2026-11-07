@@ -3,9 +3,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, useMemo, useTransition } from "react";
+import { useEffect, useRef, useState, useMemo, useTransition } from "react";
 import { toast } from "sonner";
-import { BookPlus, RotateCcw } from "lucide-react";
+import { BookOpen, BookPlus, Check, Copy, RotateCcw, Share2, X } from "lucide-react";
 import { setBookStatus, logPagesRead, startReRead, updateBook } from "@/app/actions/books";
 import { useSwipe, useLongPress } from "@/lib/touch-gestures";
 import { hapticFeedback } from "@/lib/haptic";
@@ -44,6 +44,11 @@ type CardDict = {
   pagesPromptInvalid: string;
   save: string;
   cancel: string;
+  openBook?: string;
+  shareBook?: string;
+  copyLink?: string;
+  linkCopied?: string;
+  menuClose?: string;
 };
 
 export function BookCard({
@@ -75,6 +80,15 @@ export function BookCard({
   const [pagesPromptOpen, setPagesPromptOpen] = useState(false);
   const [pageInput, setPageInput] = useState("");
   const [pagePromptError, setPagePromptError] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMenuOpen(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [menuOpen]);
 
   const totalPages = book.numberOfPages ? parseInt(book.numberOfPages, 10) : null;
   const knownPages = totalPages !== null && !isNaN(totalPages) && totalPages > 0;
@@ -148,7 +162,13 @@ export function BookCard({
           toast.error(dict.logPagesError);
           return;
         }
-        toast.success(res.finished ? dict.bookFinishedToast : dict.logPagesToast.replace("{count}", String(res.logged ?? amount)).replace("{streak}", String(res.streak ?? 0)));
+        toast.success(
+          res.finished
+            ? dict.bookFinishedToast
+            : dict.logPagesToast
+                .replace("{count}", String(res.logged ?? amount))
+                .replace("{streak}", String(res.streak ?? 0)),
+        );
         router.refresh();
         return;
       }
@@ -185,6 +205,36 @@ export function BookCard({
       toast.success(dict.reReadButton);
       router.refresh();
     });
+  }
+
+  function openBook() {
+    setMenuOpen(false);
+    router.push(`/books/${book.id}`);
+  }
+
+  async function copyBookLink() {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/books/${book.id}`);
+      toast.success(dict.linkCopied ?? "Link copied");
+    } catch {
+      toast.error(dict.logPagesError);
+    }
+    setMenuOpen(false);
+  }
+
+  async function shareBook() {
+    const url = `${window.location.origin}/books/${book.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: book.title, text: book.author ?? book.title, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success(dict.linkCopied ?? "Link copied");
+      }
+    } catch {
+      // The user cancelling the native share sheet is expected.
+    }
+    setMenuOpen(false);
   }
 
   const swipeHandlers = useSwipe({
@@ -304,25 +354,78 @@ export function BookCard({
         </div>
       </Link>
 
-      {/* Long-press status menu — rendered outside the Link so taps don't navigate */}
+      {/* Long-press action sheet — rendered outside the Link so actions never
+          navigate accidentally. */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/65 p-0 animate-in fade-in duration-200 sm:items-center sm:p-4"
           onClick={(e) => {
             e.preventDefault();
             setMenuOpen(false);
           }}
         >
           <div
-            className="w-full max-w-xs rounded-[12px] bg-[var(--surface)] p-4 shadow-lg animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200"
+            className="w-full max-w-md rounded-t-[20px] bg-[var(--surface)] p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-200 sm:rounded-[16px] sm:pb-4 sm:zoom-in-95"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
+            aria-modal="true"
             aria-label={book.title}
           >
-            <h3 className="mb-3 font-[var(--font-serif)] text-sm font-semibold text-foreground line-clamp-1">
-              {book.title}
-            </h3>
-            {/* v3.9.0 — contextual actions moved off the card (§4) */}
+            <div className="mb-3 flex items-start gap-3 border-b border-[var(--border)] pb-3">
+              <div className="h-12 w-9 shrink-0 overflow-hidden rounded-[4px] bg-[var(--surface-elevated)]">
+                {book.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={book.coverUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <BookOpen className="m-2 text-muted-foreground" size={20} />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-[var(--font-serif)] text-sm font-semibold text-foreground line-clamp-2">
+                  {book.title}
+                </h3>
+                <p className="mt-0.5 truncate font-[var(--font-sans)] text-xs text-muted-foreground">
+                  {book.author ?? statusLabel(status, statusLabels)}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                aria-label={dict.menuClose ?? dict.cancel}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-2 border-b border-[var(--border)] pb-3">
+              <button
+                type="button"
+                onClick={openBook}
+                className="flex flex-col items-center gap-1 rounded-[10px] px-2 py-2 text-xs text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              >
+                <BookOpen size={18} />
+                {dict.openBook ?? "Open book"}
+              </button>
+              <button
+                type="button"
+                onClick={shareBook}
+                className="flex flex-col items-center gap-1 rounded-[10px] px-2 py-2 text-xs text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              >
+                <Share2 size={18} />
+                {dict.shareBook ?? "Share"}
+              </button>
+              <button
+                type="button"
+                onClick={copyBookLink}
+                className="flex flex-col items-center gap-1 rounded-[10px] px-2 py-2 text-xs text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              >
+                <Copy size={18} />
+                {dict.copyLink ?? "Copy link"}
+              </button>
+            </div>
+            <p className="mb-1 mt-3 px-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+              {statusLabel(status, statusLabels)}
+            </p>
             <div className="flex flex-col gap-1">
               {STATUS_ORDER.map((s) => (
                 <button
@@ -336,6 +439,7 @@ export function BookCard({
                     s === status ? "bg-[var(--surface-elevated)] font-medium" : ""
                   }`}
                 >
+                  {s === status && <Check size={15} className="me-2 inline" />}
                   {statusLabel(s, statusLabels)}
                 </button>
               ))}
@@ -374,6 +478,13 @@ export function BookCard({
                 </button>
               )}
             </div>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              className="mt-2 w-full rounded-[8px] px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+            >
+              {dict.cancel}
+            </button>
           </div>
         </div>
       )}

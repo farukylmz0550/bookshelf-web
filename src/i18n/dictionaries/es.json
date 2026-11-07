@@ -429,6 +429,8 @@
     "monthly_goal_title": "Meta Mensual",
     "monthly_goal_desc": "Completa tu meta mensual de lectura en un mes.",
     "monthlyBadge": "Mensual",
+    "monthly_champion_title": "Campeón mensual",
+    "monthly_champion_desc": "Lee más libros que nadie en un mes natural.",
     "earnsMonthly": "Logro mensual \u2014 puede ganarse de nuevo el pr\u00f3ximo mes."
   },
   "leaderboard": {
@@ -437,7 +439,9 @@
     "name": "Nombre",
     "level": "Nivel",
     "xp": "XP",
-    "booksRead": "Books read"
+    "booksRead": "Books read",
+    "monthlyDescription": "Libros terminados este mes. La lista se reinicia cada mes.",
+    "monthReward": "El ganador recibe 150 XP"
   },
   "profile": {
     "title": "Perfil",

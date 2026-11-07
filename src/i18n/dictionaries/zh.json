@@ -429,6 +429,8 @@
     "monthly_goal_title": "\u6708\u5ea6\u76ee\u6807",
     "monthly_goal_desc": "\u4e00\u4e2a\u6708\u5185\u5b8c\u6210\u6708\u5ea6\u9605\u8bfb\u76ee\u6807\u3002",
     "monthlyBadge": "\u6bcf\u6708",
+    "monthly_champion_title": "月度冠军",
+    "monthly_champion_desc": "在一个自然月内阅读最多的书籍。",
     "earnsMonthly": "\u6bcf\u6708\u6210\u5c31 \u2014 \u4e0b\u4e2a\u6708\u53ef\u518d\u6b21\u83b7\u5f97\u3002"
   },
   "leaderboard": {
@@ -437,7 +439,9 @@
     "name": "\u59d3\u540d",
     "level": "\u7b49\u7ea7",
     "xp": "\u7ecf\u9a8c",
-    "booksRead": "Books read"
+    "booksRead": "Books read",
+    "monthlyDescription": "本月完成的书籍。列表每月重置。",
+    "monthReward": "获胜者获得 150 XP"
   },
   "profile": {
     "title": "\u4e2a\u4eba\u8d44\u6599",

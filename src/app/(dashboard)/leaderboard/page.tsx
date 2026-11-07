@@ -1,21 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { db } from "@/lib/db";
 import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { getAppConfig } from "@/lib/app-config";
+import { awardPreviousMonthlyLeaderboard, getCurrentMonthlyLeaderboard } from "@/lib/services/leaderboard";
 import { LeaderboardTable } from "./leaderboard-table";
 
 export default async function LeaderboardPage() {
   const userId = await requireUserId();
   const dict = await getDictionary();
 
-  const users = await db.user.findMany({
-    where: { showOnLeaderboard: true },
-    select: { id: true, name: true, xp: true, level: true, _count: { select: { books: { where: { status: "FINISHED" } } } } },
-    orderBy: [{ level: "desc" }, { xp: "desc" }],
-  });
-
-  const config = await getAppConfig();
+  await awardPreviousMonthlyLeaderboard();
+  const { periodKey, users } = await getCurrentMonthlyLeaderboard();
 
   return (
     <div className="space-y-6">
@@ -24,16 +18,10 @@ export default async function LeaderboardPage() {
           {dict.leaderboard.title}
         </h1>
         <p className="font-[var(--font-sans)] text-sm text-muted-foreground">
-          {dict.leaderboard.rank}
+          {(dict.leaderboard as Record<string, string>).monthlyDescription ?? dict.leaderboard.rank}
         </p>
       </header>
-      <LeaderboardTable
-        users={users.map((user) => ({ id: user.id, name: user.name, xp: user.xp, level: user.level, booksRead: user._count.books }))}
-        currentUserId={userId}
-        dict={dict.leaderboard}
-        xpPerLevelBase={config.xpPerLevelBase}
-        xpLevelNames={config.xpLevelNames}
-      />
+      <LeaderboardTable periodKey={periodKey} users={users} currentUserId={userId} dict={dict.leaderboard} />
     </div>
   );
 }

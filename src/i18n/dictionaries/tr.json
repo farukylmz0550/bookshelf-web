@@ -429,6 +429,8 @@
     "monthly_goal_title": "Ayl\u0131k Hedef",
     "monthly_goal_desc": "Bir ay i\u00e7inde ayl\u0131k okuma hedefini tamamla.",
     "monthlyBadge": "Ayl\u0131k",
+    "monthly_champion_title": "Ayın şampiyonu",
+    "monthly_champion_desc": "Bir takvim ayında en çok kitabı oku.",
     "earnsMonthly": "Ayl\u0131k ba\u015far\u0131m \u2014 gelecek ay yeniden kazan\u0131labilir."
   },
   "leaderboard": {
@@ -437,7 +439,9 @@
     "name": "Ad",
     "level": "Seviye",
     "xp": "XP",
-    "booksRead": "Okunan kitap"
+    "booksRead": "Okunan kitap",
+    "monthlyDescription": "Bu ay tamamlanan kitaplar. Liste her ay sıfırlanır.",
+    "monthReward": "Kazanana 150 XP"
   },
   "profile": {
     "title": "Profil",

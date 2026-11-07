@@ -164,6 +164,7 @@ export const ACHIEVEMENT_XP: Record<string, number> = {
   monthly_page_turner: 50,
   monthly_regular_reader: 50,
   monthly_goal: 50,
+  monthly_champion: 150,
 };
 
 /** Achievement catalog: each rule is a single, testable predicate over stats.

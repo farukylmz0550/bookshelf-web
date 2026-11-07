@@ -9,7 +9,8 @@ const adapter = new PrismaBetterSqlite3({ url: dbUrl });
 const db = new PrismaClient({ adapter });
 
 async function main() {
-  for (const rule of ACHIEVEMENT_RULES) {
+  const rules = [...ACHIEVEMENT_RULES, { key: "monthly_champion", recurrence: "MONTHLY" as const }];
+  for (const rule of rules) {
     await db.achievement.upsert({
       where: { key: rule.key },
       update: {},

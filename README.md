@@ -8,7 +8,7 @@
 
 *Fine Porcelain × Burnt Ochre · Ink & Copper · Noto Serif/Sans · 60/40 physical cards*
 
-[![Version](https://img.shields.io/badge/version-3.22.0-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
+[![Version](https://img.shields.io/badge/version-3.22.1-EAD6D0?style=flat-square&labelColor=2B2727&color=BB4F35)](https://github.com/farukylmz0550/bookshelf-web/releases)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Fbookshelf-272A29?style=flat-square&logo=docker&labelColor=1D2020&color=C17A5E)](https://ghcr.io/farukylmz0550/bookshelf)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -45,7 +45,7 @@ The original concept, creative direction, project management, and development de
 | 👥 **People** | Trust scores + lending history |
 | 📊 **Stats** | Total/finished/reading, avg days, monthly chart, streak widget, heatmap |
 | 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level (+ optional custom level names via `config.yaml`, v3.1.0) · streak shields are purchased with XP and automatically consumed after one missed reading day · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge · device reading-time write-back (Kobo minutes → Stats tile + heatmap tooltips) |
-| 🏆 **Leaderboard** | Top ranking, opt-out |
+| 🏆 **Leaderboard** | Current-month ranking by distinct completed books, automatic monthly reset, opt-out, and a one-time 150 XP reward for the previous month's winner |
 | 🎯 **Goals** | Yearly / monthly targets |
 | 🏁 **Challenges** *(v3.3.0)* | Seasonal reading challenges — custom window + target, read-event progress, exactly-once completion XP (`/challenges`) |
 | 💾 **Auto-backup** *(v3.3.0)* | Daily SQLite backup via cron (`/data/backups`, newest 7 kept) — requires CRON_SECRET |
@@ -68,6 +68,8 @@ The original concept, creative direction, project management, and development de
 | 📖 **Kobo Sync** *(v3.0.0, experimental)* | Kobo eReader pulls your whole library straight from this server — device `api_endpoint` → BookShelf sync URL · book files streamed from your own NAS URL template (`{isbn}`, `{isbn10}`, `{isbn13}`) · reading progress writes back (currentPage, streak activity, auto-finish) · optional EPUB→KEPUB conversion with cached output (`config.yaml → kobo.kepubify`, v3.4.0) · see [Kobo Sync](#-kobo-sync-v300-experimental) |
 | 🎴 **Brand** | `brand/` set — Color + Symbolic masters, all icons rendered from the Color Master |
 | 🐳 **Docker** | `ghcr.io/farukylmz0550/bookshelf` — multi-arch `linux/amd64` + `linux/arm64` images |
+| 📍 **Physical copies** *(v3.22.1)* | Assign each copy to a named room/section/shelf/box; the selector always shows the human-readable location name |
+| ☝️ **Long press** *(v3.22.1)* | Mobile action sheet with status changes, page logging, re-read, open, share and copy-link actions |
 | 🦀 **Rust data processing** *(v3.22.0)* | Goodreads CSV parsing, ISBN normalization, shelf/status mapping and validation run through the architecture-native Rust `reading-import` binary; TypeScript fallback remains available for local development |
 
 ### 📚 Documentation
@@ -133,6 +135,7 @@ services:
       DATABASE_URL: file:/data/bookshelf.db
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_SUBJECT: ${VAPID_SUBJECT:-}
@@ -176,6 +179,7 @@ volumes:
 EOF
 
 echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)" > .env
+echo "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .env
 echo "CRON_SECRET=$(openssl rand -base64 32)" >> .env
 # Optional: credentials for authenticated manual metadata imports to Open Library.
 echo "OPENLIBRARY_USERNAME=" >> .env
@@ -208,6 +212,7 @@ file supports pull-based updates **and** building from source
 git clone https://github.com/farukylmz0550/bookshelf-web.git
 cd bookshelf-web
 cp .env.example .env  # set NEXTAUTH_SECRET=$(openssl rand -base64 32)
+# Also set NEXT_SERVER_ACTIONS_ENCRYPTION_KEY once and keep it unchanged.
 docker compose up -d --build
 ```
 
@@ -398,6 +403,7 @@ All mutations via `src/app/actions/` — `awardXp()` + `syncAchievements()` afte
 |---|---|---|---|
 | `DATABASE_URL` | Yes | `file:./prisma/dev.db` | SQLite path |
 | `NEXTAUTH_SECRET` | Yes | — | JWT secret |
+| `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` | Yes for Docker builds | — | Stable Next.js Server Action encryption key; generate once with `openssl rand -base64 32` and never rotate during normal updates |
 | `NEXTAUTH_URL` | No | `http://localhost:3000` | App URL |
 | `APP_PORT` | No | `3000` | Docker port |
 | `RESET_SECRET` | No | — | `/api/test/reset` |

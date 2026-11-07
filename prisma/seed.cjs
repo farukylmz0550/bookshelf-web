@@ -39,6 +39,7 @@ const ACHIEVEMENTS = [
   { key: "monthly_page_turner", recurrence: "MONTHLY" },
   { key: "monthly_regular_reader", recurrence: "MONTHLY" },
   { key: "monthly_goal", recurrence: "MONTHLY" },
+  { key: "monthly_champion", recurrence: "MONTHLY" },
 ];
 
 const dbUrl = (process.env.DATABASE_URL || "file:./prisma/dev.db").replace(/^file:/, "").replace(/^"|"$/g, "");

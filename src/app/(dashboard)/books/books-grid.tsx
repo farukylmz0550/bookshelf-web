@@ -48,6 +48,11 @@ type CardDict = {
   nextBookDialogTitle: string;
   nextBookEmpty: string;
   startBook: string;
+  openBook?: string;
+  shareBook?: string;
+  copyLink?: string;
+  linkCopied?: string;
+  menuClose?: string;
 };
 
 export function BooksGrid({

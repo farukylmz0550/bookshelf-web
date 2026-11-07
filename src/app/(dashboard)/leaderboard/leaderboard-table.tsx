@@ -3,25 +3,21 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { levelName } from "@/lib/gamification-pure";
 
 type User = { id: string; name: string; xp: number; level: number; booksRead: number };
 
 const PAGE_SIZE = 20;
 
 export function LeaderboardTable({
-  xpPerLevelBase = 100,
-  xpLevelNames = [],
   users,
   currentUserId,
   dict,
+  periodKey,
 }: {
   users: User[];
   currentUserId: string;
-  dict: { rank: string; name: string; level: string; booksRead: string };
-  xpPerLevelBase?: number;
-  /** v3.1.0 — custom level names from config.yaml (optional). */
-  xpLevelNames?: readonly string[];
+  periodKey: string;
+  dict: { rank: string; name: string; level: string; booksRead: string; monthReward?: string };
 }) {
   const [page, setPage] = useState(0);
   const totalPages = Math.ceil(users.length / PAGE_SIZE);
@@ -30,6 +26,10 @@ export function LeaderboardTable({
 
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-2">
+        <span className="text-[11px] font-medium text-muted-foreground">{periodKey}</span>
+        <span className="text-[11px] text-muted-foreground">{dict.monthReward ?? "Winner earns 150 XP"}</span>
+      </div>
       <div className="grid grid-cols-[3rem_1fr_5rem_7rem] gap-4 border-b border-border bg-muted/50 px-4 py-2">
         <span className="text-[11px] text-muted-foreground">#</span>
         <span className="text-[11px] text-muted-foreground">{dict.name}</span>
@@ -47,14 +47,7 @@ export function LeaderboardTable({
           <span className="text-sm text-foreground">{user.name}</span>
           <span className="text-center text-sm text-muted-foreground">
             {user.level}
-            {levelName(user.level, xpLevelNames) && (
-              <span
-                className="ml-1 text-[10px] text-muted-foreground/80"
-                title={levelName(user.level, xpLevelNames) ?? undefined}
-              >
-                {levelName(user.level, xpLevelNames)}
-              </span>
-            )}
+            <span className="ml-1 text-[10px] text-muted-foreground/80">{user.xp} XP</span>
           </span>
           <span className="text-end text-sm tabular-nums text-muted-foreground">{user.booksRead}</span>
         </div>

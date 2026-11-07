@@ -6,7 +6,7 @@ on:
       tag:
         description: "Tag"
         required: true
-        default: "v3.22.0"
+        default: "v3.22.1"
 
 permissions:
   contents: read
@@ -42,6 +42,10 @@ jobs:
         run: |
           cargo test --manifest-path rust/reading_core/Cargo.toml
           cargo build --manifest-path rust/reading_core/Cargo.toml --target "${{ matrix.rust-target }}"
+      - name: Require stable Server Action encryption key
+        env:
+          SERVER_ACTIONS_KEY: ${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
+        run: test -n "$SERVER_ACTIONS_KEY"
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -54,6 +58,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: ${{ env.IMAGE }}:${{ inputs.tag }}-${{ matrix.suffix }}
+          build-args: |
+            NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
           cache-from: type=gha,scope=${{ matrix.suffix }}
           cache-to: type=gha,mode=max,scope=${{ matrix.suffix }}
           provenance: mode=max

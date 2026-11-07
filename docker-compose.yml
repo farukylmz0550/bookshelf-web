@@ -1,14 +1,22 @@
+x-bookshelf-build: &bookshelf-build
+  context: .
+  args:
+    # Set once in .env and keep it stable. Next.js consumes this during
+    # `next build` when generating the Server Action encryption manifest.
+    NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
+
 services:
   app:
     # Pulled with `docker compose pull`; `build: .` below still lets
     # `docker compose up -d --build` build from source instead.
     image: ghcr.io/farukylmz0550/bookshelf:latest
-    build: .
+    build: *bookshelf-build
     restart: unless-stopped
     environment:
       DATABASE_URL: file:/data/bookshelf.db
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
       AUTH_TRUST_HOST: "true"
       ANDROID_SHA256_FINGERPRINT: ${ANDROID_SHA256_FINGERPRINT:-}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
@@ -43,7 +51,7 @@ services:
   # (default 09:00, container-local time). Requires CRON_SECRET + VAPID keys.
   cron:
     image: ghcr.io/farukylmz0550/bookshelf:latest
-    build: .
+    build: *bookshelf-build
     restart: unless-stopped
     depends_on:
       app:
@@ -51,6 +59,7 @@ services:
     entrypoint: ["node", "scripts/cron.mjs"]
     environment:
       CRON_SECRET: ${CRON_SECRET:-}
+      NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
       BOOKSHELF_URL: http://app:3000
       CRON_HOUR: ${CRON_HOUR:-9}
       CRON_RUN_ON_START: ${CRON_RUN_ON_START:-true}

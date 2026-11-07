@@ -20,6 +20,11 @@ WORKDIR /app
 COPY . .
 RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
+# Server Action IDs and their encryption manifest are produced during the
+# build. Keep this value stable across deployments so a rolling/recreated
+# container never serves a bundle that the server cannot decrypt.
+ARG NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+ENV NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=$NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
 RUN npm run build
 RUN npm prune --omit=dev
 

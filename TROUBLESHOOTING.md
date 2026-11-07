@@ -56,6 +56,34 @@ behavior, so you can verify or patch locally.
 - **Cause:** more than one app instance writing to the same SQLite file, or the cron container pointing at the wrong URL. The app is **single-instance by design** — rate limiters and finish-claim maps are per-process.
 - **Fix:** run exactly one `app` service against the data volume. The cron container does not touch the DB (it only calls the push API).
 
+### Server Action "was not found" after a deployment
+
+This usually means a browser submitted a Server Action from an older client
+bundle to a container built from a different Next.js output. Keep
+`NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` in the deployment `.env` permanently and
+pass it to the Docker build; do not rotate it during a normal update. Build and
+run `app` and `cron` from the same image digest, then recreate both services:
+
+```sh
+docker compose pull
+docker compose up -d --force-recreate --no-build app cron
+docker compose ps
+docker compose logs --tail=100 app
+```
+
+After the new Service Worker is available, refresh once. If the error remains,
+unregister the site's Service Worker and clear site data in browser settings,
+then sign in again. Do not delete the Docker volume or database.
+
+### Monthly leaderboard
+
+The leaderboard uses UTC calendar months and counts distinct completed books
+from `BookReadEvent`; reading the same book again in the same month does not
+inflate that month's book count. When the leaderboard is first opened in a new
+month, the previous month's winner is finalized exactly once and receives 150
+XP. The reward is recorded as a monthly achievement and does not alter the
+SQLite volume structure.
+
 ### Wrong image version after `docker compose pull`
 
 - `latest` follows the newest published release; a specific version pin like `2.10.0` never moves. Confirm which tag your compose file references, then `docker compose pull && docker compose up -d`.

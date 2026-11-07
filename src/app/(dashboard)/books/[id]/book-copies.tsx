@@ -63,6 +63,7 @@ export function BookCopies({
         <div className="space-y-2">
           {rows.map((copy) => {
             const current = copy.locationId ?? "none";
+            const currentLocation = activeLocations.find((location) => location.id === copy.locationId);
             return (
               <div
                 key={copy.id}
@@ -79,7 +80,9 @@ export function BookCopies({
                       className="ms-auto min-w-40 rounded-[8px] border-[var(--border)] bg-[var(--surface)] text-foreground"
                       aria-label={`${dict.copy} ${copy.copyNumber}`}
                     >
-                      <SelectValue />
+                      {/* Always render the human label. Otherwise Base UI can
+                          fall back to the raw location cuid in the trigger. */}
+                      <SelectValue>{currentLocation?.name ?? dict.unassigned}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">{dict.unassigned}</SelectItem>

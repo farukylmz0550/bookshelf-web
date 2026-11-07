@@ -16,10 +16,10 @@ The purpose of this document is to preserve the integrity of the existing projec
 `CONTRIBUTING.md → Commit Signing`). Unsigned commits and unsigned release
 tags are not accepted into `main`.
 
-**Docker image rule:** release Docker images are **always built locally** and
-pushed to GHCR from the developer machine. CI/CD must not build or publish
-images — the `Docker Publish` workflow was removed (v3.11.0) because local
-builds are the single source of truth.
+**Docker image rule:** release Docker images are built reproducibly for both
+architectures and published to GHCR by the repository's multi-arch workflow.
+The stable `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` GitHub secret is required for
+every image build; local source builds use the same variable from `.env`.
 **Multi-arch rule (2026-10-01):** every release image is built for BOTH
 `linux/amd64` and `linux/arm64` — a single buildx push publishes the
 multi-arch manifest for both tags:
@@ -35,7 +35,8 @@ SHA-256-pinned from the official v4.0.4 release). Verify the published
 manifest per architecture with
 `docker manifest inspect ghcr.io/farukylmz0550/bookshelf:{version}` (both
 `amd64` and `arm64` descriptors must be listed). `docker-compose.yml` pulls
-from GHCR and `build: .` stays only as a source-build fallback.
+from GHCR and `build: .` stays as a source-build fallback. The `app` and
+`cron` services must always use the same image digest.
 
 **Push → delete rule (60s delay):** after a locally built image is pushed to
 GHCR, the local image copy is deleted — **not immediately, but 60 seconds
