@@ -5,13 +5,13 @@
 
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { lookupIsbn, lookupIsbns, lookupBookByTitle, type IsbnLookupResult } from "@/lib/isbn";
+import { lookupIsbn, lookupBookByTitle, type IsbnLookupResult } from "@/lib/isbn";
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppConfig } from "@/lib/app-config";
 import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { defaultFilters, arrange, type Filters } from "@/lib/books/filters";
 import { recordActivityFor, finishBookWithXpFor } from "./streak";
-import { queueOpenLibrarySubmission } from "./openlibrary-submissions";
+import { queueOpenLibrarySubmission, submitOpenLibrarySubmission, toOpenLibraryImportPayload } from "./openlibrary-submissions";
 
 export const bookStatusSchema = z.enum(["TO_READ", "READING", "FINISHED"]);
 export type BookStatusValue = z.infer<typeof bookStatusSchema>;
@@ -214,11 +214,9 @@ export async function createBook(userId: string, input: AddBookInput) {
       ? await lookupIsbn(isbn).catch(() => null)
       : await lookupBookByTitle(parsed.data.title, parsed.data.author).catch(() => null);
     if (!found) {
-      await queueOpenLibrarySubmission(book.id, {
-        ...parsed.data,
-        source: "manual",
-        createdAt: new Date().toISOString(),
-      }).catch(() => {});
+      const payload = toOpenLibraryImportPayload({ ...book, ...parsed.data });
+      await queueOpenLibrarySubmission(book.id, payload).catch(() => {});
+      await submitOpenLibrarySubmission(book.id, payload).catch(() => {});
     }
     try {
       const { syncBookCopies } = await import("./locations");
@@ -259,6 +257,12 @@ export async function updateBook(userId: string, bookId: string, data: UpdateBoo
     else update[k] = typeof v === "string" ? v.trim() : v;
   }
   const updated = await db.book.update({ where: { id: bookId }, data: update });
+  const submission = await db.openLibrarySubmission.findUnique({ where: { bookId } });
+  if (submission && submission.status !== "SUBMITTED") {
+    const payload = toOpenLibraryImportPayload(updated);
+    await queueOpenLibrarySubmission(bookId, payload).catch(() => {});
+    await submitOpenLibrarySubmission(bookId, payload).catch(() => {});
+  }
   if (typeof update.copies === "number") {
     try {
       const { syncBookCopies } = await import("./locations");

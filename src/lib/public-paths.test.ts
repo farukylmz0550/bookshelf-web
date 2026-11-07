@@ -21,12 +21,15 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/api/push/overdue-remind")).toBe(true);
     expect(isPublicPath("/api/backup")).toBe(true);
     expect(isPublicPath("/api/backup/")).toBe(true);
+    expect(isPublicPath("/api/openlibrary/submissions")).toBe(true);
+    expect(isCronPath("/api/openlibrary/submissions")).toBe(true);
   });
 
   it("does not open sibling routes through the cron allowlist", () => {
     expect(isPublicPath("/api/push/subscribe")).toBe(false);
     expect(isPublicPath("/api/push/streak-remind/extra")).toBe(false);
     expect(isPublicPath("/api/backup/extra")).toBe(false);
+    expect(isPublicPath("/api/openlibrary/submissions/extra")).toBe(false);
   });
 });
 

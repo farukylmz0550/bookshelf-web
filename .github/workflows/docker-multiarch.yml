@@ -6,7 +6,7 @@ on:
       tag:
         description: "Tag"
         required: true
-        default: "v3.21.0"
+        default: "v3.22.0"
 
 permissions:
   contents: read
@@ -24,15 +24,24 @@ jobs:
           - platform: linux/amd64
             runner: ubuntu-24.04
             suffix: amd64
+            rust-target: x86_64-unknown-linux-gnu
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
             suffix: arm64
+            rust-target: aarch64-unknown-linux-gnu
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-target }}
+      - name: Verify Rust core on target architecture
+        run: |
+          cargo test --manifest-path rust/reading_core/Cargo.toml
+          cargo build --manifest-path rust/reading_core/Cargo.toml --target "${{ matrix.rust-target }}"
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:

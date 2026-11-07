@@ -138,7 +138,7 @@
     "batchFailed": "Échec de la recherche",
     "batchEmpty": "Saisissez au moins un ISBN",
     "batchAdded": "Livres ajoutés",
-    "logPagesButton": "J'ai lu {count} pages",
+    "logPagesButton": "Enregistrer des pages",
     "logPagesToast": "{count} pages enregistr\u00e9es \u00b7 \ud83d\udd25 s\u00e9rie de {streak} jours",
     "logPagesError": "Impossible d'enregistrer la lecture",
     "bookFinishedToast": "Livre termin\u00e9 !",

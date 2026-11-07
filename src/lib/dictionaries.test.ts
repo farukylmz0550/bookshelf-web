@@ -53,4 +53,10 @@ describe("dictionary parity (v3.13.0)", () => {
   it("arabic: full parity with en", () => {
     expect(flatten(ar).size).toBe(EN.size);
   });
+
+  it("reading action labels do not claim a fixed page amount", () => {
+    for (const locale of LOCALES) {
+      expect(dictionaries[locale].books.logPagesButton).not.toContain("{count}");
+    }
+  });
 });

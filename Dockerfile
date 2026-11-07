@@ -1,3 +1,12 @@
+# Rust data-processing binary: CSV parsing and Goodreads normalization run in
+# the target image architecture (including arm64), with no cross-compiled
+# native dependency assumptions.
+FROM rust:1.86-slim AS rust-build
+WORKDIR /src
+COPY rust/reading_core/Cargo.toml rust/reading_core/Cargo.lock ./rust/reading_core/
+COPY rust/reading_core/src ./rust/reading_core/src
+RUN cargo build --release --manifest-path rust/reading_core/Cargo.toml --bin reading-import
+
 # Keep dependency installation on the target platform. Native packages such as
 # better-sqlite3 and Prisma's generated engines must match the image's CPU.
 FROM node:22-slim AS base
@@ -32,6 +41,7 @@ COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=build --chown=nextjs:nodejs /app/scripts/cron.mjs ./scripts/cron.mjs
 COPY --from=build --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
 COPY --from=build --chown=nextjs:nodejs /app/config.yaml ./config.yaml
+COPY --from=rust-build --chown=nextjs:nodejs /src/rust/reading_core/target/release/reading-import /usr/local/bin/reading-import
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm64" ]; then curl -fsSL -o /usr/local/bin/kepubify https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-arm64; else curl -fsSL -o /usr/local/bin/kepubify https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-64bit; fi && chmod +x /usr/local/bin/kepubify
 RUN chmod +x docker-entrypoint.sh && mkdir -p /data /home/nextjs && chown -R nextjs:nodejs /data /home/nextjs

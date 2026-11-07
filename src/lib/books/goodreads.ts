@@ -5,6 +5,7 @@
 
 import { z } from "zod";
 import { normalizeIsbn, isValidIsbn10, isValidIsbn13 } from "./model";
+import { parseGoodreadsRowsWithRust } from "./rust-import";
 
 export const GOODREADS_CSV_MAX_BYTES = 20 * 1024 * 1024; // 20 MiB
 export const GOODREADS_MAX_ROWS = 5000; // DoS guard
@@ -167,6 +168,12 @@ export const rowSchema = z.object({
 export type GoodreadsParseResult = { rows: GoodreadsRow[]; invalidRows: string[] } | { error: string };
 
 /** Parse a Goodreads export into importable rows. One bad row never aborts the import. */
+export async function parseGoodreadsRowsWithRustFirst(text: string): Promise<GoodreadsParseResult> {
+  const rustResult = await parseGoodreadsRowsWithRust(text);
+  if (rustResult) return rustResult;
+  return parseGoodreadsRows(text);
+}
+
 export function parseGoodreadsRows(text: string): GoodreadsParseResult {
   const csv = parseCsvText(text);
   if (csv.length === 0) return { error: "Invalid CSV — the file is empty" };

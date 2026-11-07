@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.22.0 — 2026-11-07
+
+### Added
+- Goodreads CSV parsing and normalization now runs through a Rust data-processing binary.
+- Rust import processing is built for both `linux/amd64` and `linux/arm64` images.
+- Manual book metadata can be submitted to Open Library through the authenticated import queue.
+
+### Fixed
+- Reading actions no longer claim a fixed page count when the reading mode is variable.
+- Completed books cannot receive additional page credit, and large page/XP values are overflow-safe.
+- Scheduler and Open Library submission routes are protected by exact cron-path matching.
+
 ## 3.21.0 — 2026-11-05
 
 ### Added

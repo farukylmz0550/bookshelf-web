@@ -138,7 +138,7 @@
     "batchFailed": "Arama başarısız",
     "batchEmpty": "En az bir ISBN girin",
     "batchAdded": "Eklenen kitaplar",
-    "logPagesButton": "{count} sayfa okudum",
+    "logPagesButton": "Sayfa oku",
     "logPagesToast": "{count} sayfa kaydedildi \u00b7 \ud83d\udd25 {streak} g\u00fcn",
     "logPagesError": "Okuma kaydedilemedi",
     "bookFinishedToast": "Kitap bitti!",

@@ -138,7 +138,7 @@
     "batchFailed": "Lookup failed",
     "batchEmpty": "Enter at least one ISBN",
     "batchAdded": "Books added",
-    "logPagesButton": "I've read {count} pages",
+    "logPagesButton": "Log pages",
     "logPagesToast": "{count} pages logged \u00b7 \ud83d\udd25 {streak}-day streak",
     "logPagesError": "Could not log reading",
     "bookFinishedToast": "Book finished!",

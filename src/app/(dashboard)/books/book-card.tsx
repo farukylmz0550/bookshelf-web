@@ -356,7 +356,7 @@ export function BookCard({
                   className="flex items-center gap-2 rounded-[8px] bg-[var(--accent)] px-3 py-2.5 text-start font-[var(--font-sans)] text-sm font-medium text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
                 >
                   <BookPlus size={16} />
-                  {dict.logPagesButton.replace("{count}", String(pagesToLog))}
+                  {dict.logPagesButton}
                 </button>
               )}
               {status === "FINISHED" && (

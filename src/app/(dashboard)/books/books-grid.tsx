@@ -76,7 +76,7 @@ export function BooksGrid({
   headerSlot?: React.ReactNode;
   ctaSlot?: React.ReactNode;
 }) {
-  pageMode = pageMode ?? "FIXED";
+  const effectivePageMode = pageMode ?? "FIXED";
   const router = useRouter();
   // v2.7.0 — "start a new book" flow after finishing one
   const [nextBookOpen, setNextBookOpen] = useState(false);
@@ -184,7 +184,7 @@ export function BooksGrid({
                 lentOut={!!lentMap[book.id]}
                 statusLabels={statusLabels}
                 pagesPerReadEvent={pagesPerReadEvent}
-                pageMode={pageMode}
+                pageMode={effectivePageMode}
                 groups={groups}
                 dict={{
                   toRead: statusLabels.toRead,

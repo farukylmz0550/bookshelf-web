@@ -9,7 +9,7 @@ import { requireUserId } from "@/lib/session";
 import {
   finishBookWithXpFor,
   recordActivityFor,
-  useStreakShieldFor,
+  useStreakShieldFor as consumeStreakShieldFor,
   purchaseStreakShieldFor,
 } from "@/lib/services/streak";
 
@@ -31,7 +31,7 @@ export async function finishBookWithXp(bookId: string, pages: number | null) {
 
 export async function useStreakShield() {
   const userId = await requireUserId();
-  const result = await useStreakShieldFor(userId);
+  const result = await consumeStreakShieldFor(userId);
   revalidatePath("/stats");
   return result;
 }

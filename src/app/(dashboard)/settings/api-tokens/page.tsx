@@ -24,7 +24,7 @@ export default async function ApiTokensPage() {
           {dict.apiTokens?.subtitle ?? "Use tokens for the REST API and MCP endpoint."}
         </p>
       </header>
-      <ApiTokensManager tokens={tokens as any} dict={dict.apiTokens ?? {}} isAdmin={!!user?.isAdmin} />
+      <ApiTokensManager tokens={tokens} dict={dict.apiTokens ?? {}} isAdmin={!!user?.isAdmin} />
     </div>
   );
 }

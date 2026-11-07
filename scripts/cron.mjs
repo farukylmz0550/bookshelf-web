@@ -30,6 +30,7 @@ const TASKS = [
   ["goal-progress", "/api/push/goal-progress"],
   ["backup", "/api/backup"],
   ["extensions", "/api/extensions/cron"],
+  ["openlibrary-submissions", "/api/openlibrary/submissions"],
 ];
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

@@ -52,6 +52,7 @@ export const CRON_PATHS = [
   "/api/push/overdue-remind",
   "/api/backup",
   "/api/extensions/cron",
+  "/api/openlibrary/submissions",
 ];
 
 /** True when the pathname may be reached without a NextAuth session. */

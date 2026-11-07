@@ -9,6 +9,7 @@ import {
   GOODREADS_MAX_ERROR_MESSAGES,
   GOODREADS_MAX_ROWS,
   parseGoodreadsRows,
+  parseGoodreadsRowsWithRustFirst,
   type GoodreadsRow,
 } from "@/lib/books/goodreads";
 import { lookupIsbns, type IsbnLookupResult } from "@/lib/isbn";
@@ -44,7 +45,9 @@ export async function importBooksCsv(base64: string): Promise<GoodreadsImportRes
         ? parseCalibreRows(text)
         : format === "storygraph"
           ? parseStorygraphRows(text)
-          : parseGoodreadsRows(text);
+          : format === "goodreads"
+            ? await parseGoodreadsRowsWithRustFirst(text)
+            : parseGoodreadsRows(text);
     if ("error" in parsed) {
       return { imported: 0, duplicates: 0, invalid: 0, lookupFailed: 0, errors: [], error: "invalidCsv" };
     }

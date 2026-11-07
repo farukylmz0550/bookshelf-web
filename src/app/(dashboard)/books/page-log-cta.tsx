@@ -147,7 +147,7 @@ export function PageLogCta({
         className="h-11 w-full gap-2 rounded-[12px] px-6 text-base sm:w-auto"
       >
         <BookPlus size={18} />
-        {dict.label.replace("{count}", String(pagesPerReadEvent))}
+        {dict.label}
       </Button>
 
       {books.length > 1 && (
@@ -159,7 +159,7 @@ export function PageLogCta({
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{dict.label.replace("{count}", String(pagesPerReadEvent))}</DialogTitle>
+              <DialogTitle>{dict.label}</DialogTitle>
             </DialogHeader>
             <div className="max-h-72 space-y-1 overflow-y-auto">
               {books.map((book) => {

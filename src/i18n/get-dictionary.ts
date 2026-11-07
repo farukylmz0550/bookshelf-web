@@ -11,12 +11,12 @@ import de from "./dictionaries/de.json";
 import it from "./dictionaries/it.json";
 import pt from "./dictionaries/pt.json";
 
-function mergeDictionary(base: unknown, overrides: unknown): any {
+function mergeDictionary(base: Record<string, unknown>, overrides: unknown): Record<string, unknown> {
   if (!overrides || typeof overrides !== "object" || Array.isArray(overrides)) return base;
-  const result: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  const result: Record<string, unknown> = { ...base };
   for (const [key, value] of Object.entries(overrides)) {
     result[key] = value && typeof value === "object" && !Array.isArray(value)
-      ? mergeDictionary(result[key], value)
+      ? mergeDictionary((result[key] as Record<string, unknown>) ?? {}, value)
       : value;
   }
   return result;
@@ -30,9 +30,9 @@ export const dictionaries = {
   ru,
   zh,
   ar,
-  de: mergeDictionary(en, de),
-  it: mergeDictionary(en, it),
-  pt: mergeDictionary(en, pt),
+  de: mergeDictionary(en, de) as typeof en,
+  it: mergeDictionary(en, it) as typeof en,
+  pt: mergeDictionary(en, pt) as typeof en,
 };
 export type Locale = keyof typeof dictionaries;
 export const LOCALES: Locale[] = ["en", "tr", "es", "fr", "ru", "zh", "ar", "de", "it", "pt"];
