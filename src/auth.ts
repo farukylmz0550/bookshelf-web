@@ -1,10 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { checkRateLimit, resetRateLimit, throttlingEnabled, getRequestIp, DEFAULT_LIMITS } from "@/lib/rate-limit";
 import { verifyTotpCode } from "@/lib/totp";
+
+class LoginStepError extends CredentialsSignin {
+  constructor(code: "APPROVAL_PENDING" | "TOTP_REQUIRED" | "TOTP_THROTTLED" | "INVALID_TOTP") {
+    super();
+    this.code = code;
+  }
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -32,7 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!valid) return null;
 
         if (!user.approved) {
-          throw new Error("APPROVAL_PENDING");
+          throw new LoginStepError("APPROVAL_PENDING");
         }
 
         // v2.10.0 — optional TOTP: without an enabled secret this step is a
@@ -51,12 +58,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // 3. a successful code clears the counter.
         if (user.totpEnabled) {
           const token = (credentials?.totp as string | undefined) ?? "";
-          if (!token) throw new Error("TOTP_REQUIRED");
+          if (!token) throw new LoginStepError("TOTP_REQUIRED");
           if (throttlingEnabled() && !checkRateLimit(`totp-login:${user.id}`, { max: 5, windowMs: 5 * 60 * 1000 })) {
-            throw new Error("TOTP_THROTTLED");
+            throw new LoginStepError("TOTP_THROTTLED");
           }
           if (user.totpSecret && verifyTotpCode(user.totpSecret, token) !== "VALID") {
-            throw new Error("INVALID_TOTP");
+            throw new LoginStepError("INVALID_TOTP");
           }
           if (throttlingEnabled()) resetRateLimit(`totp-login:${user.id}`);
         }

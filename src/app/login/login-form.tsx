@@ -41,7 +41,8 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
     });
     setPending(false);
     if (result?.error) {
-      if (result.error === "TOTP_REQUIRED") {
+      const errorCode = result.error === "CredentialsSignin" ? result.code : result.error;
+      if (errorCode === "TOTP_REQUIRED") {
         // v3.14.0 — open the TOTP popup with the credentials stashed; the
         // popup's submit re-sends them + the code in the same signIn path.
         credsRef.current = {
@@ -57,17 +58,17 @@ export default function LoginForm({ dict }: { dict: Record<string, string> }) {
       // v3.11.2 — throttle hit: explain the wait instead of pretending the
       // password was wrong; the code entry stays open for a single retry
       // after the window.
-      if (result.error === "TOTP_THROTTLED") {
+      if (errorCode === "TOTP_THROTTLED") {
         setError(dict.totpThrottled);
         return;
       }
-      if (result.error === "INVALID_TOTP") {
+      if (errorCode === "INVALID_TOTP") {
         setTotpInvalid(true);
         setTotpCode("");
         setError(dict.invalidTotp);
         return;
       }
-      if (result.error === "APPROVAL_PENDING") {
+      if (errorCode === "APPROVAL_PENDING") {
         setError(dict.approvalPending);
         return;
       }

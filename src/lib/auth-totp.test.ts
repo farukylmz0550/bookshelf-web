@@ -5,6 +5,8 @@
 // and the NextAuth factory intercepted only to capture the provider.
 
 import { describe, it, expect, beforeAll, vi } from "vitest";
+import { Auth, type AuthConfig } from "@auth/core";
+import { generateSync } from "otplib";
 
 // The login throttle paths under test are no-ops in dev, so force the flag.
 vi.mock("@/lib/rate-limit", async (importOriginal) => {
@@ -37,18 +39,17 @@ vi.mock("@/lib/db", async () => {
 // its NextAuth config — the test then drives it exactly like signIn() does.
 const captured = vi.hoisted(() => ({
   authorize: null as null | ((c: Record<string, unknown>, r: unknown) => Promise<unknown>),
+  config: null as AuthConfig | null,
 }));
 
-vi.mock("next-auth", () => {
-  const NextAuth = (config: {
-    providers: Array<{
-      // Credentials() keeps the user's authorize in `options` — the provider
-      // object itself carries only the default `() => null`.
+vi.mock("next-auth", async () => {
+  const { CredentialsSignin } = await import("@auth/core/errors");
+  const NextAuth = (config: AuthConfig) => {
+    captured.config = config;
+    const provider = config.providers[0] as {
       options?: { authorize?: (c: Record<string, unknown>, r: unknown) => Promise<unknown> };
-    }>;
-  }) => {
-    const provider = config.providers.find((p) => typeof p.options?.authorize === "function");
-    captured.authorize = provider?.options?.authorize ?? null;
+    };
+    captured.authorize = provider.options?.authorize ?? null;
     return {
       handlers: {},
       auth: async () => null,
@@ -56,7 +57,7 @@ vi.mock("next-auth", () => {
       signOut: async () => null,
     };
   };
-  return { NextAuth, default: NextAuth };
+  return { NextAuth, default: NextAuth, CredentialsSignin };
 });
 
 import { db } from "@/lib/db";
@@ -103,7 +104,10 @@ describe("TOTP login (v3.11.2 deadlock fix)", () => {
     // 5 slots per 5 minutes, so the account was locked out before any real
     // code was typed.
     for (let i = 0; i < 6; i++) {
-      await expect(attempt({ email: EMAIL, password: PASSWORD })).rejects.toThrowError("TOTP_REQUIRED");
+      await expect(attempt({ email: EMAIL, password: PASSWORD })).rejects.toMatchObject({
+        type: "CredentialsSignin",
+        code: "TOTP_REQUIRED",
+      });
     }
   });
 
@@ -114,15 +118,81 @@ describe("TOTP login (v3.11.2 deadlock fix)", () => {
         if (r === null) throw new Error(`attempt ${i + 1} unexpectedly resolved null`);
         expect.unreachable(`attempt ${i + 1} did not reject`);
       } catch (e) {
-        expect((e as Error).message).toBe("INVALID_TOTP");
+        expect(e).toMatchObject({ type: "CredentialsSignin", code: "INVALID_TOTP" });
       }
     }
     // The throttle must surface as its OWN error — not a silent null that the
     // login form shows as "invalid credentials" while hiding the code field.
-    await expect(attempt({ email: EMAIL, password: PASSWORD, totp: "000000" })).rejects.toThrowError("TOTP_THROTTLED");
+    await expect(attempt({ email: EMAIL, password: PASSWORD, totp: "000000" })).rejects.toMatchObject({
+      type: "CredentialsSignin",
+      code: "TOTP_THROTTLED",
+    });
   });
 
   it("wrong password still fails generically (null → CredentialsSignin)", async () => {
     await expect(attempt({ email: EMAIL, password: "wrong", totp: "000000" })).resolves.toBeNull();
+  });
+
+  it("preserves second-factor error codes through the real Auth.js HTTP callback and requires a valid code", async () => {
+    const email = "http-totp@bookshelf.test";
+    const secret = createTotpSecret();
+    await db.user.create({
+      data: {
+        email,
+        name: "HTTP TOTP User",
+        passwordHash: await bcrypt.hash(PASSWORD, 4),
+        approved: true,
+        totpEnabled: true,
+        totpSecret: secret,
+      },
+    });
+    if (!captured.config) throw new Error("Auth config was not captured");
+    const config: AuthConfig = {
+      ...captured.config,
+      secret: "isolated-auth-http-regression-test",
+      trustHost: true,
+      basePath: "/api/auth",
+      logger: { error: () => undefined },
+    };
+    async function callback(password: string, totp = "") {
+      const csrf = await Auth(new Request("https://bookshelf.test/api/auth/csrf"), config);
+      const { csrfToken } = await csrf.json();
+      const cookies = csrf.headers
+        .getSetCookie()
+        .map((cookie) => cookie.split(";")[0])
+        .join("; ");
+      const response = await Auth(
+        new Request("https://bookshelf.test/api/auth/callback/credentials", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Auth-Return-Redirect": "1",
+            cookie: cookies,
+            "x-forwarded-for": "10.1.0.1",
+          },
+          body: new URLSearchParams({ email, password, totp, csrfToken, callbackUrl: "https://bookshelf.test/books" }),
+        }),
+        config,
+      );
+      const { url } = await response.json();
+      return { response, url: new URL(url) };
+    }
+    for (const [password, totp, code] of [
+      [PASSWORD, "", "TOTP_REQUIRED"],
+      [PASSWORD, "invalid", "INVALID_TOTP"],
+      ["wrong-password", "", "credentials"],
+    ]) {
+      const result = await callback(password, totp);
+      expect(result.url.searchParams.get("error")).toBe("CredentialsSignin");
+      expect(result.url.searchParams.get("code")).toBe(code);
+      expect(
+        result.response.headers.getSetCookie().some((cookie) => cookie.startsWith("__Secure-authjs.session-token=")),
+      ).toBe(false);
+    }
+    const success = await callback(PASSWORD, generateSync({ secret }));
+    expect(success.url.href).toBe("https://bookshelf.test/books");
+    expect(
+      success.response.headers.getSetCookie().some((cookie) => cookie.startsWith("__Secure-authjs.session-token=")),
+    ).toBe(true);
   });
 });
