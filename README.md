@@ -38,7 +38,7 @@ The original concept, creative direction, project management, and development de
 | 🗂️ **Shelves** | Create/rename/delete/reorder, optional color · bulk picker dialog (+ button per shelf — select books, one "Add" click) · many-to-many books · dedicated `/groups/[id]` grid view · main-page shelf filter (AND with tags/status/search) |
 | 🤝 **Lending** | Lend / return, copy-aware · borrower picked from your People via dropdown — people are created on `/people` only (v3.5.1) |
 | 👥 **People** | Trust scores + lending history |
-| 📊 **Stats** | Total/finished/reading, avg days, monthly chart, streak widget, heatmap |
+| 📊 **Stats** | Total/finished/reading, avg days, monthly chart, streak widget, calendar with distinct reading/non-reading day colors and a localized legend |
 | 🎮 **Gamification** | XP +5 add / +50 finish / +5 lend (+page & streak bonus) · Fibonacci level (+ optional custom level names via `config.yaml`, v3.1.0) · streak shields are purchased with XP and automatically consumed after one missed reading day · 21 achievements — permanent + re-earnable monthly (period-based, no cron) with a "Monthly" badge · device reading-time write-back (Kobo minutes → Stats tile + heatmap tooltips) |
 | 🏆 **Leaderboard** | Current-month ranking by distinct completed books, automatic monthly reset, opt-out, and a one-time 150 XP reward for the previous month's winner |
 | 🎯 **Goals** | Yearly / monthly targets |

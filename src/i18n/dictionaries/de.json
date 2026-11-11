@@ -1,6 +1,16 @@
 {
-  "nav": { "health": "Bibliothek", "market": "Shop", "books": "Bücher", "settings": "Einstellungen", "more": "Mehr", "stats": "Statistiken", "groups": "Regale", "lending": "Ausleihe" },
+  "nav": {
+    "health": "Bibliothek",
+    "market": "Shop",
+    "books": "Bücher",
+    "settings": "Einstellungen",
+    "more": "Mehr",
+    "stats": "Statistiken",
+    "groups": "Regale",
+    "lending": "Ausleihe"
+  },
   "theme": { "light": "Hell", "dark": "Dunkel", "system": "System" },
+  "stats": { "readingDay": "Lesetag", "noReadingDay": "Nicht gelesen" },
   "market": {
     "title": "Shop",
     "description": "Tausche XP gegen Belohnungen zum Schutz deiner Leseserie.",

@@ -1,6 +1,16 @@
 {
-  "nav": { "health": "Biblioteca", "market": "Loja", "books": "Livros", "settings": "Definições", "more": "Mais", "stats": "Estatísticas", "groups": "Estantes", "lending": "Empréstimos" },
+  "nav": {
+    "health": "Biblioteca",
+    "market": "Loja",
+    "books": "Livros",
+    "settings": "Definições",
+    "more": "Mais",
+    "stats": "Estatísticas",
+    "groups": "Estantes",
+    "lending": "Empréstimos"
+  },
   "theme": { "light": "Claro", "dark": "Escuro", "system": "Sistema" },
+  "stats": { "readingDay": "Dia de leitura", "noReadingDay": "Sem leitura" },
   "market": {
     "title": "Loja",
     "description": "Troca XP por recompensas que protegem a tua sequência de leitura.",

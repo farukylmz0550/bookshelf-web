@@ -5,18 +5,14 @@ import type { ReactNode } from "react";
 
 interface ActivityHeatmapProps {
   activities: { date: string; count: number; pagesRead: number; minutesRead?: number }[];
-  dict: { yearlyActivity: string; activities: string; less: string; more: string };
+  dict: { yearlyActivity: string; activities: string; readingDay: string; noReadingDay: string };
 }
 
 const WEEK_DAYS = ["Mon", "", "Wed", "", "Fri", "", "Sun"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-function getIntensityClass(count: number): string {
-  if (count === 0) return "bg-muted/50";
-  if (count === 1) return "bg-[var(--success)]/30";
-  if (count === 2) return "bg-[var(--success)]/50";
-  if (count <= 4) return "bg-[var(--success)]/75";
-  return "bg-[var(--success)]";
+function getDayClass(count: number): string {
+  return count > 0 ? "bg-primary" : "bg-muted/50";
 }
 
 function formatDate(date: Date): string {
@@ -132,8 +128,8 @@ export function ActivityHeatmap({ activities, dict }: ActivityHeatmapProps) {
                   {week.map((day, di) => (
                     <div
                       key={di}
-                      className={`h-[10px] w-[10px] rounded-sm ${getIntensityClass(day.count)} transition-colors`}
-                      title={`${formatDate(day.date)} — ${day.count} activities${day.pagesRead > 0 ? ` · ${day.pagesRead}p` : ""}${day.minutesRead > 0 ? ` · ${day.minutesRead} min` : ""}`}
+                      className={`h-[10px] w-[10px] rounded-sm ${getDayClass(day.count)} transition-colors`}
+                      title={`${formatDate(day.date)} — ${day.count > 0 ? dict.readingDay : dict.noReadingDay} · ${day.count} ${dict.activities}${day.pagesRead > 0 ? ` · ${day.pagesRead}p` : ""}${day.minutesRead > 0 ? ` · ${day.minutesRead} min` : ""}`}
                     />
                   ))}
                 </div>
@@ -143,12 +139,15 @@ export function ActivityHeatmap({ activities, dict }: ActivityHeatmapProps) {
         </div>,
       )}
 
-      <div className="mt-2 flex items-center justify-end gap-1">
-        <span className="text-[9px] text-muted-foreground">{dict.less}</span>
-        {[0, 1, 2, 3, 5].map((n) => (
-          <div key={n} className={`h-[10px] w-[10px] rounded-sm ${getIntensityClass(n)}`} />
-        ))}
-        <span className="text-[9px] text-muted-foreground">{dict.more}</span>
+      <div className="mt-2 flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1">
+          <span aria-hidden="true" className={`h-[10px] w-[10px] rounded-sm ${getDayClass(0)}`} />
+          {dict.noReadingDay}
+        </span>
+        <span className="flex items-center gap-1">
+          <span aria-hidden="true" className={`h-[10px] w-[10px] rounded-sm ${getDayClass(1)}`} />
+          {dict.readingDay}
+        </span>
       </div>
     </div>
   );

@@ -185,8 +185,8 @@ export default async function StatsPage({ searchParams }: { searchParams?: Promi
         dict={{
           yearlyActivity: dict.stats.yearlyActivity,
           activities: dict.stats.activities,
-          less: dict.stats.less,
-          more: dict.stats.more,
+          readingDay: dict.stats.readingDay,
+          noReadingDay: dict.stats.noReadingDay,
         }}
         activities={dailyActivities.map((a) => ({
           date: a.date.toISOString().split("T")[0],

@@ -44,7 +44,7 @@ function guard(context: AuthContext, scope: ApiScope): string | null {
 
 export function createMcpServer(context: AuthContext): McpServer {
   const server = new McpServer(
-    { name: "bookshelf", version: "4.0.0" },
+    { name: "bookshelf", version: "4.0.1" },
     {
       instructions:
         "BookShelf personal library. Use list_books/search_books before mutating; dates are ISO 8601; statuses are TO_READ, READING, FINISHED.",
@@ -219,16 +219,32 @@ export function createMcpServer(context: AuthContext): McpServer {
   register(
     "search_books",
     "books:read",
-    { description: "Search the caller's books by title, author, ISBN or tags.", inputSchema: { query: z.string().min(1), limit: z.number().int().min(1).max(500).optional() } },
-    async (args) => ok(await books.listBooks(context.userId, { search: args.query as string, limit: args.limit as number | undefined })),
+    {
+      description: "Search the caller's books by title, author, ISBN or tags.",
+      inputSchema: { query: z.string().min(1), limit: z.number().int().min(1).max(500).optional() },
+    },
+    async (args) =>
+      ok(
+        await books.listBooks(context.userId, {
+          search: args.query as string,
+          limit: args.limit as number | undefined,
+        }),
+      ),
   );
 
   register(
     "set_openlibrary_submission_permission",
     "books:write",
-    { description: "Allow or deny Open Library submission for one book.", inputSchema: { bookId: z.string().min(1), enabled: z.boolean() } },
+    {
+      description: "Allow or deny Open Library submission for one book.",
+      inputSchema: { bookId: z.string().min(1), enabled: z.boolean() },
+    },
     async (args) => {
-      const result = await books.setOpenLibrarySubmissionPermission(context.userId, args.bookId as string, args.enabled as boolean);
+      const result = await books.setOpenLibrarySubmissionPermission(
+        context.userId,
+        args.bookId as string,
+        args.enabled as boolean,
+      );
       return result.ok ? ok(result) : fail(result.error);
     },
   );

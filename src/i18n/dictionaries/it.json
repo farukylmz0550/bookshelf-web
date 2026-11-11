@@ -1,6 +1,16 @@
 {
-  "nav": { "health": "Biblioteca", "market": "Negozio", "books": "Libri", "settings": "Impostazioni", "more": "Altro", "stats": "Statistiche", "groups": "Scaffali", "lending": "Prestiti" },
+  "nav": {
+    "health": "Biblioteca",
+    "market": "Negozio",
+    "books": "Libri",
+    "settings": "Impostazioni",
+    "more": "Altro",
+    "stats": "Statistiche",
+    "groups": "Scaffali",
+    "lending": "Prestiti"
+  },
   "theme": { "light": "Chiaro", "dark": "Scuro", "system": "Sistema" },
+  "stats": { "readingDay": "Giorno di lettura", "noReadingDay": "Nessuna lettura" },
   "market": {
     "title": "Negozio",
     "description": "Scambia XP con ricompense che proteggono la tua serie di lettura.",

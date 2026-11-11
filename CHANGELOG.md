@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.1 — 2026-11-11
+
+### Fixed
+- Statistics now highlight reading days with the theme's orange accent while keeping the existing non-reading day color, with a localized legend and day tooltips.
+
 ## 4.0.0 — 2026-11-11
 
 ### Added
