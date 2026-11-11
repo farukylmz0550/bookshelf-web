@@ -11,7 +11,7 @@ import { getAppConfig } from "@/lib/app-config";
 import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { defaultFilters, arrange, type Filters } from "@/lib/books/filters";
 import { recordActivityFor, finishBookWithXpFor } from "./streak";
-import { queueOpenLibrarySubmission, submitOpenLibrarySubmission, toOpenLibraryImportPayload } from "./openlibrary-submissions";
+import { queueOpenLibrarySubmission, toOpenLibraryImportPayload } from "./openlibrary-submissions";
 
 export const bookStatusSchema = z.enum(["TO_READ", "READING", "FINISHED"]);
 export type BookStatusValue = z.infer<typeof bookStatusSchema>;
@@ -200,6 +200,25 @@ export async function getBook(userId: string, bookId: string) {
   return db.book.findFirst({ where: { id: bookId, userId } });
 }
 
+export async function setOpenLibrarySubmissionPermission(userId: string, bookId: string, enabled: boolean) {
+  const book = await db.book.findFirst({ where: { id: bookId, userId }, select: { id: true } });
+  if (!book) return { ok: false as const, error: "NOT_FOUND" };
+  const updated = await db.book.update({ where: { id: bookId }, data: { openLibrarySubmissionEnabled: enabled } });
+  if (!enabled) {
+    await db.openLibrarySubmission.updateMany({ where: { bookId, status: "PENDING" }, data: { lastError: "Consent revoked" } });
+  }
+  return { ok: true as const, enabled: updated.openLibrarySubmissionEnabled };
+}
+
+export async function getOpenLibrarySubmissionStatus(userId: string, bookId: string) {
+  const book = await db.book.findFirst({
+    where: { id: bookId, userId },
+    select: { openLibrarySubmissionEnabled: true, openLibrarySubmission: true },
+  });
+  if (!book) return null;
+  return { enabled: book.openLibrarySubmissionEnabled, submission: book.openLibrarySubmission };
+}
+
 export async function createBook(userId: string, input: AddBookInput) {
   const parsed = addBookSchema.safeParse(input);
   if (!parsed.success) {
@@ -216,7 +235,6 @@ export async function createBook(userId: string, input: AddBookInput) {
     if (!found) {
       const payload = toOpenLibraryImportPayload({ ...book, ...parsed.data });
       await queueOpenLibrarySubmission(book.id, payload).catch(() => {});
-      await submitOpenLibrarySubmission(book.id, payload).catch(() => {});
     }
     try {
       const { syncBookCopies } = await import("./locations");
@@ -261,7 +279,6 @@ export async function updateBook(userId: string, bookId: string, data: UpdateBoo
   if (submission && submission.status !== "SUBMITTED") {
     const payload = toOpenLibraryImportPayload(updated);
     await queueOpenLibrarySubmission(bookId, payload).catch(() => {});
-    await submitOpenLibrarySubmission(bookId, payload).catch(() => {});
   }
   if (typeof update.copies === "number") {
     try {

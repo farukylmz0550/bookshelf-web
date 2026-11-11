@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# BookShelf v3.0.0 — site-wide configuration (single source of truth).
+# BookShelf v4.0.0 — site-wide configuration (single source of truth).
 #
 # Previously these values lived in the AppSettings DB table and were editable
 # from the admin panel; as of 3.0.0 the admin panel no longer changes them —
@@ -32,6 +32,17 @@ xp:
     # language only (site owner's choice); missing entries fall back to
     # "Level N".
     # names: [Novice Reader, Bookworm, Bibliophile, Librarian]
+
+family:
+  # v4.0.0 — legacy personal-book mode remains the safe default.
+  enabled: false
+
+index:
+  batchSize: 250
+
+cron:
+  # Notification rows enforce exactly-once delivery at this cadence.
+  intervalMinutes: 15
 
 backfill:
   # "Fill missing page counts" (Settings → Book data): Open Library batch

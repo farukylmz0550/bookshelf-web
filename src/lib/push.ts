@@ -31,12 +31,28 @@ export interface PushPayload {
   tag?: string;
 }
 
+function localDateKey(date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
+  return `${parts.find((p) => p.type === "year")?.value}-${parts.find((p) => p.type === "month")?.value}-${parts.find((p) => p.type === "day")?.value}`;
+}
+
+async function claimPushDelivery(userId: string, notification: string): Promise<boolean> {
+  try {
+    await db.pushDelivery.create({ data: { userId, notification, deliveryDate: localDateKey() } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Send a web push to every subscription of a user.
  * Removes subscriptions the server reports as gone (410/404).
  */
-export async function sendPushToUser(userId: string, payload: PushPayload): Promise<number> {
+export async function sendPushToUser(userId: string, payload: PushPayload, notificationKey?: string): Promise<number> {
   ensureConfigured();
+
+  if (notificationKey && !(await claimPushDelivery(userId, notificationKey))) return 0;
 
   const subscriptions = await db.pushSubscription.findMany({ where: { userId } });
   let sent = 0;
@@ -101,7 +117,7 @@ export async function sendStreakReminders(): Promise<{ sent: number; skipped: nu
         body: `You haven't read today. Don't lose your ${info.currentStreak}-day streak!`,
         url: "/books",
         tag: "streak-warning",
-      });
+      }, "streak-warning");
       sent += count;
     } catch {
       skipped += 1;
@@ -153,7 +169,7 @@ export async function sendOverdueReminders(): Promise<{ sent: number; skipped: n
         skipped += 1;
         continue;
       }
-      const count = await sendPushToUser(userId, { ...payload, url: "/lending", tag: "overdue-remind" });
+      const count = await sendPushToUser(userId, { ...payload, url: "/lending", tag: "overdue-remind" }, "overdue-remind");
       sent += count;
     } catch {
       skipped += 1;
@@ -238,7 +254,7 @@ export async function sendGoalProgressReminders(): Promise<{ sent: number; skipp
                 tag: "goal-progress",
               };
 
-      sent += await sendPushToUser(userId, payload);
+      sent += await sendPushToUser(userId, payload, "goal-progress");
     } catch {
       skipped += 1;
     }

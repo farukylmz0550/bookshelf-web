@@ -19,6 +19,7 @@ const SECRET = process.env.CRON_SECRET;
 const RUN_ON_START = process.env.CRON_RUN_ON_START !== "false";
 const configuredHour = Number.parseInt(process.env.CRON_HOUR ?? "9", 10);
 const RUN_HOUR = Number.isFinite(configuredHour) ? Math.min(23, Math.max(0, configuredHour)) : 9;
+const INTERVAL_MINUTES = Math.min(60, Math.max(1, Number.parseInt(process.env.CRON_INTERVAL_MINUTES ?? "15", 10) || 15));
 const TASK_TIMEOUT_MS = 20_000;
 const HEALTH_TIMEOUT_MS = 5_000;
 const HEALTH_ATTEMPTS = 30;
@@ -32,6 +33,7 @@ const TASKS = [
   ["extensions", "/api/extensions/cron"],
   ["openlibrary-submissions", "/api/openlibrary/submissions"],
 ];
+const FREQUENT_TASKS = TASKS.slice(0, 3);
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -73,28 +75,19 @@ async function runTask(name, path) {
   }
 }
 
-let lastRunDate = "";
+let lastDailyDate = "";
 
 async function runAll() {
   const today = new Date().toISOString().slice(0, 10);
-  if (lastRunDate === today) {
-    log(`already ran today (${today}); skipping duplicate`);
-    return;
-  }
-  log("running scheduled tasks");
-  for (const [name, path] of TASKS) {
+  log("running frequent notification tasks");
+  for (const [name, path] of FREQUENT_TASKS) {
     await runTask(name, path);
   }
-  lastRunDate = today;
+  if (lastDailyDate !== today && new Date().getHours() >= RUN_HOUR) {
+    for (const [name, path] of TASKS.slice(3)) await runTask(name, path);
+    lastDailyDate = today;
+  }
   log("scheduled tasks finished");
-}
-
-function msUntilNextRun() {
-  const now = new Date();
-  const next = new Date(now);
-  next.setHours(RUN_HOUR, 0, 0, 0);
-  if (next.getTime() <= now.getTime()) next.setDate(next.getDate() + 1);
-  return next.getTime() - now.getTime();
 }
 
 async function main() {
@@ -110,12 +103,8 @@ async function main() {
 
   if (RUN_ON_START) await runAll();
 
-  const delay = msUntilNextRun();
-  log(`next run in ${Math.round(delay / 60_000)} min (${RUN_HOUR}:00 local)`);
-  setTimeout(async () => {
-    await runAll();
-    setInterval(runAll, 24 * 60 * 60 * 1000);
-  }, delay);
+  log(`running every ${INTERVAL_MINUTES} min; daily tasks after ${RUN_HOUR}:00 local`);
+  setInterval(runAll, INTERVAL_MINUTES * 60 * 1000);
 }
 
 main().catch((error) => {

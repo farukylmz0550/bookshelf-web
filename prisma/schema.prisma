@@ -68,6 +68,7 @@ model User {
   libraryLocations  LibraryLocation[]
   bookCopies        BookCopy[]
   inventoryAudits   InventoryAudit[]
+  pushDeliveries    PushDelivery[]
 
   @@index([id])
 }
@@ -145,6 +146,7 @@ model Book {
 
   // Manual books that are not yet present in Open Library are queued for a
   // future authenticated Open Library submission flow.
+  openLibrarySubmissionEnabled Boolean @default(false)
   openLibrarySubmission OpenLibrarySubmission?
 
   lendingRecords   LendingRecord[]
@@ -373,6 +375,19 @@ model PushSubscription {
 
   @@unique([userId, endpoint])
   @@index([userId])
+}
+
+// v4.0.0 — exactly-once guard for scheduled notifications.
+model PushDelivery {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notification String
+  deliveryDate String
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, notification, deliveryDate])
+  @@index([deliveryDate])
 }
 
 // v3.5.1 — site-wide admin-controlled values that must live in the DB (the

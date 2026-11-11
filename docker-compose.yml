@@ -63,6 +63,7 @@ services:
       BOOKSHELF_URL: http://app:3000
       CRON_HOUR: ${CRON_HOUR:-9}
       CRON_RUN_ON_START: ${CRON_RUN_ON_START:-true}
+      CRON_INTERVAL_MINUTES: ${CRON_INTERVAL_MINUTES:-15}
       TZ: ${TZ:-UTC}
 
 volumes:

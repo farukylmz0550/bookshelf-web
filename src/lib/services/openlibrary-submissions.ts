@@ -59,8 +59,9 @@ export async function submitOpenLibrarySubmission(bookId: string, payload: Recor
   const password = process.env.OPENLIBRARY_PASSWORD;
   if (!username || !password) return { submitted: false as const, reason: "NOT_CONFIGURED" };
 
-  const row = await db.openLibrarySubmission.findUnique({ where: { bookId } });
+  const row = await db.openLibrarySubmission.findUnique({ where: { bookId }, include: { book: { select: { openLibrarySubmissionEnabled: true } } } });
   if (!row) return { submitted: false as const, reason: "NOT_QUEUED" };
+  if (!row.book.openLibrarySubmissionEnabled) return { submitted: false as const, reason: "CONSENT_REQUIRED" };
 
   try {
     const login = await fetch("https://openlibrary.org/account/login.json", {
@@ -102,7 +103,7 @@ export async function submitOpenLibrarySubmission(bookId: string, payload: Recor
 
 export async function processOpenLibrarySubmissions(limit = 10) {
   const rows = await db.openLibrarySubmission.findMany({
-    where: { status: { in: ["PENDING", "FAILED"] }, attempts: { lt: 5 } },
+    where: { status: { in: ["PENDING", "FAILED"] }, attempts: { lt: 5 }, book: { openLibrarySubmissionEnabled: true } },
     orderBy: { updatedAt: "asc" },
     take: Math.max(1, Math.min(50, limit)),
   });

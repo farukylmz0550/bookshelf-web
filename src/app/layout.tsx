@@ -103,6 +103,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang={locale}
       dir={dir}
+      data-theme={theme ?? "system"}
       data-scroll-behavior="smooth"
       className={`${notoSerif.variable} ${notoSans.variable} ${notoMono.variable} ${notoSansArabic.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
     >
@@ -125,7 +126,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         {theme === undefined && (
           <script
             dangerouslySetInnerHTML={{
-              __html: `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");function a(){var d=m.matches;var c=document.documentElement.classList;c.toggle("dark",d);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",d?"#C17A5E":"#BB4F35");}if(m.addEventListener)m.addEventListener("change",a);a();})();`,
+              __html: `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");function a(){var d=m.matches;var r=document.documentElement;r.setAttribute("data-theme",d?"dark":"light");r.classList.toggle("dark",d);r.style.colorScheme=d?"dark":"light";var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",d?"#C17A5E":"#BB4F35");}if(m.addEventListener)m.addEventListener("change",a);a();})();`,
             }}
           />
         )}

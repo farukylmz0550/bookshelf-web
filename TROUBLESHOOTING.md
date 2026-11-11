@@ -536,3 +536,9 @@ Documented so they are not mistaken for bugs:
 - **Cron jobs not running**: confirm `CRON_SECRET` matches, the cron container can reach the app, and `/api/health` returns 200. The sidecar logs each task.
 - **Extension install fails**: ZIP must include `manifest.json` at root, must be valid JSON, and server extensions require admin rights.
 - **Theme not applying**: the active theme comes from your enabled theme extension or the admin default; hard refresh after changes.
+# v4.0.0 notes
+
+- **Open Library says consent is required:** open the book's submission permission and enable it explicitly. The worker filters disabled books, including old pending rows.
+- **Repeated push delivery:** keep the `PushDelivery` migration applied. The unique user/type/local-date key makes scheduler retries idempotent.
+- **Family mode:** leave `family.enabled` disabled until a backup exists and the deployment has a reviewed data migration plan.
+- **FTS refresh:** the deterministic Rust core is tested with `cargo test --manifest-path rust/reading_core/Cargo.toml`; the Next.js layer remains responsible for database transactions and search scope.

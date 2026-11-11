@@ -44,7 +44,7 @@ function guard(context: AuthContext, scope: ApiScope): string | null {
 
 export function createMcpServer(context: AuthContext): McpServer {
   const server = new McpServer(
-    { name: "bookshelf", version: "3.16.0" },
+    { name: "bookshelf", version: "4.0.0" },
     {
       instructions:
         "BookShelf personal library. Use list_books/search_books before mutating; dates are ISO 8601; statuses are TO_READ, READING, FINISHED.",
@@ -214,6 +214,33 @@ export function createMcpServer(context: AuthContext): McpServer {
       inputSchema: { id: z.string().min(1), pages: z.number().int().min(1).max(5000).optional() },
     },
     async (args) => ok(await books.logPagesRead(context.userId, args.id as string, args.pages as number | undefined)),
+  );
+
+  register(
+    "search_books",
+    "books:read",
+    { description: "Search the caller's books by title, author, ISBN or tags.", inputSchema: { query: z.string().min(1), limit: z.number().int().min(1).max(500).optional() } },
+    async (args) => ok(await books.listBooks(context.userId, { search: args.query as string, limit: args.limit as number | undefined })),
+  );
+
+  register(
+    "set_openlibrary_submission_permission",
+    "books:write",
+    { description: "Allow or deny Open Library submission for one book.", inputSchema: { bookId: z.string().min(1), enabled: z.boolean() } },
+    async (args) => {
+      const result = await books.setOpenLibrarySubmissionPermission(context.userId, args.bookId as string, args.enabled as boolean);
+      return result.ok ? ok(result) : fail(result.error);
+    },
+  );
+
+  register(
+    "get_openlibrary_submission_status",
+    "books:read",
+    { description: "Read Open Library consent and submission state.", inputSchema: { bookId: z.string().min(1) } },
+    async (args) => {
+      const result = await books.getOpenLibrarySubmissionStatus(context.userId, args.bookId as string);
+      return result ? ok(result) : fail("Book not found");
+    },
   );
 
   register(

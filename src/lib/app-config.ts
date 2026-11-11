@@ -37,6 +37,9 @@ export type AppConfigValues = {
   koboStoreProxy: boolean;
   /** v3.4.0 — convert EPUB downloads to KEPUB (kepubify binary required). */
   koboKepubify: boolean;
+  familyEnabled: boolean;
+  indexBatchSize: number;
+  cronIntervalMinutes: number;
 };
 
 const xpSchema = z.object({
@@ -75,12 +78,19 @@ const authSchema = z.object({
   selfApprove: z.boolean().default(false),
 });
 
+const familySchema = z.object({ enabled: z.boolean().default(false) });
+const indexSchema = z.object({ batchSize: intInRange(10, 5000).default(250) });
+const cronSchema = z.object({ intervalMinutes: intInRange(1, 60).default(15) });
+
 const configSchema = z.object({
   xp: xpSchema.optional(),
   backfill: backfillSchema.optional(),
   challenges: challengesSchema.optional(),
   kobo: koboSchema.optional(),
   auth: authSchema.optional(),
+  family: familySchema.optional(),
+  index: indexSchema.optional(),
+  cron: cronSchema.optional(),
 });
 
 function intInRange(min: number, max: number) {
@@ -107,6 +117,9 @@ export function defaultAppConfig(): AppConfigValues {
     koboEnabled: true,
     koboStoreProxy: true,
     koboKepubify: false,
+    familyEnabled: false,
+    indexBatchSize: 250,
+    cronIntervalMinutes: 15,
   };
 }
 
@@ -139,6 +152,9 @@ export function validateAppConfig(doc: unknown): AppConfigValues {
     koboEnabled: data.kobo?.enabled ?? defaults.koboEnabled,
     koboStoreProxy: data.kobo?.storeProxy ?? defaults.koboStoreProxy,
     koboKepubify: data.kobo?.kepubify ?? defaults.koboKepubify,
+    familyEnabled: data.family?.enabled ?? defaults.familyEnabled,
+    indexBatchSize: data.index?.batchSize ?? defaults.indexBatchSize,
+    cronIntervalMinutes: data.cron?.intervalMinutes ?? defaults.cronIntervalMinutes,
   };
 }
 

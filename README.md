@@ -116,6 +116,10 @@ The original concept, creative direction, project management, and development de
 
 ## 🚀 Quick Start
 
+### v4.0.0 migration notes
+
+Version 4 adds the safe foundation for family mode while preserving the existing personal-book schema. `config.yaml` keeps `family.enabled: false` by default. Before enabling future shared-catalog migration work, stop the app, back up `bookshelf.db`, run Prisma migrations, and verify the migration report. Open Library submissions are opt-in per book and existing queued records are not sent automatically.
+
 > **Problems?** See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — startup, login/TOTP recovery, lending, import, PWA and dev-environment fixes.
 
 ### Docker — pre-built (easiest)

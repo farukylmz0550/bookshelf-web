@@ -6,6 +6,9 @@ edition = "2021"
 [lib]
 crate-type = ["rlib"]
 
+[dependencies]
+ts-rs = "10.1"
+
 [[bin]]
 name = "reading-import"
 path = "src/bin/reading-import.rs"

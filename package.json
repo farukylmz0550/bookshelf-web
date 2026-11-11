@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "3.22.1",
+  "version": "4.0.0",
   "license": "GPL-3.0-only",
   "private": true,
   "overrides": {

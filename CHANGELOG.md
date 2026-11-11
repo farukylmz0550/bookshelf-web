@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.0.0 — 2026-11-11
+
+### Added
+- Additive v4 foundation for family-mode configuration, Rust matching/FTS/streak primitives and exactly-once push delivery.
+- Per-book Open Library submission consent; queued records are never submitted without consent.
+- MCP server reports version 4.0.0 and exposes `search_books` plus Open Library consent/status tools.
+
+### Migration
+- Existing personal-library data is preserved. Keep `family.enabled: false` until a reviewed family migration is available for the deployment.
+- Run the database migration before starting v4 and take a SQLite backup first.
+
 ## 3.22.1 — 2026-11-07
 
 ### Added
