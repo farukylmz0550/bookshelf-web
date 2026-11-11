@@ -6,7 +6,7 @@ on:
       tag:
         description: "Tag"
         required: true
-        default: "v3.22.1"
+        default: "v4.0.0"
 
 permissions:
   contents: read
