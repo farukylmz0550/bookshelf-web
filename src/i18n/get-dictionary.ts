@@ -24,12 +24,12 @@ function mergeDictionary(base: Record<string, unknown>, overrides: unknown): Rec
 
 export const dictionaries = {
   en,
-  tr,
-  es,
-  fr,
-  ru,
-  zh,
-  ar,
+  tr: mergeDictionary(en, tr) as typeof en,
+  es: mergeDictionary(en, es) as typeof en,
+  fr: mergeDictionary(en, fr) as typeof en,
+  ru: mergeDictionary(en, ru) as typeof en,
+  zh: mergeDictionary(en, zh) as typeof en,
+  ar: mergeDictionary(en, ar) as typeof en,
   de: mergeDictionary(en, de) as typeof en,
   it: mergeDictionary(en, it) as typeof en,
   pt: mergeDictionary(en, pt) as typeof en,

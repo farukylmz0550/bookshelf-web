@@ -1,6 +1,5 @@
 {
   "nav": {
-    "health": "Biblioteca",
     "market": "Negozio",
     "books": "Libri",
     "settings": "Impostazioni",
@@ -13,6 +12,7 @@
   "stats": { "readingDay": "Giorno di lettura", "noReadingDay": "Nessuna lettura" },
   "market": {
     "title": "Negozio",
+    "currency": "Pergamena",
     "description": "Scambia XP con ricompense che proteggono la tua serie di lettura.",
     "shield": "Protezione della serie",
     "shieldDescription": "Protegge la serie quando salti un giorno.",

@@ -48,6 +48,55 @@ pub fn xp_for_pages(pages: i32, xp_per_ten_pages: i32) -> i32 {
     (pages.max(0) / 10).saturating_mul(xp_per_ten_pages.max(0))
 }
 
+/// Currency is stored in tenths: one real page earns 0.5 parchment (5 tenths).
+pub fn parchment_tenths_for_pages(pages: i32) -> i32 {
+    pages.max(0).saturating_mul(5)
+}
+
+/// Exponential shield price, returned in the same tenths used by persistence.
+pub fn streak_shield_price_tenths(base_parchment: i32, purchase_count: u32) -> i32 {
+    let exponent = purchase_count.min(30);
+    base_parchment
+        .max(0)
+        .saturating_mul(10)
+        .saturating_mul(1_i32.checked_shl(exponent).unwrap_or(i32::MAX))
+}
+
+/// A power is active for an instant strictly before its stored expiry.
+pub fn active_power_multiplier(expires_at_ms: Option<i64>, now_ms: i64) -> i32 {
+    if expires_at_ms.is_some_and(|expiry| expiry > now_ms) {
+        2
+    } else {
+        1
+    }
+}
+
+/// Split subjects on comma/semicolon. If subjects are blank, tags are the source.
+/// Values are trimmed and de-duplicated case-insensitively per book while the
+/// first display spelling is retained.
+pub fn normalized_genres(subjects: Option<&str>, tags: Option<&str>) -> Vec<String> {
+    let subjects = subjects.unwrap_or("").trim();
+    let source = if subjects.is_empty() {
+        tags.unwrap_or("")
+    } else {
+        subjects
+    };
+    let mut result: Vec<String> = Vec::new();
+    let mut keys: Vec<String> = Vec::new();
+    for value in source
+        .split([',', ';'])
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+    {
+        let key = value.to_lowercase();
+        if !keys.iter().any(|existing| existing == &key) {
+            keys.push(key);
+            result.push(value.to_owned());
+        }
+    }
+    result
+}
+
 /// Number of free shields earned at a level, one per ten levels.
 pub fn free_shields_for_level(level: i32) -> i32 {
     level.max(0) / 10
@@ -217,6 +266,35 @@ mod tests {
         assert_eq!(xp_for_pages(29, 5), 10);
         assert_eq!(xp_for_pages(-1, 5), 0);
         assert_eq!(xp_for_pages(100, -5), 0);
+    }
+
+    #[test]
+    fn parchment_uses_exact_tenths_and_ignores_non_positive_pages() {
+        assert_eq!(parchment_tenths_for_pages(1), 5);
+        assert_eq!(parchment_tenths_for_pages(2), 10);
+        assert_eq!(parchment_tenths_for_pages(20), 100);
+        assert_eq!(parchment_tenths_for_pages(-1), 0);
+    }
+
+    #[test]
+    fn market_prices_and_power_expiry_are_deterministic() {
+        assert_eq!(streak_shield_price_tenths(100, 0), 1000);
+        assert_eq!(streak_shield_price_tenths(100, 3), 8000);
+        assert_eq!(active_power_multiplier(Some(101), 100), 2);
+        assert_eq!(active_power_multiplier(Some(100), 100), 1);
+        assert_eq!(active_power_multiplier(None, 100), 1);
+    }
+
+    #[test]
+    fn genres_prefer_subjects_and_dedupe_case_insensitively() {
+        assert_eq!(
+            normalized_genres(Some(" Fantasy; fantasy, Space Opera "), Some("ignored")),
+            vec!["Fantasy", "Space Opera"]
+        );
+        assert_eq!(
+            normalized_genres(Some("  "), Some("History, history; Memoir")),
+            vec!["History", "Memoir"]
+        );
     }
 
     #[test]

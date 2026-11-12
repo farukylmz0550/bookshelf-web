@@ -1,6 +1,5 @@
 {
   "nav": {
-    "health": "Bibliothek",
     "market": "Shop",
     "books": "Bücher",
     "settings": "Einstellungen",
@@ -13,6 +12,7 @@
   "stats": { "readingDay": "Lesetag", "noReadingDay": "Nicht gelesen" },
   "market": {
     "title": "Shop",
+    "currency": "Pergament",
     "description": "Tausche XP gegen Belohnungen zum Schutz deiner Leseserie.",
     "shield": "Serienschutz",
     "shieldDescription": "Schützt deine Serie, wenn du einen Tag verpasst.",

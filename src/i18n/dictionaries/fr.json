@@ -1,6 +1,5 @@
 {
   "nav": {
-    "health": "Santé",
     "market": "Boutique",
     "locations": "Emplacements",
     "inventory": "Inventaire",
@@ -213,6 +212,7 @@
   },
   "market": {
     "title": "Boutique",
+    "currency": "Parchemin",
     "description": "Échangez vos XP contre des récompenses qui protègent votre série.",
     "shield": "Protection de série",
     "shieldDescription": "Protège votre série lorsque vous manquez un jour.",

@@ -1,6 +1,5 @@
 {
   "nav": {
-    "health": "Health",
     "market": "Market",
     "locations": "Locations",
     "inventory": "Inventory",
@@ -213,10 +212,29 @@
   },
   "market": {
     "title": "Market",
-    "description": "Trade XP for rewards that help protect your reading streak.",
+    "description": "Spend Parchment on reading powers and useful items.",
+    "currency": "Parchment",
+    "balance": "Parchment balance",
+    "earnHint": "Earn 0.5 Parchment for every real page of progress.",
     "shield": "Streak shield",
     "shieldDescription": "Protects your streak when you miss a day.",
+    "pageBoost": "Page XP boost",
+    "pageBoostDescription": "Doubles XP from manual and Kobo page progress for 24 hours.",
+    "finishBoost": "Finish XP boost",
+    "finishBoostDescription": "Doubles XP from successful book completions for 24 hours.",
+    "challengeExtension": "Challenge extension",
+    "challengeExtensionDescription": "Extends one eligible challenge by 3 days, once per challenge.",
     "inventory": "In stock",
+    "activate": "Activate",
+    "apply": "Apply",
+    "activeRemaining": "Active · {time} remaining",
+    "noEligibleChallenge": "No eligible active challenge",
+    "purchaseSuccess": "Item purchased",
+    "activated": "Power activated",
+    "extended": "Challenge extended by 3 days",
+    "alreadyActive": "This power is already active.",
+    "insufficientParchment": "You do not have enough Parchment.",
+    "error": "The market action could not be completed.",
     "buy": "Buy for {cost} XP",
     "buying": "Buying…",
     "success": "Streak shield purchased",
@@ -687,7 +705,10 @@
     "onShelf": "On shelf",
     "addCount": "Add ({count})",
     "pickEmpty": "No books in your library yet.",
-    "addedManyToast": "Added {count} books to the shelf"
+    "addedManyToast": "Added {count} books to the shelf",
+    "genres": "Genres",
+    "authors": "Authors",
+    "viewAll": "View all"
   },
   "smartCollections": {
     "create": "Smart collection",
@@ -766,7 +787,26 @@
     "reading": "reading",
     "empty": "No author information in your library yet.",
     "emptyShelf": "No books found for this author.",
-    "back": "Back to authors"
+    "back": "Back to authors",
+    "search": "Search"
+  },
+  "genres": {
+    "title": "Genres",
+    "subtitle": "Automatic collections from subjects, or tags when subjects are empty",
+    "search": "Search",
+    "empty": "No genres found.",
+    "emptyShelf": "No books found for this genre.",
+    "back": "Back to genres"
+  },
+  "openLibrarySubmission": {
+    "title": "Open Library submission",
+    "description": "This local record is queued for a possible Open Library contribution.",
+    "permission": "Allow this book to be submitted",
+    "PENDING": "Pending",
+    "SUBMITTED": "Submitted",
+    "FAILED": "Failed",
+    "saved": "Submission permission saved",
+    "error": "Could not update submission permission"
   },
   "challenges": {
     "title": "Challenges",

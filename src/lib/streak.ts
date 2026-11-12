@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { db } from "@/lib/db";
-import { shieldCost as calcShieldCost } from "./gamification-pure";
+import { getAppConfig } from "./app-config";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -30,6 +30,11 @@ async function autoUseStreakShieldFor(userId: string): Promise<boolean> {
       },
     });
     await tx.streakShield.create({ data: { userId } });
+    await tx.marketInventory.updateMany({
+      where: { userId, item: "STREAK_SHIELD", quantity: { gte: 1 } },
+      data: { quantity: { decrement: 1 } },
+    });
+    await tx.marketItemUse.create({ data: { userId, item: "STREAK_SHIELD" } });
     await tx.dailyActivity.create({ data: { userId, date: today, count: 0, pagesRead: 0 } });
     return true;
   });
@@ -133,10 +138,10 @@ export function isTodayActive(activities: { date: Date }[]): boolean {
 /** Get streak info for a user. */
 export async function getStreakInfo(userId: string) {
   await autoUseStreakShieldFor(userId);
-  const user = await db.user.findUnique({
+  const [user, config] = await Promise.all([db.user.findUnique({
     where: { id: userId },
-    select: { currentStreak: true, longestStreak: true, lastActiveDate: true, streakShieldCount: true, streakShieldBalance: true, streakShieldPurchases: true, xp: true },
-  });
+    select: { currentStreak: true, longestStreak: true, lastActiveDate: true, streakShieldCount: true, streakShieldBalance: true, streakShieldPurchases: true, xp: true, parchmentTenths: true },
+  }), getAppConfig()]);
   if (!user) return null;
 
   const today = startOfUtcDay();
@@ -145,8 +150,8 @@ export async function getStreakInfo(userId: string) {
     where: { userId_date: { userId, date: today } },
   });
 
-  const cost = calcShieldCost(user.streakShieldPurchases);
-  const canAfford = user.xp >= cost;
+  const cost = config.marketStreakShield * 2 ** Math.min(30, user.streakShieldPurchases);
+  const canAfford = user.parchmentTenths >= cost * 10;
   const canUseShield = !todayActivity && user.currentStreak > 0 && user.streakShieldBalance > 0;
 
   return {

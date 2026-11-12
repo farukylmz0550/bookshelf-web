@@ -18,12 +18,9 @@ import * as groups from "@/lib/services/groups";
 import * as goals from "@/lib/services/goals";
 import * as challenges from "@/lib/services/challenges";
 import * as stats from "@/lib/services/stats";
-import * as health from "@/lib/services/health";
 import * as locations from "@/lib/services/locations";
-import * as smartCollections from "@/lib/services/smart-collections";
 import * as batchBooks from "@/lib/services/batch-books";
 import * as inventory from "@/lib/services/inventory";
-import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { json } from "@/lib/api/responses";
 
@@ -44,7 +41,7 @@ function guard(context: AuthContext, scope: ApiScope): string | null {
 
 export function createMcpServer(context: AuthContext): McpServer {
   const server = new McpServer(
-    { name: "bookshelf", version: "4.0.1" },
+    { name: "bookshelf", version: "4.1.0" },
     {
       instructions:
         "BookShelf personal library. Use list_books/search_books before mutating; dates are ISO 8601; statuses are TO_READ, READING, FINISHED.",
@@ -422,34 +419,6 @@ export function createMcpServer(context: AuthContext): McpServer {
   );
 
   register(
-    "books_health_report",
-    "books:read",
-    {
-      description: "Generate a deterministic data-quality report for the caller's books.",
-      inputSchema: { limit: z.number().int().min(1).max(500).optional(), offset: z.number().int().min(0).optional() },
-    },
-    async (args) =>
-      ok(
-        await health.getBooksHealthReport(context.userId, {
-          limit: args.limit as number | undefined,
-          offset: args.offset as number | undefined,
-        }),
-      ),
-  );
-
-  register(
-    "preview_book_repair",
-    "books:read",
-    { description: "Preview non-mutating repair suggestions for one book.", inputSchema: { id: z.string().min(1) } },
-    async (args) => {
-      const book = await health.getBookForRepairPreview(context.userId, args.id as string);
-      return book
-        ? ok({ book, findings: buildHealthReport([book]).findings, applySupported: false })
-        : fail("Book not found");
-    },
-  );
-
-  register(
     "list_locations",
     "books:read",
     { description: "List the caller's physical library locations.", inputSchema: {} },
@@ -550,31 +519,6 @@ export function createMcpServer(context: AuthContext): McpServer {
     { description: "List physical inventory audits and their found/missing summary.", inputSchema: {} },
     async () => ok(await inventory.listInventoryAudits(context.userId)),
   );
-  register(
-    "preview_collection",
-    "books:read",
-    {
-      description: "Preview books matching an allow-listed smart collection rule.",
-      inputSchema: { rule: z.unknown() },
-    },
-    async (args) => {
-      const result = await smartCollections.previewSmartCollection(context.userId, args.rule);
-      return result.ok ? ok(result) : fail(result.error);
-    },
-  );
-  register(
-    "create_smart_collection",
-    "books:write",
-    {
-      description: "Create a smart collection using a validated rule AST.",
-      inputSchema: { name: z.string().min(1).max(60), rule: z.unknown(), color: z.string().optional() },
-    },
-    async (args) => {
-      const result = await smartCollections.createSmartCollection(context.userId, args.name, args.rule, args.color);
-      return result.ok ? ok(result) : fail(result.error);
-    },
-  );
-
   register(
     "admin_list_users",
     "admin:users",

@@ -12,19 +12,20 @@ import { ReadingTimer } from "./reading-timer";
 import { BookQuotes } from "./book-quotes";
 import { ShareButton } from "@/components/share-button";
 import { BookCopies } from "./book-copies";
+import { OpenLibrarySubmission } from "./openlibrary-submission";
 
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const userId = await requireUserId();
   const dict = await getDictionary();
-  const book = await db.book.findFirst({ where: { id, userId } });
+  const book = await db.book.findFirst({ where: { id, userId }, include: { openLibrarySubmission: true } });
   if (!book) notFound();
 
   const [lendings, persons, groups, memberships, quotes, copies, locations] = await Promise.all([
     db.lendingRecord.findMany({ where: { bookId: id }, orderBy: { lentAt: "desc" } }),
     db.person.findMany({ where: { userId }, select: { id: true, name: true } }),
     db.bookGroup.findMany({
-      where: { userId },
+      where: { userId, mode: "STATIC" },
       orderBy: [{ order: "asc" }, { createdAt: "asc" }],
       select: { id: true, name: true, color: true },
     }),
@@ -104,6 +105,14 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
       </div>
 
       <BookFacts book={book} dict={dict.facts} />
+      {book.openLibrarySubmission && (
+        <OpenLibrarySubmission
+          bookId={book.id}
+          enabled={book.openLibrarySubmissionEnabled}
+          status={book.openLibrarySubmission.status}
+          dict={dict.openLibrarySubmission}
+        />
+      )}
       <BookCopies bookId={book.id} copies={copies} locations={locations} dict={dict.locations} />
       {book.status === "READING" && <ReadingTimer bookId={book.id} dict={dict.timer} />}
       <BookPersonal book={book} dict={{ ...dict.personal, earlyFinishBlocked: dict.books.earlyFinishBlocked }} />

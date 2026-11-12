@@ -7,9 +7,10 @@
 
 import { db } from "@/lib/db";
 import { calculateStreak, startOfUtcDay } from "@/lib/streak";
-import { calculateFinishXp, shieldCost as calcShieldCost, levelForXp } from "@/lib/gamification-pure";
+import { calculateFinishXp, levelForXp } from "@/lib/gamification-pure";
 import { awardXp, syncAchievements } from "@/lib/gamification";
 import { getAppConfig } from "@/lib/app-config";
+import { finishXpMultiplierFor } from "./market";
 
 const FINISH_CLAIM_TTL_MS = 10_000;
 const recentFinishClaims = new Map<string, number>();
@@ -55,7 +56,13 @@ export async function recordActivityFor(userId: string, pagesRead?: number, minu
   return { current, longest };
 }
 /** Award finish XP + activity for an already-FINISHED book. Returns XP (0 = no-op). */
-export async function finishBookWithXpFor(userId: string, bookId: string, pages: number | null): Promise<number> {
+export async function finishBookWithXpFor(
+  userId: string,
+  bookId: string,
+  pages: number | null,
+  activityPages: number | null = pages,
+  activityMinutes = 0,
+): Promise<number> {
   const book = await db.book.findFirst({
     where: { id: bookId, userId, status: "FINISHED" },
     select: { id: true },
@@ -76,9 +83,9 @@ export async function finishBookWithXpFor(userId: string, bookId: string, pages:
     bookFinishedBase: settings.xpBookFinishedBase,
     pagesPer10: settings.xpPagesPer10,
     perLevelBase: settings.xpPerLevelBase,
-  });
+  }) * (await finishXpMultiplierFor(userId));
   await awardXp(userId, xp);
-  await recordActivityFor(userId, pages ?? undefined);
+  await recordActivityFor(userId, activityPages ?? undefined, activityMinutes);
   await syncAchievements(userId);
   try {
     const { syncChallenges } = await import("@/lib/gamification");
@@ -110,19 +117,15 @@ export async function useStreakShieldFor(userId: string): Promise<{ shieldUsed: 
       data: { streakShieldBalance: { decrement: 1 } },
     });
     await tx.streakShield.create({ data: { userId } });
+    await tx.marketInventory.updateMany({
+      where: { userId, item: "STREAK_SHIELD", quantity: { gte: 1 } },
+      data: { quantity: { decrement: 1 } },
+    });
+    await tx.marketItemUse.create({ data: { userId, item: "STREAK_SHIELD" } });
     await tx.dailyActivity.create({ data: { userId, date: today, count: 0, pagesRead: 0 } });
   });
 
   return { shieldUsed: true, cost: 0 };
-}
-
-export async function purchaseStreakShieldFor(userId: string) {
-  const user = await db.user.findUnique({ where: { id: userId }, select: { xp: true, streakShieldPurchases: true } });
-  if (!user) throw new Error("User not found");
-  const cost = calcShieldCost(user.streakShieldPurchases);
-  if (user.xp < cost) throw new Error("Not enough XP");
-  await db.user.update({ where: { id: userId }, data: { xp: { decrement: cost }, streakShieldBalance: { increment: 1 }, streakShieldPurchases: { increment: 1 } } });
-  return { purchased: true as const, cost };
 }
 
 export async function syncFreeShieldRewardsFor(userId: string) {
@@ -134,5 +137,16 @@ export async function syncFreeShieldRewardsFor(userId: string) {
   const level = Math.max(user.level, levelForXp(user.xp, config.xpPerLevelBase));
   const target = Math.floor(level / 10);
   if (target <= user.streakShieldRewardLevel) return;
-  await db.user.update({ where: { id: userId }, data: { level, streakShieldBalance: { increment: target - user.streakShieldRewardLevel }, streakShieldRewardLevel: target } });
+  const earned = target - user.streakShieldRewardLevel;
+  await db.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: userId },
+      data: { level, streakShieldBalance: { increment: earned }, streakShieldRewardLevel: target },
+    });
+    await tx.marketInventory.upsert({
+      where: { userId_item: { userId, item: "STREAK_SHIELD" } },
+      update: { quantity: { increment: earned } },
+      create: { userId, item: "STREAK_SHIELD", quantity: earned },
+    });
+  });
 }

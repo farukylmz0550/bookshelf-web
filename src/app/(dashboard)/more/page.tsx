@@ -14,6 +14,7 @@ import {
   User,
   ShoppingBag,
   MapPinned,
+  ClipboardCheck,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -53,6 +54,7 @@ export default async function MorePage() {
       items: [
         { href: "/market", icon: ShoppingBag, label: dict.nav.market },
         { href: "/locations", icon: MapPinned, label: dict.nav.locations },
+        { href: "/inventory", icon: ClipboardCheck, label: dict.nav.inventory },
         { href: "/achievements", icon: Trophy, label: dict.nav.achievements },
         { href: "/challenges", icon: Flag, label: dict.nav.challenges },
         { href: "/leaderboard", icon: TrendingUp, label: dict.nav.leaderboard },

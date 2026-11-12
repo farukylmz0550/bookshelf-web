@@ -10,8 +10,8 @@ import {
   finishBookWithXpFor,
   recordActivityFor,
   useStreakShieldFor as consumeStreakShieldFor,
-  purchaseStreakShieldFor,
 } from "@/lib/services/streak";
+import { purchaseMarketItem } from "@/lib/services/market";
 
 export async function recordActivity(
   pagesRead?: number,
@@ -38,7 +38,7 @@ export async function useStreakShield() {
 
 export async function purchaseStreakShield() {
   const userId = await requireUserId();
-  const result = await purchaseStreakShieldFor(userId);
+  const result = await purchaseMarketItem(userId, "STREAK_SHIELD");
   revalidatePath("/stats");
   return result;
 }

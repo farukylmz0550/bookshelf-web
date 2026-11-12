@@ -30,12 +30,12 @@ const renameGroupSchema = z.object({ name: nameField });
 export async function listGroups(userId: string) {
   const [groups, counts] = await Promise.all([
     db.bookGroup.findMany({
-      where: { userId },
+      where: { userId, mode: "STATIC" },
       orderBy: [{ order: "asc" }, { createdAt: "asc" }],
     }),
     db.bookGroupMembership.groupBy({
       by: ["groupId"],
-      where: { group: { userId } },
+      where: { group: { userId, mode: "STATIC" } },
       _count: { bookId: true },
     }),
   ]);
@@ -67,7 +67,7 @@ export async function createGroup(
 
   try {
     const group = await db.$transaction(async (tx) => {
-      const maxOrder = (await tx.bookGroup.aggregate({ where: { userId }, _max: { order: true } }))._max.order;
+      const maxOrder = (await tx.bookGroup.aggregate({ where: { userId, mode: "STATIC" }, _max: { order: true } }))._max.order;
       return tx.bookGroup.create({
         data: { userId, name: nameRes.value!, color: colorRes.value, order: (maxOrder ?? -1) + 1 },
       });
@@ -88,7 +88,7 @@ export async function renameGroup(userId: string, groupId: string, name: unknown
   const nameRes = (parsed.data as { name: { ok: boolean; error?: string; value?: string } }).name;
   if (!nameRes.ok) return fail(nameRes.error ?? "INVALID_INPUT");
 
-  const group = await db.bookGroup.findFirst({ where: { id: groupId, userId }, select: { id: true } });
+  const group = await db.bookGroup.findFirst({ where: { id: groupId, userId, mode: "STATIC" }, select: { id: true } });
   if (!group) return fail("NOT_FOUND");
   try {
     await db.bookGroup.update({ where: { id: groupId }, data: { name: nameRes.value! } });
@@ -100,12 +100,12 @@ export async function renameGroup(userId: string, groupId: string, name: unknown
 }
 
 export async function deleteGroup(userId: string, groupId: string): Promise<GroupActionResult> {
-  const result = await db.bookGroup.deleteMany({ where: { id: groupId, userId } });
+  const result = await db.bookGroup.deleteMany({ where: { id: groupId, userId, mode: "STATIC" } });
   return result.count === 0 ? fail("NOT_FOUND") : { ok: true };
 }
 
 export async function reorderGroups(userId: string, orderedIds: string[]): Promise<GroupActionResult> {
-  const groups = await db.bookGroup.findMany({ where: { userId }, select: { id: true } });
+  const groups = await db.bookGroup.findMany({ where: { userId, mode: "STATIC" }, select: { id: true } });
   const reorder = applyReorder(
     groups.map((g) => g.id),
     orderedIds,
@@ -124,7 +124,7 @@ export async function reorderGroups(userId: string, orderedIds: string[]): Promi
 export async function addBookToGroup(userId: string, bookId: string, groupId: string): Promise<GroupActionResult> {
   const [book, group] = await Promise.all([
     db.book.findFirst({ where: { id: bookId, userId }, select: { id: true } }),
-    db.bookGroup.findFirst({ where: { id: groupId, userId }, select: { id: true } }),
+    db.bookGroup.findFirst({ where: { id: groupId, userId, mode: "STATIC" }, select: { id: true } }),
   ]);
   if (!book || !group) return fail("NOT_FOUND");
   try {
@@ -140,7 +140,7 @@ export async function addBookToGroup(userId: string, bookId: string, groupId: st
 }
 
 export async function listBooksForShelfPicker(userId: string, groupId: string) {
-  const group = await db.bookGroup.findFirst({ where: { id: groupId, userId }, select: { id: true } });
+  const group = await db.bookGroup.findFirst({ where: { id: groupId, userId, mode: "STATIC" }, select: { id: true } });
   if (!group) return { ok: false as const, error: "NOT_FOUND" };
   const [books, memberships] = await Promise.all([
     db.book.findMany({
@@ -159,7 +159,7 @@ export async function addBooksToGroup(userId: string, groupId: string, bookIds: 
     return { ok: false as const, error: "INVALID_INPUT" };
   }
   const [group, ownedBooks] = await Promise.all([
-    db.bookGroup.findFirst({ where: { id: groupId, userId }, select: { id: true } }),
+    db.bookGroup.findFirst({ where: { id: groupId, userId, mode: "STATIC" }, select: { id: true } }),
     db.book.findMany({ where: { userId, id: { in: bookIds.slice(0, 500) } }, select: { id: true } }),
   ]);
   if (!group) return { ok: false as const, error: "NOT_FOUND" };
@@ -193,7 +193,7 @@ export async function addBooksToGroup(userId: string, groupId: string, bookIds: 
 
 export async function removeBookFromGroup(userId: string, bookId: string, groupId: string): Promise<GroupActionResult> {
   const result = await db.bookGroupMembership.deleteMany({
-    where: { bookId, groupId, group: { userId } },
+    where: { bookId, groupId, group: { userId, mode: "STATIC" } },
   });
   return result.count === 0 ? fail("NOT_FOUND") : { ok: true };
 }

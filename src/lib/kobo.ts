@@ -6,6 +6,8 @@
 import { randomBytes, createHash } from "node:crypto";
 import { db } from "@/lib/db";
 import type { Book } from "@/generated/prisma/client";
+import { pageXpMultiplierFor, parchmentTenthsForPages } from "@/lib/services/market";
+import { finishBookWithXpFor, recordActivityFor } from "@/lib/services/streak";
 
 /** Generate a URL-safe sync token (40 hex chars). */
 export function generateKoboToken(): string {
@@ -205,18 +207,30 @@ export async function applyKoboProgress(
   }
 
   if (finished) {
-    const updated = await db.book.updateMany({
-      where: { id: book.id, userId: book.userId, status: { not: "FINISHED" } },
-      data: { status: "FINISHED", finishedAt: new Date(), currentPage: totalPages },
-    });
-    if (updated.count > 0) {
-      try {
-        await db.bookReadEvent.create({
-          data: { userId: book.userId, bookId: book.id, bookTitle: book.title, pagesRead: totalPages! },
+    const updated = await db.$transaction(async (tx) => {
+      const changed = await tx.book.updateMany({
+        where: {
+          id: book.id,
+          userId: book.userId,
+          status: { not: "FINISHED" },
+          ...(current === 0 ? { OR: [{ currentPage: 0 }, { currentPage: null }] } : { currentPage: current }),
+        },
+        data: { status: "FINISHED", finishedAt: new Date(), currentPage: totalPages },
+      });
+      if (changed.count !== 1) return false;
+      if (delta > 0) {
+        await tx.user.update({
+          where: { id: book.userId },
+          data: { parchmentTenths: { increment: parchmentTenthsForPages(delta) } },
         });
-      } catch {}
-      const { finishBookWithXp } = await import("@/app/actions/streak");
-      await finishBookWithXp(book.id, totalPages);
+      }
+      await tx.bookReadEvent.create({
+        data: { userId: book.userId, bookId: book.id, bookTitle: book.title, pagesRead: delta || null },
+      });
+      return true;
+    });
+    if (updated) {
+      await finishBookWithXpFor(book.userId, book.id, totalPages, delta, minutesDelta);
       return { ok: true, delta, minutes: minutesDelta, finished: true };
     }
     // Already finished by the user/another sync — no double finish bonus.
@@ -229,19 +243,38 @@ export async function applyKoboProgress(
   }
 
   if (position !== null && (delta > 0 || book.status === "TO_READ")) {
-    const updateData: { currentPage: number; status?: "READING"; startedAt?: Date } = { currentPage: position };
+    const updateData: { currentPage: number; status?: "READING"; startedAt?: Date } = {
+      currentPage: Math.max(position, current),
+    };
     if (book.status === "TO_READ") {
       updateData.status = "READING";
       if (!book.startedAt) updateData.startedAt = new Date();
     }
-    await db.book.update({ where: { id: book.id }, data: updateData });
+    const changed = await db.$transaction(async (tx) => {
+      const update = await tx.book.updateMany({
+        where: {
+          id: book.id,
+          userId: book.userId,
+          ...(current === 0 ? { OR: [{ currentPage: 0 }, { currentPage: null }] } : { currentPage: current }),
+        },
+        data: updateData,
+      });
+      if (update.count !== 1) return false;
+      if (delta > 0) {
+        await tx.user.update({
+          where: { id: book.userId },
+          data: { parchmentTenths: { increment: parchmentTenthsForPages(delta) } },
+        });
+      }
+      return true;
+    });
+    if (!changed) return { ok: false, reason: "conflict" };
   }
 
   if (delta > 0 || minutesDelta > 0) {
-    const { recordActivity } = await import("@/app/actions/streak");
-    await recordActivity(delta, minutesDelta);
+    await recordActivityFor(book.userId, delta, minutesDelta);
     const { awardXp, syncChallenges } = await import("@/lib/gamification");
-    const xp = Math.floor(delta / 10) * config.xpPagesPer10;
+    const xp = Math.floor(delta / 10) * config.xpPagesPer10 * (await pageXpMultiplierFor(book.userId));
     if (xp > 0) {
       try {
         await awardXp(book.userId, xp);

@@ -1,6 +1,5 @@
 {
   "nav": {
-    "health": "Salud",
     "market": "Mercado",
     "locations": "Ubicaciones",
     "inventory": "Inventario",
@@ -213,6 +212,7 @@
   },
   "market": {
     "title": "Mercado",
+    "currency": "Pergamino",
     "description": "Canjea XP por recompensas que protegen tu racha.",
     "shield": "Protección de racha",
     "shieldDescription": "Protege tu racha cuando te saltas un día.",

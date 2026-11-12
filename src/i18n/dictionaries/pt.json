@@ -1,6 +1,5 @@
 {
   "nav": {
-    "health": "Biblioteca",
     "market": "Loja",
     "books": "Livros",
     "settings": "Definições",
@@ -13,6 +12,7 @@
   "stats": { "readingDay": "Dia de leitura", "noReadingDay": "Sem leitura" },
   "market": {
     "title": "Loja",
+    "currency": "Pergaminho",
     "description": "Troca XP por recompensas que protegem a tua sequência de leitura.",
     "shield": "Proteção da sequência",
     "shieldDescription": "Protege a tua sequência quando falhas um dia.",

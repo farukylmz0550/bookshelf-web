@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.1.0 — 2026-11-12
+
+- **Breaking API change:** removed rule-based smart collection REST/MCP operations and the book-health REST/MCP feature. Existing `SMART` rows remain stored but are hidden from shelf views; Docker `/api/health` remains unchanged.
+- Added automatic Genre and Author collections, book-level Open Library submission controls, and mobile Inventory navigation.
+- Added the Parchment market with general inventory, 24-hour XP powers, streak shields, and one-time three-day challenge extensions. Real manual/Kobo page deltas earn 0.5 Parchment per page.
+
 ## 4.0.1 — 2026-11-11
 
 ### Fixed

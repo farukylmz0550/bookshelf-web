@@ -19,12 +19,9 @@ import * as groups from "@/lib/services/groups";
 import * as goals from "@/lib/services/goals";
 import * as challenges from "@/lib/services/challenges";
 import * as stats from "@/lib/services/stats";
-import * as health from "@/lib/services/health";
 import * as locations from "@/lib/services/locations";
-import * as smartCollections from "@/lib/services/smart-collections";
 import * as batchBooks from "@/lib/services/batch-books";
 import * as inventory from "@/lib/services/inventory";
-import { buildHealthReport } from "@/lib/books/health";
 import * as users from "@/lib/services/users";
 import { db } from "@/lib/db";
 import { verifyTotpCode } from "@/lib/totp";
@@ -61,28 +58,6 @@ async function route(request: Request, segments: string[], context: AuthContext)
   const method = request.method.toUpperCase();
   const url = new URL(request.url);
   const params = url.searchParams;
-
-  // --------------------------------------------------------------- health
-  if (segments[0] === "health" && segments[1] === "books") {
-    const userId = userIdOf(context, params);
-    await requireUserExists(userId);
-    if (segments.length === 2 && (method === "GET" || method === "POST")) {
-      const result = await health.getBooksHealthReport(userId, {
-        limit: queryInt(params, "limit", 100),
-        offset: queryInt(params, "offset", 0),
-      });
-      return json({
-        data: result.findings,
-        meta: { generatedAt: result.generatedAt, summary: result.summary, limit: result.limit, offset: result.offset },
-      });
-    }
-    if (segments.length === 4 && segments[3] === "repair-preview" && method === "POST") {
-      const book = await health.getBookForRepairPreview(userId, segments[2]);
-      if (!book) throw new ApiError(404, "not_found", "Book not found");
-      const report = buildHealthReport([book]);
-      return json({ data: { book, findings: report.findings, applySupported: false } });
-    }
-  }
 
   // ------------------------------------------------------------- locations
   if (segments[0] === "locations") {
@@ -358,17 +333,9 @@ async function route(request: Request, segments: string[], context: AuthContext)
         z.object({
           name: z.unknown(),
           color: z.unknown().optional(),
-          mode: z.enum(["STATIC", "SMART"]).optional(),
-          rule: z.unknown().optional(),
         }),
         await readJson(request),
       );
-      if (body.mode === "SMART") {
-        const result = await smartCollections.createSmartCollection(userId, body.name, body.rule, body.color);
-        if (!result.ok)
-          throw new ApiError(result.error === "DUPLICATE_NAME" ? 409 : 400, "invalid_group", result.error);
-        return json({ data: result.group }, { status: 201 });
-      }
       const result = await groups.createGroup(userId, body.name, body.color);
       if (!result.ok) throw new ApiError(400, "invalid_group", result.error);
       return json({ data: { id: result.groupId } }, { status: 201 });
@@ -383,28 +350,6 @@ async function route(request: Request, segments: string[], context: AuthContext)
       const result = await groups.deleteGroup(userId, segments[1]);
       if (!result.ok) throw new ApiError(404, "not_found", "Group not found");
       return noContent();
-    }
-    if (segments.length === 3 && segments[2] === "preview" && method === "POST") {
-      const group = await db.bookGroup.findFirst({
-        where: { id: segments[1], userId, mode: "SMART" },
-        select: { ruleJson: true },
-      });
-      if (!group) throw new ApiError(404, "not_found", "Smart collection not found");
-      let rule: unknown;
-      try {
-        rule = group.ruleJson ? JSON.parse(group.ruleJson) : null;
-      } catch {
-        throw new ApiError(422, "invalid_rule", "Smart collection rule is invalid");
-      }
-      const result = await smartCollections.previewSmartCollection(userId, rule);
-      if (!result.ok) throw new ApiError(422, "invalid_rule", result.error);
-      return json({ data: result });
-    }
-    if (segments.length === 3 && segments[2] === "rebuild" && method === "POST") {
-      const result = await smartCollections.rebuildSmartCollection(userId, segments[1]);
-      if (!result.ok)
-        throw new ApiError(result.error === "NOT_FOUND" ? 404 : 422, "smart_collection_rebuild_failed", result.error);
-      return json({ data: result });
     }
     if (segments.length === 4 && segments[2] === "books") {
       if (method === "POST") {
@@ -600,8 +545,6 @@ function requiredScope(method: string, segments: string[]): ApiScope {
   const write = method !== "GET" && method !== "HEAD";
   if (root === "admin") return "admin:data";
   switch (root) {
-    case "health":
-      return "books:read";
     case "locations":
       return write ? "books:write" : "books:read";
     case "inventory":
@@ -670,12 +613,6 @@ function buildOpenApi(origin: string) {
       "/books": {
         get: { summary: "List books", parameters: [userParam], responses: { "200": { description: "OK" } } },
         post: { summary: "Create a book", responses: { "201": { description: "Created" } } },
-      },
-      "/health/books": {
-        get: { summary: "Generate a deterministic book health report", responses: { "200": { description: "OK" } } },
-      },
-      "/health/books/{id}/repair-preview": {
-        post: { summary: "Preview safe repair suggestions for a book", responses: { "200": { description: "OK" } } },
       },
       "/books/{id}": {
         get: {

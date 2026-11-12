@@ -41,6 +41,7 @@ import { calculateFinishXp } from "@/lib/gamification-pure";
 import { logPagesRead } from "@/app/actions/books";
 import { finishBookWithXp } from "@/app/actions/streak";
 import { createGroup } from "@/app/actions/groups";
+import { activateMarketPower, applyChallengeExtension, purchaseMarketItem } from "@/lib/services/market";
 
 const RACE_USER_ID = "raceuser";
 
@@ -96,6 +97,7 @@ describe("logPagesRead optimistic lock (v2.9.0 race fix)", () => {
 
     const user = await db.user.findUnique({ where: { id: RACE_USER_ID } });
     expect(user?.xp).toBe(Math.floor(step / 10) * settings.xpPagesPer10); // exactly once
+    expect(user?.parchmentTenths).toBe(1000 + step * 5);
 
     expect(await db.bookReadEvent.count({ where: { bookId: book.id } })).toBe(0);
     expect(results.some((r) => r.ok)).toBe(true);
@@ -118,7 +120,45 @@ describe("logPagesRead optimistic lock (v2.9.0 race fix)", () => {
     });
     const user = await db.user.findUnique({ where: { id: RACE_USER_ID } });
     expect(user?.xp).toBe(expectedXp);
+    expect(user?.parchmentTenths).toBe(1050); // only the real 90 → 100 delta
+    const activity = await db.dailyActivity.findFirst({ where: { userId: RACE_USER_ID } });
+    expect(activity?.pagesRead).toBe(10);
     expect(results.some((r) => r.ok && r.finished)).toBe(true);
+  });
+});
+
+describe("Parchment market transactions", () => {
+  it("purchases atomically, rejects insufficient balances and activates one 24h power", async () => {
+    const bought = await purchaseMarketItem(RACE_USER_ID, "PAGE_XP_BOOST");
+    expect(bought.costTenths).toBe(750);
+    expect((await db.user.findUnique({ where: { id: RACE_USER_ID } }))?.parchmentTenths).toBe(250);
+    expect((await db.marketInventory.findUnique({ where: { userId_item: { userId: RACE_USER_ID, item: "PAGE_XP_BOOST" } } }))?.quantity).toBe(1);
+    await expect(purchaseMarketItem(RACE_USER_ID, "FINISH_XP_BOOST")).rejects.toThrow("INSUFFICIENT_PARCHMENT");
+
+    const activated = await activateMarketPower(RACE_USER_ID, "PAGE_XP_BOOST");
+    expect(activated.expiresAt.getTime() - Date.now()).toBeGreaterThan(23 * 60 * 60 * 1000);
+    await expect(activateMarketPower(RACE_USER_ID, "PAGE_XP_BOOST")).rejects.toThrow("POWER_ALREADY_ACTIVE");
+    expect(await db.marketItemUse.count({ where: { userId: RACE_USER_ID, item: "PAGE_XP_BOOST" } })).toBe(1);
+  });
+
+  it("extends an active incomplete challenge once and consumes inventory only on success", async () => {
+    const now = new Date();
+    const challenge = await db.challenge.create({
+      data: {
+        userId: RACE_USER_ID,
+        title: "Autumn",
+        target: 2,
+        startAt: new Date(now.getTime() - 86_400_000),
+        endAt: new Date(now.getTime() + 86_400_000),
+      },
+    });
+    await db.marketInventory.create({
+      data: { userId: RACE_USER_ID, item: "CHALLENGE_EXTENSION", quantity: 1 },
+    });
+    const first = await applyChallengeExtension(RACE_USER_ID, challenge.id, now);
+    expect(first.endAt.getTime()).toBe(challenge.endAt.getTime() + 3 * 86_400_000);
+    await expect(applyChallengeExtension(RACE_USER_ID, challenge.id, now)).rejects.toThrow("CHALLENGE_NOT_ELIGIBLE");
+    expect((await db.marketInventory.findUnique({ where: { userId_item: { userId: RACE_USER_ID, item: "CHALLENGE_EXTENSION" } } }))?.quantity).toBe(0);
   });
 });
 

@@ -1,6 +1,5 @@
 {
   "nav": {
-    "health": "健康检查",
     "market": "商店",
     "locations": "位置",
     "inventory": "盘点",
@@ -213,6 +212,7 @@
   },
   "market": {
     "title": "商店",
+    "currency": "羊皮纸",
     "description": "用 XP 兑换保护阅读连胜的奖励。",
     "shield": "连胜保护",
     "shieldDescription": "错过一天时保护你的连胜记录。",

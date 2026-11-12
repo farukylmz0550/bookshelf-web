@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# BookShelf v4.0.1 — site-wide configuration (single source of truth).
+# BookShelf v4.1.0 — site-wide configuration (single source of truth).
 #
 # Previously these values lived in the AppSettings DB table and were editable
 # from the admin panel; as of 3.0.0 the admin panel no longer changes them —
@@ -53,6 +53,13 @@ backfill:
 challenges:
   # v3.3.0 — XP awarded once when a seasonal challenge is completed.
   completionXp: 25
+
+market:
+  # Prices are in Parşömen. The streak shield doubles after every purchase.
+  streakShield: 100
+  pageXpBoost: 75
+  finishXpBoost: 150
+  challengeExtension: 200
 
 auth:
   # When true, every new registration is approved automatically — no admin

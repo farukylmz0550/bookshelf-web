@@ -12,6 +12,7 @@ import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { defaultFilters, arrange, type Filters } from "@/lib/books/filters";
 import { recordActivityFor, finishBookWithXpFor } from "./streak";
 import { queueOpenLibrarySubmission, toOpenLibraryImportPayload } from "./openlibrary-submissions";
+import { pageXpMultiplierFor, parchmentTenthsForPages } from "./market";
 
 export const bookStatusSchema = z.enum(["TO_READ", "READING", "FINISHED"]);
 export type BookStatusValue = z.infer<typeof bookStatusSchema>;
@@ -320,11 +321,11 @@ export async function setBookStatus(userId: string, bookId: string, status: Book
           userId,
           bookId: book.id,
           bookTitle: book.title,
-          pagesRead: knownPages ? totalPages : null,
+          pagesRead: null,
         },
       });
     } catch {}
-    await finishBookWithXpFor(userId, bookId, knownPages ? totalPages : null);
+    await finishBookWithXpFor(userId, bookId, knownPages ? totalPages : null, 0);
   }
   return { ok: true as const };
 }
@@ -340,24 +341,32 @@ export async function logPagesRead(userId: string, bookId: string, pages?: numbe
   const knownPages = totalPages !== null && !isNaN(totalPages) && totalPages > 0;
   const current = book.currentPage ?? 0;
   const newCurrent = knownPages ? Math.min(current + pagesLogged, totalPages) : current + pagesLogged;
+  const actualPages = Math.max(0, newCurrent - current);
+  if (actualPages === 0) return { ok: false as const, error: "No pages to log" };
 
   const currentPageUnchanged =
     current === 0 ? { OR: [{ currentPage: 0 }, { currentPage: null as null }] } : { currentPage: current };
 
   if (knownPages && newCurrent >= totalPages) {
-    const finished = await db.book.updateMany({
-      where: { id: bookId, userId, ...currentPageUnchanged, status: { not: "FINISHED" } },
-      data: { status: "FINISHED", finishedAt: new Date(), currentPage: totalPages },
-    });
-    if (finished.count === 0) return { ok: false as const, error: "Conflict, please retry" };
-    try {
-      await db.bookReadEvent.create({
-        data: { userId, bookId: book.id, bookTitle: book.title, pagesRead: totalPages },
+    const finished = await db.$transaction(async (tx) => {
+      const changed = await tx.book.updateMany({
+        where: { id: bookId, userId, ...currentPageUnchanged, status: { not: "FINISHED" } },
+        data: { status: "FINISHED", finishedAt: new Date(), currentPage: totalPages },
       });
-    } catch {}
-    await finishBookWithXpFor(userId, bookId, totalPages);
+      if (changed.count !== 1) return false;
+      await tx.user.update({
+        where: { id: userId },
+        data: { parchmentTenths: { increment: parchmentTenthsForPages(actualPages) } },
+      });
+      await tx.bookReadEvent.create({
+        data: { userId, bookId: book.id, bookTitle: book.title, pagesRead: actualPages },
+      });
+      return true;
+    });
+    if (!finished) return { ok: false as const, error: "Conflict, please retry" };
+    await finishBookWithXpFor(userId, bookId, totalPages, actualPages);
     const user = await db.user.findUnique({ where: { id: userId }, select: { currentStreak: true } });
-    return { ok: true as const, logged: pagesLogged, finished: true, streak: user?.currentStreak ?? 0 };
+    return { ok: true as const, logged: actualPages, finished: true, streak: user?.currentStreak ?? 0 };
   }
 
   const updateData: { currentPage: number; status?: "READING"; startedAt?: Date } = { currentPage: newCurrent };
@@ -365,14 +374,22 @@ export async function logPagesRead(userId: string, bookId: string, pages?: numbe
     updateData.status = "READING";
     if (!book.startedAt) updateData.startedAt = new Date();
   }
-  const updated = await db.book.updateMany({
-    where: { id: bookId, userId, ...currentPageUnchanged },
-    data: updateData,
+  const updated = await db.$transaction(async (tx) => {
+    const changed = await tx.book.updateMany({
+      where: { id: bookId, userId, ...currentPageUnchanged },
+      data: updateData,
+    });
+    if (changed.count !== 1) return changed;
+    await tx.user.update({
+      where: { id: userId },
+      data: { parchmentTenths: { increment: parchmentTenthsForPages(actualPages) } },
+    });
+    return changed;
   });
   if (updated.count === 0) return { ok: false as const, error: "Conflict, please retry" };
 
-  const { current: streakNow } = await recordActivityFor(userId, pagesLogged);
-  const xp = Math.floor(pagesLogged / 10) * settings.xpPagesPer10;
+  const { current: streakNow } = await recordActivityFor(userId, actualPages);
+  const xp = Math.floor(actualPages / 10) * settings.xpPagesPer10 * (await pageXpMultiplierFor(userId));
   if (xp > 0) {
     try {
       await awardXp(userId, xp);
@@ -384,7 +401,7 @@ export async function logPagesRead(userId: string, bookId: string, pages?: numbe
     await syncChallenges(userId);
   } catch {}
 
-  return { ok: true as const, logged: pagesLogged, streak: streakNow };
+  return { ok: true as const, logged: actualPages, streak: streakNow };
 }
 
 export async function startReRead(userId: string, bookId: string) {

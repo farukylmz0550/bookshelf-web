@@ -40,6 +40,10 @@ export type AppConfigValues = {
   familyEnabled: boolean;
   indexBatchSize: number;
   cronIntervalMinutes: number;
+  marketStreakShield: number;
+  marketPageXpBoost: number;
+  marketFinishXpBoost: number;
+  marketChallengeExtension: number;
 };
 
 const xpSchema = z.object({
@@ -81,6 +85,12 @@ const authSchema = z.object({
 const familySchema = z.object({ enabled: z.boolean().default(false) });
 const indexSchema = z.object({ batchSize: intInRange(10, 5000).default(250) });
 const cronSchema = z.object({ intervalMinutes: intInRange(1, 60).default(15) });
+const marketSchema = z.object({
+  streakShield: intInRange(0, 1_000_000).default(100),
+  pageXpBoost: intInRange(0, 1_000_000).default(75),
+  finishXpBoost: intInRange(0, 1_000_000).default(150),
+  challengeExtension: intInRange(0, 1_000_000).default(200),
+});
 
 const configSchema = z.object({
   xp: xpSchema.optional(),
@@ -91,6 +101,7 @@ const configSchema = z.object({
   family: familySchema.optional(),
   index: indexSchema.optional(),
   cron: cronSchema.optional(),
+  market: marketSchema.optional(),
 });
 
 function intInRange(min: number, max: number) {
@@ -120,6 +131,10 @@ export function defaultAppConfig(): AppConfigValues {
     familyEnabled: false,
     indexBatchSize: 250,
     cronIntervalMinutes: 15,
+    marketStreakShield: 100,
+    marketPageXpBoost: 75,
+    marketFinishXpBoost: 150,
+    marketChallengeExtension: 200,
   };
 }
 
@@ -155,6 +170,10 @@ export function validateAppConfig(doc: unknown): AppConfigValues {
     familyEnabled: data.family?.enabled ?? defaults.familyEnabled,
     indexBatchSize: data.index?.batchSize ?? defaults.indexBatchSize,
     cronIntervalMinutes: data.cron?.intervalMinutes ?? defaults.cronIntervalMinutes,
+    marketStreakShield: data.market?.streakShield ?? defaults.marketStreakShield,
+    marketPageXpBoost: data.market?.pageXpBoost ?? defaults.marketPageXpBoost,
+    marketFinishXpBoost: data.market?.finishXpBoost ?? defaults.marketFinishXpBoost,
+    marketChallengeExtension: data.market?.challengeExtension ?? defaults.marketChallengeExtension,
   };
 }
 

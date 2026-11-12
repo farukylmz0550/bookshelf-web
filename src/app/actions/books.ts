@@ -16,6 +16,7 @@ import {
   logPagesRead as logPagesReadService,
   lookupIsbnFor,
   setBookStatus as setBookStatusService,
+  setOpenLibrarySubmissionPermission,
   startReRead as startReReadService,
   updateBook as updateBookService,
   type AddBookInput,
@@ -116,5 +117,12 @@ export async function backfillPageCounts() {
   const userId = await requireUserId();
   const result = await backfillPageCountsService(userId);
   if (result.ok) revalidatePath("/books");
+  return result;
+}
+
+export async function setOpenLibraryPermission(bookId: string, enabled: boolean) {
+  const userId = await requireUserId();
+  const result = await setOpenLibrarySubmissionPermission(userId, bookId, enabled);
+  if (result.ok) revalidateBook(bookId);
   return result;
 }

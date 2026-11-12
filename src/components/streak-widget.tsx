@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 "use client";
 
-import { useTransition, useCallback } from "react";
 import { Flame, Shield } from "lucide-react";
+import Link from "next/link";
 
 interface StreakWidgetProps {
   currentStreak: number;
@@ -19,21 +19,10 @@ export function StreakWidget({
   currentStreak,
   longestStreak,
   isTodayActive,
-  shieldCost,
   isTodayShielded,
   shieldBalance,
-  canPurchaseShield,
   buyMoreLabel,
 }: StreakWidgetProps) {
-  const [isPending, startTransition] = useTransition();
-
-  const buyShield = useCallback(() => {
-    startTransition(async () => {
-      const mod = await import("@/app/actions/streak");
-      await mod.purchaseStreakShield();
-    });
-  }, []);
-
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
   const today = new Date().getDay();
   const todayIndex = today === 0 ? 6 : today - 1;
@@ -99,16 +88,9 @@ export function StreakWidget({
 
       <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <span>Shields: {shieldBalance}</span>
-        {canPurchaseShield && (
-          <button
-            onClick={buyShield}
-            disabled={isPending}
-            className="rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-foreground hover:bg-[var(--surface-elevated)] disabled:opacity-50"
-          >
-            Buy shield ({shieldCost} XP)
-          </button>
-        )}
-        {!canPurchaseShield && <span>{buyMoreLabel}</span>}
+        <Link href="/market" className="rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-foreground hover:bg-[var(--surface-elevated)]">
+          {buyMoreLabel}
+        </Link>
       </div>
     </div>
   );

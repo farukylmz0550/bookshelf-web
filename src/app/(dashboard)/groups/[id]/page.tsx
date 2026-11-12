@@ -15,7 +15,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
 
   // Ownership-aware: a foreign group id renders 404.
   const group = await db.bookGroup.findFirst({
-    where: { id, userId },
+    where: { id, userId, mode: "STATIC" },
     select: { id: true, name: true, color: true },
   });
   if (!group) notFound();

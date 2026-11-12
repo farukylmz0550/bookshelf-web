@@ -21,6 +21,44 @@ export type AuthorGroup = {
   books: Book[];
 };
 
+export type GenreGroup = {
+  name: string;
+  total: number;
+  books: Book[];
+};
+
+/** Rust-owned normalization mirrored from reading_core::normalized_genres. */
+export function genresForBook(book: Pick<Book, "subjects" | "tags">): string[] {
+  const subjects = (book.subjects ?? "").trim();
+  const source = subjects || (book.tags ?? "");
+  const seen = new Set<string>();
+  return source
+    .split(/[,;]/)
+    .map((value) => value.trim())
+    .filter((value) => {
+      if (!value) return false;
+      const key = value.toLocaleLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+export function groupGenres(books: Book[]): GenreGroup[] {
+  const map = new Map<string, { name: string; books: Book[] }>();
+  for (const book of books) {
+    for (const name of genresForBook(book)) {
+      const key = name.toLocaleLowerCase();
+      const group = map.get(key) ?? { name, books: [] };
+      group.books.push(book);
+      map.set(key, group);
+    }
+  }
+  return [...map.values()]
+    .map((group) => ({ name: group.name, total: group.books.length, books: sortBooks(group.books) }))
+    .sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
+}
+
 /**
  * Group the caller's books by series name. Books without a series value are
  * excluded. Order: most books first, then alphabetical.

@@ -25,6 +25,8 @@ model User {
   isAdmin           Boolean   @default(false)
   approved          Boolean   @default(false)
   xp                Int       @default(0)
+  // Stored in tenths so half-parchment page rewards stay exact.
+  parchmentTenths   Int       @default(1000)
   level             Int       @default(1)
   showOnLeaderboard Boolean   @default(true)
   currentStreak     Int       @default(0)
@@ -69,6 +71,10 @@ model User {
   bookCopies        BookCopy[]
   inventoryAudits   InventoryAudit[]
   pushDeliveries    PushDelivery[]
+  marketInventory   MarketInventory[]
+  marketPurchases   MarketPurchase[]
+  activePowers      ActivePower[]
+  marketItemUses    MarketItemUse[]
 
   @@index([id])
 }
@@ -86,9 +92,69 @@ model Challenge {
   startAt     DateTime
   endAt       DateTime
   completedAt DateTime?
+  marketExtensionUsedAt DateTime?
   createdAt   DateTime  @default(now())
 
   @@index([userId])
+}
+
+enum MarketItemType {
+  STREAK_SHIELD
+  PAGE_XP_BOOST
+  FINISH_XP_BOOST
+  CHALLENGE_EXTENSION
+}
+
+enum MarketPowerType {
+  PAGE_XP
+  FINISH_XP
+}
+
+model MarketInventory {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item      MarketItemType
+  quantity  Int            @default(0)
+  updatedAt DateTime       @updatedAt
+
+  @@unique([userId, item])
+  @@index([userId])
+}
+
+model MarketPurchase {
+  id             String         @id @default(cuid())
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item           MarketItemType
+  priceTenths    Int
+  purchasedAt    DateTime       @default(now())
+
+  @@index([userId, item, purchasedAt])
+}
+
+model ActivePower {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        MarketPowerType
+  activatedAt DateTime        @default(now())
+  expiresAt   DateTime
+
+  @@unique([userId, type])
+  @@index([userId, expiresAt])
+}
+
+model MarketItemUse {
+  id         String         @id @default(cuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item       MarketItemType
+  targetId   String?
+  usedAt     DateTime       @default(now())
+
+  @@index([userId, item, usedAt])
+  @@index([targetId])
 }
 
 // v3.0.0 — Kobo eReader sync: one token per user, embedded in the device's
