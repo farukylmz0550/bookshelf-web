@@ -249,6 +249,20 @@ docs/contributing-guide
 
 ---
 
+## Backend Language Policy
+
+Prefer Rust for new backend services, domain/data processors, and
+performance-sensitive server logic whenever it is technically practical.
+Keep TypeScript for frontend and Next.js integration work, or when Rust would
+make the implementation less maintainable or portable.
+
+This policy applies incrementally to new or explicitly scoped work. Do not
+rewrite an existing working TypeScript backend merely to change languages.
+Rust components must expose a documented, testable interface to the rest of
+the application.
+
+---
+
 ## Testing
 
 ### Unit Tests (Vitest)

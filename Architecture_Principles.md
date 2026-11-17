@@ -6,7 +6,15 @@ This document defines the architectural principles for Bookshelf.
 
 Its purpose is not to force a specific framework architecture, directory structure, or abstraction pattern. Its purpose is to keep the codebase understandable, maintainable, predictable, and internally consistent as the project evolves.
 
-Bookshelf is primarily a TypeScript project. These principles are therefore written around responsibilities and boundaries rather than around a particular frontend framework.
+Bookshelf currently uses TypeScript for the application and Rust for selected
+native processing. New backend and server-side processing should prefer Rust
+whenever technically practical, while TypeScript remains appropriate for UI,
+framework integration, and cases where a Rust implementation would reduce
+maintainability or platform support. This policy is incremental and does not
+authorize an unscoped rewrite of working backend code.
+
+These principles are written around responsibilities and boundaries rather
+than around a particular frontend framework or backend language.
 
 ---
 

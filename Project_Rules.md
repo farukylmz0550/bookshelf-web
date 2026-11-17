@@ -79,6 +79,18 @@ Do not:
 
 A visual redesign must not accidentally become a product rewrite.
 
+### Backend language rule
+
+New backend services, domain processors, data-processing components, and
+performance-sensitive server logic should be implemented in Rust whenever it
+is technically practical and does not weaken maintainability, deployment,
+security, or platform support.
+
+This is a forward-looking rule. It does **not** require an immediate rewrite of
+working TypeScript backend code. Existing backend code should move to Rust only
+as part of an explicitly scoped change with tests and a stable interface for
+the Next.js application.
+
 ---
 
 ## 3. Understand Before Modifying
