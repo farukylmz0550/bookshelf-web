@@ -21,6 +21,7 @@ export function BarcodeScanner({ onDetected, title = "Scan" }: BarcodeScannerPro
 
     let cancelled = false;
     let cameraListObserver: MutationObserver | null = null;
+    let preferredCameraStarted = false;
 
     import("html5-qrcode")
       .then(({ Html5QrcodeScanner }) => {
@@ -32,6 +33,9 @@ export function BarcodeScanner({ onDetected, title = "Scan" }: BarcodeScannerPro
             fps: 10,
             qrbox: { width: 250, height: 150 },
             aspectRatio: 1.5,
+            // A remembered selfie camera would otherwise start before the
+            // close-focus camera selector below gets a chance to run.
+            rememberLastUsedCamera: false,
           },
           false,
         );
@@ -46,7 +50,20 @@ export function BarcodeScanner({ onDetected, title = "Scan" }: BarcodeScannerPro
           const preferred = selectCloseFocusCamera(
             Array.from(select.options, (option) => ({ id: option.value, label: option.text })),
           );
-          if (preferred) select.value = preferred.id;
+          if (!preferred) return;
+
+          select.value = preferred.id;
+
+          // Changing the select value does not switch an already running
+          // stream. Start only after the preferred rear lens is selected.
+          const startButton = containerRef.current?.querySelector<HTMLButtonElement>(
+            "#html5-qrcode-button-camera-start",
+          );
+          if (!startButton || startButton.disabled || preferredCameraStarted) return;
+
+          preferredCameraStarted = true;
+          cameraListObserver?.disconnect();
+          startButton.click();
         });
         cameraListObserver.observe(containerRef.current, { childList: true, subtree: true });
 

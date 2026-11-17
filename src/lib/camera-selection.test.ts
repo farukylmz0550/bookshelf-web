@@ -31,6 +31,15 @@ describe("selectCloseFocusCamera", () => {
     expect(camera?.id).toBe("rear");
   });
 
+  it("never treats a front-facing macro label as a rear macro lens", () => {
+    const camera = selectCloseFocusCamera([
+      { id: "front", label: "Front Macro Camera" },
+      { id: "rear", label: "Back Camera" },
+    ]);
+
+    expect(camera?.id).toBe("rear");
+  });
+
   it("keeps the first camera when labels are unavailable", () => {
     const camera = selectCloseFocusCamera([
       { id: "first", label: "" },

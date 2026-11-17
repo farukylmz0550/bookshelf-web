@@ -11,10 +11,11 @@ const REAR_CAMERA = /\b(?:back|rear|environment|facing back|arka|hinten|trasera|
 const FRONT_CAMERA = /\b(?:front|user|facing front|ön|vorne|frontal|avant|anteriore)\b/i;
 
 function cameraScore(label: string) {
+  // Never let a word such as "macro" override an explicit front-facing label.
+  if (FRONT_CAMERA.test(label)) return -100;
   if (MACRO_CAMERA.test(label)) return 300;
   if (ULTRA_WIDE_CAMERA.test(label)) return 200;
   if (REAR_CAMERA.test(label)) return 100;
-  if (FRONT_CAMERA.test(label)) return -100;
   return 0;
 }
 

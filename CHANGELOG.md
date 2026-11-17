@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.2.1 — 2026-11-17
+
+- Fixed mobile ISBN scanning so a remembered selfie camera cannot start before the preferred macro or rear camera is selected.
+- Camera selection now rejects explicitly front-facing lenses even when their label also contains “macro”.
+
 ## 4.2.0 — 2026-11-17
 
 - Mobile ISBN scanning now prefers a dedicated macro camera, then an ultra-wide close-focus lens, with the rear camera as a fallback.
