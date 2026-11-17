@@ -68,7 +68,9 @@ export async function createBooksBatchAction(
   }
 }
 
-export async function addBook(input: AddBookInput): Promise<{ ok: true } | { ok: false; error: string }> {
+export async function addBook(
+  input: AddBookInput,
+): Promise<{ ok: true; openLibrarySubmission: "NOT_NEEDED" | "QUEUED" | "SUBMITTED" } | { ok: false; error: string }> {
   // Keep the action contract: a Zod failure returns ok:false instead of throwing.
   const parsed = addBookSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -76,7 +78,7 @@ export async function addBook(input: AddBookInput): Promise<{ ok: true } | { ok:
   const result = await createBook(userId, input);
   if (!result.ok) return { ok: false, error: result.error };
   revalidatePath("/books");
-  return { ok: true };
+  return { ok: true, openLibrarySubmission: result.openLibrarySubmission };
 }
 
 export async function setBookStatus(

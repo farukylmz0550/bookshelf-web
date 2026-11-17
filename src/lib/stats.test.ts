@@ -514,6 +514,23 @@ describe("defaultAppConfig + validateAppConfig", () => {
     expect(validateAppConfig({ auth: { unknown: 1 } }).authSelfApprove).toBe(false);
   });
 
+  it("validates file-managed smart shelves and development mode", () => {
+    const defaults = defaultAppConfig();
+    expect(defaults.smartShelfPublishers).toBe(true);
+    expect(defaults.smartShelfAuthors).toBe(true);
+    expect(defaults.smartShelfSeries).toBe(true);
+    expect(defaults.developmentMode).toBe(false);
+
+    const values = validateAppConfig({
+      smartShelves: { publishers: false, authors: true, series: false },
+      development: { enabled: true },
+    });
+    expect(values.smartShelfPublishers).toBe(false);
+    expect(values.smartShelfAuthors).toBe(true);
+    expect(values.smartShelfSeries).toBe(false);
+    expect(values.developmentMode).toBe(true);
+  });
+
   it("passes custom level names through (v3.1.0)", () => {
     const values = validateAppConfig({ xp: { levels: { names: ["Novice", "Bookworm"] } } });
     expect(values.xpLevelNames).toEqual(["Novice", "Bookworm"]);

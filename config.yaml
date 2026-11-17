@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# BookShelf v4.1.0 — site-wide configuration (single source of truth).
+# BookShelf v4.2.0 — site-wide configuration (single source of truth).
 #
 # Previously these values lived in the AppSettings DB table and were editable
 # from the admin panel; as of 3.0.0 the admin panel no longer changes them —
@@ -35,6 +35,19 @@ xp:
 
 family:
   # v4.0.0 — legacy personal-book mode remains the safe default.
+  enabled: false
+
+# Derived navigation built from book metadata. Each shelf can be enabled or
+# disabled independently; changes are read from this file after restart.
+smartShelves:
+  publishers: true
+  authors: true
+  series: true
+
+# Local development escape hatch. When enabled, the Admin GUI can disable the
+# signed-in admin's TOTP and the mandatory-admin TOTP gate is skipped. Never
+# enable this on an internet-facing production instance.
+development:
   enabled: false
 
 index:

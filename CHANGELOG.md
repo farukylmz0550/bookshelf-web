@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.2.0 — 2026-11-17
+
+- Mobile ISBN scanning now prefers a dedicated macro camera, then an ultra-wide close-focus lens, with the rear camera as a fallback.
+- ISBN lookup now falls back to open university catalogs from Leipzig, Tel Aviv and Rice, plus Internet Archive, when extension providers and Open Library have no match.
+- Added file-managed, independently switchable publisher, author and series shelves, including publisher list/detail pages and an Admin configuration overview.
+- Added an opt-in development mode that lets the signed-in admin disable their own TOTP from the Admin GUI; it remains disabled by default.
+- Manual book forms now ask for explicit Open Library metadata-submission consent and immediately attempt an authenticated submission when consent is given.
+
 ## 4.1.0 — 2026-11-12
 
 - **Breaking API change:** removed rule-based smart collection REST/MCP operations and the book-health REST/MCP feature. Existing `SMART` rows remain stored but are hidden from shelf views; Docker `/api/health` remains unchanged.

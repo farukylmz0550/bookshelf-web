@@ -11,6 +11,7 @@ export interface PendingBook {
   author?: string;
   coverUrl?: string;
   numberOfPages?: string;
+  submitToOpenLibrary?: boolean;
 }
 
 function readQueue(): PendingBook[] {
@@ -51,6 +52,7 @@ export async function flushPendingBooks(): Promise<number> {
         author: book.author,
         coverUrl: book.coverUrl,
         numberOfPages: book.numberOfPages || undefined,
+        submitToOpenLibrary: book.submitToOpenLibrary,
       });
       if (!result.ok) remaining.push(book);
     } catch {

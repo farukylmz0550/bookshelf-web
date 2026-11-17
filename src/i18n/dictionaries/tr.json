@@ -15,6 +15,7 @@
     "groups": "Raflar",
     "series": "Seriler",
     "authors": "Yazarlar",
+    "publishers": "Yay\u0131nevleri",
     "challenges": "Meydan Okumalar",
     "groupLibrary": "K\u00fct\u00fcphane",
     "groupExplore": "Ke\u015ffet",
@@ -118,6 +119,10 @@
     "scan": "Tara",
     "currentPage": "Mevcut Sayfa",
     "notFound": "ISBN bulunamad\u0131 \u2014 bilgileri manuel girin.",
+    "openLibraryConsent": "Bu kitab\u0131n meta verisini Open Library'ye katk\u0131 olarak g\u00f6nder",
+    "openLibraryConsentHint": "\u0130ste\u011fe ba\u011fl\u0131d\u0131r. Yaln\u0131zca bibliyografik meta veri g\u00f6nderilir; e-kitap dosyas\u0131 y\u00fcklenmez.",
+    "openLibrarySubmitted": "Meta veri Open Library'ye g\u00f6nderildi.",
+    "openLibraryQueued": "Meta veri kuyru\u011fa al\u0131nd\u0131. G\u00f6ndermek i\u00e7in Open Library kimlik bilgilerini ayarlay\u0131n.",
     "lookupFailed": "Arama ba\u015far\u0131s\u0131z. Tekrar deneyin.",
     "addSuccess": "Kitap eklendi",
     "addFailed": "Kitap eklenemedi",
@@ -534,7 +539,18 @@
     "selfResetTitle": "Kendi \u015fifreni s\u0131f\u0131rla",
     "selfResetDesc": "TOTP do\u011frulaman\u0131 girin; yeni rastgele \u015fifre olu\u015fturulacak ve bir sonraki giri\u015fte de\u011fi\u015ftirmeniz istenecek.",
     "selfResetConfirm": "\u015eifreniz rastgele yeni bir de\u011ferle de\u011fi\u015ftirilecek ve bir sonraki giri\u015fte de\u011fi\u015ftirmeniz istenecek. Devam edilsin mi?",
-    "selfResetInvalidCode": "Ge\u00e7ersiz TOTP kodu"
+    "selfResetInvalidCode": "Ge\u00e7ersiz TOTP kodu",
+    "configurationTitle": "Dosyadan y\u00f6netilen \u00f6zellikler",
+    "configurationDesc": "Bu de\u011ferler config.yaml dosyas\u0131ndan okunur ve GUI'den de\u011fi\u015ftirilemez.",
+    "metadataSources": "ISBN meta veri kaynaklar\u0131",
+    "smartShelvesLabel": "Otomatik raflar",
+    "developmentMode": "Geli\u015ftirici modu",
+    "enabled": "A\u00e7\u0131k",
+    "disabled": "Kapal\u0131",
+    "disableAdminTotp": "Admin TOTP'mi kapat",
+    "disableAdminTotpConfirm": "Admin hesab\u0131n\u0131z\u0131n TOTP korumas\u0131 kapat\u0131ls\u0131n m\u0131? Bu i\u015flem yaln\u0131zca config.yaml i\u00e7inde geli\u015ftirici modu a\u00e7\u0131kken kullan\u0131labilir.",
+    "adminTotpDisabled": "Admin TOTP kapat\u0131ld\u0131.",
+    "developmentWarning": "Geli\u015ftirici modu admin g\u00fcvenli\u011fini zay\u0131flat\u0131r. \u00dcretim sistemlerinde kapal\u0131 tutun."
   },
   "licenses": {
     "title": "Lisanslar & At\u0131flar",
@@ -785,6 +801,26 @@
     "empty": "Kitaplar\u0131nda hen\u00fcz yazar bilgisi yok.",
     "emptyShelf": "Bu yazar\u0131n kitaplar\u0131 bulunamad\u0131.",
     "back": "Yazarlara d\u00f6n"
+  },
+  "publishers": {
+    "title": "Yay\u0131nevleri",
+    "subtitle": "Kitapl\u0131\u011f\u0131n yay\u0131nevlerine g\u00f6re gruplanm\u0131\u015f hali",
+    "empty": "Kitaplar\u0131nda hen\u00fcz yay\u0131nevi bilgisi yok.",
+    "emptyShelf": "Bu yay\u0131nevine ait kitap bulunamad\u0131.",
+    "back": "Yay\u0131nevlerine d\u00f6n",
+    "search": "Ara"
+  },
+  "openLibrarySubmission": {
+    "title": "Open Library g\u00f6nderimi",
+    "description": "Bu yerel kayd\u0131n bibliyografik meta verisi Open Library katk\u0131 kuyru\u011funda.",
+    "permission": "Bu kitab\u0131n meta verisinin g\u00f6nderilmesine izin ver",
+    "PENDING": "Bekliyor",
+    "SUBMITTED": "G\u00f6nderildi",
+    "FAILED": "Ba\u015far\u0131s\u0131z",
+    "saved": "G\u00f6nderim izni kaydedildi",
+    "submitted": "Meta veri Open Library'ye g\u00f6nderildi",
+    "queued": "Meta veri kuyru\u011fa al\u0131nd\u0131; Open Library kimlik bilgileri ayarl\u0131 de\u011fil veya servis kullan\u0131lam\u0131yor",
+    "error": "G\u00f6nderim izni g\u00fcncellenemedi"
   },
   "challenges": {
     "title": "Meydan Okumalar",

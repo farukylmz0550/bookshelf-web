@@ -11,6 +11,7 @@ import {
   BarChart3,
   Layers,
   PenLine,
+  Building2,
   Flag,
   Trophy,
   Medal,
@@ -33,6 +34,7 @@ type SidebarProps = {
   isAdmin: boolean;
   userName?: string | null;
   initialCollapsed: boolean;
+  smartShelves: { publishers: boolean; authors: boolean; series: boolean };
 };
 
 const MAIN_NAV: NavItem[] = [
@@ -49,6 +51,7 @@ const MAIN_NAV: NavItem[] = [
 const EXPLORE_NAV: NavItem[] = [
   { href: "/series", label: "series", icon: Layers },
   { href: "/authors", label: "authors", icon: PenLine },
+  { href: "/publishers", label: "publishers", icon: Building2 },
 ];
 
 const MORE_NAV: NavItem[] = [
@@ -75,9 +78,18 @@ const NAV_GROUPS: { labelKey: string; fallback: string; items: NavItem[] }[] = [
   { labelKey: "groupAccount", fallback: "Account", items: ACCOUNT_NAV },
 ];
 
-export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarProps) {
+export function Sidebar({ dict, isAdmin, userName, initialCollapsed, smartShelves }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const visibleGroups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter(
+      (item) =>
+        (item.label !== "publishers" || smartShelves.publishers) &&
+        (item.label !== "authors" || smartShelves.authors) &&
+        (item.label !== "series" || smartShelves.series),
+    ),
+  })).filter((group) => group.items.length > 0);
 
   useEffect(() => {
     try {
@@ -125,7 +137,7 @@ export function Sidebar({ dict, isAdmin, userName, initialCollapsed }: SidebarPr
           collapsed, every group after the first shows a divider line */}
       <nav className="flex-1 overflow-y-auto py-3">
         <div className="space-y-4">
-          {NAV_GROUPS.map((group, gi) => (
+          {visibleGroups.map((group, gi) => (
             <div key={group.labelKey} className="space-y-0.5 px-2">
               {!collapsed ? (
                 <p className="px-2 py-1 font-[var(--font-sans)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">

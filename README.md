@@ -30,7 +30,7 @@ The original concept, creative direction, project management, and development de
 
 | | Capability |
 |---|---|
-| 📚 **Library** | One-click ISBN (Open Library, full metadata: publishers, dates, languages, subjects, ISBN10/13) + detailed manual form (arrow → 14 fields) · manual metadata submission queue for Open Library · header "Read N pages" CTA on first open · Card/List toggle · Excel import/export |
+| 📚 **Library** | One-click ISBN (Open Library + open university/library catalog fallbacks; full metadata: publishers, dates, languages, subjects, ISBN10/13) + detailed manual form (arrow → 14 fields) · manual metadata submission queue for Open Library · header "Read N pages" CTA on first open · Card/List toggle · Excel import/export |
 | 🎴 **Cards** | Equal `h-[380px]` **60% cover / 40% meta** · `object-contain` · 12px radius · `2→3→4` responsive grid |
 | 📚 **Series** *(v3.2.0)* | Books grouped by the Open Library `series` field — progress bars (finished/total), detail grid per series (`/series`) |
 | ✍️ **Authors** *(v3.2.0)* | Derived author pages — counts (finished/reading) + per-author grid (`/authors`) |
@@ -218,8 +218,10 @@ docker compose up -d --build
 ### Open Library manual metadata imports
 
 When a manually entered book is not found in Open Library, BookShelf stores a
-submission payload locally and retries it through the authenticated Open Library
-import API. Configure these server-side variables to enable delivery:
+submission payload locally. The add-book form asks for explicit consent; when
+selected, BookShelf immediately tries the authenticated Open Library import API.
+Only bibliographic metadata is contributed—ebook files are never uploaded.
+Configure these server-side variables to enable delivery:
 
 ```env
 OPENLIBRARY_USERNAME=your-openlibrary-account

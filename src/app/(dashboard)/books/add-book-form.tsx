@@ -86,6 +86,23 @@ export function AddBookForm({ dict, onAdded }: { dict: AddBookFormDict; onAdded?
         </button>
       </div>
 
+      <label className="flex items-start gap-2 rounded-[8px] border border-[var(--border)] bg-[var(--surface-elevated)] p-3 text-sm">
+        <input
+          type="checkbox"
+          checked={form.submitToOpenLibrary}
+          onChange={(event) => form.setSubmitToOpenLibrary(event.target.checked)}
+          className="mt-0.5"
+        />
+        <span>
+          <span className="block font-medium text-foreground">
+            {dict.openLibraryConsent ?? "Contribute this book's metadata to Open Library"}
+          </span>
+          <span className="block text-xs text-muted-foreground">
+            {dict.openLibraryConsentHint ?? "Optional. Only bibliographic metadata is sent; no ebook file is uploaded."}
+          </span>
+        </span>
+      </label>
+
       {/* States — distinguishable without color alone per UI_Design_Language:532 */}
       {form.lookupError && (
         <div

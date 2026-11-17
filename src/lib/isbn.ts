@@ -14,7 +14,7 @@ export type IsbnLookupResult = {
   isbn13?: string;
 };
 
-/** Looks up a single ISBN via the Open Library API. Returns null if not found. */
+/** Looks up a single ISBN through extension, Open Library and open-catalog fallbacks. */
 export async function lookupIsbn(isbn: string): Promise<IsbnLookupResult | null> {
   const cleaned = isbn.replace(/[^0-9Xx]/g, "");
   try {
@@ -24,21 +24,25 @@ export async function lookupIsbn(isbn: string): Promise<IsbnLookupResult | null>
   } catch {}
   const { fetchBook } = await import("./books/openlibrary");
   const book = await fetchBook(cleaned);
-  if (!book) return null;
-  return {
-    isbn: cleaned,
-    title: book.title,
-    author: book.authors,
-    coverUrl: book.coverUrl,
-    numberOfPages: book.numberOfPages,
-    publishers: book.publishers,
-    publishDate: book.publishDate,
-    publishPlaces: book.publishPlaces,
-    languages: book.languages,
-    subjects: book.subjects,
-    isbn10: book.isbn10,
-    isbn13: book.isbn13,
-  };
+  if (book) {
+    return {
+      isbn: cleaned,
+      title: book.title,
+      author: book.authors,
+      coverUrl: book.coverUrl,
+      numberOfPages: book.numberOfPages,
+      publishers: book.publishers,
+      publishDate: book.publishDate,
+      publishPlaces: book.publishPlaces,
+      languages: book.languages,
+      subjects: book.subjects,
+      isbn10: book.isbn10,
+      isbn13: book.isbn13,
+    };
+  }
+
+  const { fetchBookFromOpenCatalogs } = await import("./books/open-catalogs");
+  return fetchBookFromOpenCatalogs(cleaned);
 }
 
 /** Looks up many ISBNs (bulk import) with throttle & abort on 3 consecutive failures. */

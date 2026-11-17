@@ -7,11 +7,14 @@ import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { groupAuthors } from "@/lib/collections";
 import { BookOpen } from "lucide-react";
+import { getAppConfig } from "@/lib/app-config";
+import { notFound } from "next/navigation";
 
 export default async function AuthorsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;
   const userId = await requireUserId();
   const dict = await getDictionary();
+  if (!(await getAppConfig()).smartShelfAuthors) notFound();
 
   const books = await db.book.findMany({ where: { userId }, orderBy: { addedAt: "desc" } });
   const query = q.trim().toLocaleLowerCase();
@@ -29,8 +32,15 @@ export default async function AuthorsPage({ searchParams }: { searchParams: Prom
       </header>
 
       <form className="flex max-w-md gap-2">
-        <input name="q" defaultValue={q} placeholder={dict.filter.search} className="min-w-0 flex-1 rounded-[10px] border border-[var(--border)] bg-background px-3 py-2 text-sm" />
-        <button className="rounded-[10px] bg-[var(--primary)] px-4 py-2 text-sm text-[var(--primary-foreground)]">{dict.authors.search}</button>
+        <input
+          name="q"
+          defaultValue={q}
+          placeholder={dict.filter.search}
+          className="min-w-0 flex-1 rounded-[10px] border border-[var(--border)] bg-background px-3 py-2 text-sm"
+        />
+        <button className="rounded-[10px] bg-[var(--primary)] px-4 py-2 text-sm text-[var(--primary-foreground)]">
+          {dict.authors.search}
+        </button>
       </form>
 
       {authors.length === 0 ? (

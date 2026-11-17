@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { describe, expect, it } from "vitest";
-import { genresForBook, groupGenres } from "./collections";
+import { genresForBook, groupGenres, groupPublishers, publishersForBook } from "./collections";
 import type { Book } from "@/generated/prisma/client";
 
 function book(id: string, subjects: string | null, tags: string | null): Book {
@@ -14,7 +14,10 @@ describe("automatic genre collections", () => {
 
   it("falls back to tags and merges case-insensitively across books", () => {
     const groups = groupGenres([book("1", null, "History"), book("2", "history; Memoir", "ignored")]);
-    expect(groups.map((group) => [group.name, group.total])).toEqual([["History", 2], ["Memoir", 1]]);
+    expect(groups.map((group) => [group.name, group.total])).toEqual([
+      ["History", 2],
+      ["Memoir", 1],
+    ]);
   });
 
   it("sorts by count then name so the first twelve are deterministic", () => {
@@ -23,5 +26,17 @@ describe("automatic genre collections", () => {
     const top = groupGenres(books).slice(0, 12);
     expect(top[0]).toMatchObject({ name: "Genre 13", total: 2 });
     expect(top).toHaveLength(12);
+  });
+});
+
+describe("automatic publisher shelves", () => {
+  it("groups publisher metadata case-insensitively", () => {
+    const first = { ...book("1", null, null), publishers: "Penguin" };
+    const second = { ...book("2", null, null), publishers: "penguin; Vintage" };
+    expect(publishersForBook(second)).toEqual(["penguin", "Vintage"]);
+    expect(groupPublishers([first, second]).map((group) => [group.name, group.total])).toEqual([
+      ["Penguin", 2],
+      ["Vintage", 1],
+    ]);
   });
 });

@@ -8,8 +8,10 @@ import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { BooksGrid } from "@/app/(dashboard)/books/books-grid";
+import { getAppConfig } from "@/lib/app-config";
 
 export default async function SeriesDetailPage({ params }: { params: Promise<{ name: string }> }) {
+  if (!(await getAppConfig()).smartShelfSeries) notFound();
   const { name: raw } = await params;
   const name = decodeURIComponent(raw);
   const userId = await requireUserId();

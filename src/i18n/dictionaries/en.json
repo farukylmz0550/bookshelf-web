@@ -15,6 +15,7 @@
     "groups": "Shelves",
     "series": "Series",
     "authors": "Authors",
+    "publishers": "Publishers",
     "challenges": "Challenges",
     "groupLibrary": "Library",
     "groupExplore": "Explore",
@@ -118,6 +119,10 @@
     "scan": "Scan",
     "currentPage": "Current Page",
     "notFound": "ISBN not found \u2014 enter details manually.",
+    "openLibraryConsent": "Contribute this book's metadata to Open Library",
+    "openLibraryConsentHint": "Optional. Only bibliographic metadata is sent; no ebook file is uploaded.",
+    "openLibrarySubmitted": "Metadata submitted to Open Library.",
+    "openLibraryQueued": "Metadata queued. Configure Open Library credentials to send it.",
     "lookupFailed": "Lookup failed. Try again.",
     "addSuccess": "Book added",
     "addFailed": "Failed to add book",
@@ -534,7 +539,18 @@
     "selfResetTitle": "Reset your own password",
     "selfResetDesc": "Confirm with a fresh TOTP code; a new random password will be generated and you must change it at next login.",
     "selfResetConfirm": "Your password will be replaced with a random one and you must change it at next login. Continue?",
-    "selfResetInvalidCode": "Invalid TOTP code"
+    "selfResetInvalidCode": "Invalid TOTP code",
+    "configurationTitle": "File-managed features",
+    "configurationDesc": "These values are read from config.yaml and cannot be edited in the GUI.",
+    "metadataSources": "ISBN metadata sources",
+    "smartShelvesLabel": "Automatic shelves",
+    "developmentMode": "Development mode",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "disableAdminTotp": "Disable my admin TOTP",
+    "disableAdminTotpConfirm": "Disable TOTP for your admin account? This is allowed only while development mode is enabled in config.yaml.",
+    "adminTotpDisabled": "Admin TOTP disabled.",
+    "developmentWarning": "Development mode weakens admin security. Keep it off on production systems."
   },
   "licenses": {
     "title": "Licenses & Attributions",
@@ -790,6 +806,14 @@
     "back": "Back to authors",
     "search": "Search"
   },
+  "publishers": {
+    "title": "Publishers",
+    "subtitle": "Your books grouped by publisher",
+    "empty": "No publisher information in your library yet.",
+    "emptyShelf": "No books found for this publisher.",
+    "back": "Back to publishers",
+    "search": "Search"
+  },
   "genres": {
     "title": "Genres",
     "subtitle": "Automatic collections from subjects, or tags when subjects are empty",
@@ -806,6 +830,8 @@
     "SUBMITTED": "Submitted",
     "FAILED": "Failed",
     "saved": "Submission permission saved",
+    "submitted": "Metadata submitted to Open Library",
+    "queued": "Metadata queued; Open Library credentials are not configured or the service is unavailable",
     "error": "Could not update submission permission"
   },
   "challenges": {

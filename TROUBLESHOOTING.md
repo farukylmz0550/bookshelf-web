@@ -285,11 +285,15 @@ Note: **Clear cover cache** is global — it wipes every user's stored cover URL
 
 ### "ISBN not found — enter details manually."
 
-Open Library has no record for that ISBN. Enter the details manually; the book works fully without lookup data.
+Open Library and the configured open catalog fallbacks have no record for that ISBN. Enter the details manually; the book works fully without lookup data.
 
 ### "Lookup failed. Try again."
 
 Open Library was unreachable or throttled. The client retries 3× with backoff (10 s timeout per attempt) — a persistent failure usually means outbound internet is blocked from the container or the service is throttling you. Bulk lookups are throttled to 5 requests/s and stop after 3 consecutive failures, so a dead network shows up as **fewer imported rows**, not an error screen.
+
+### Open Library contribution stays pending
+
+The add-book checkbox submits bibliographic metadata only; it never uploads an ebook file. Set `OPENLIBRARY_USERNAME` and `OPENLIBRARY_PASSWORD` for an Open Library account permitted to use the import API. Without those credentials, consented records remain safely queued. The Admin page shows whether submission credentials are configured.
 
 ### "Finish the remaining pages first — the book auto-finishes when all pages are read."
 
@@ -499,7 +503,7 @@ Only Chromium/Android fires `beforeinstallprompt`; iOS Safari uses Share → "Ad
 - Requires **HTTPS or localhost** (camera API) and a mobile-width viewport — the button is hidden on desktop.
 - "Barcode scanner failed to load" → the html5-qrcode module could not load (offline or old browser).
 - "Invalid barcode: …" → the scanned digits are not a valid ISBN-10/13; scan the ISBN barcode, not the EAN of other products.
-- Since v3.6.0 the scanner opens the **rear camera by default** (`facingMode: "environment"`); if your device still opens the front camera, pick the rear one from the scanner's camera selector once.
+- Since v4.2.0 the scanner prefers a dedicated **macro camera**, then an ultra-wide close-focus lens, and finally a rear camera. Camera names depend on what the phone exposes to the browser; use the scanner's camera selector if the preferred lens is not identified correctly.
 
 ---
 

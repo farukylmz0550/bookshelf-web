@@ -20,6 +20,10 @@ export type AddBookFormDict = {
   addSuccess?: string;
   addFailed?: string;
   required?: string;
+  openLibraryConsent?: string;
+  openLibraryConsentHint?: string;
+  openLibrarySubmitted?: string;
+  openLibraryQueued?: string;
 };
 
 /** State + logic for the one-click ISBN add form. The component only renders. */
@@ -30,6 +34,7 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
   const [author, setAuthor] = useState("");
   const [coverUrl, setCoverUrl] = useState<string | undefined>();
   const [numberOfPages, setNumberOfPages] = useState("");
+  const [submitToOpenLibrary, setSubmitToOpenLibrary] = useState(false);
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
   const [lookupPending, startLookup] = useTransition();
@@ -46,6 +51,7 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
     setCoverUrl(undefined);
     setNumberOfPages("");
     setLookupError(null);
+    setSubmitToOpenLibrary(false);
   }, []);
 
   const handleLookup = useCallback(
@@ -76,9 +82,20 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
             subjects: data.subjects,
             isbn10: data.isbn10,
             isbn13: data.isbn13,
+            submitToOpenLibrary,
           });
           if (result.ok) {
-            toast.success(dict.addSuccess ?? "Book added", { description: data.title, icon: <Check size={16} /> });
+            const submissionDescription = submitToOpenLibrary
+              ? result.openLibrarySubmission === "SUBMITTED"
+                ? dict.openLibrarySubmitted
+                : result.openLibrarySubmission === "QUEUED"
+                  ? dict.openLibraryQueued
+                  : undefined
+              : undefined;
+            toast.success(dict.addSuccess ?? "Book added", {
+              description: submissionDescription ?? data.title,
+              icon: <Check size={16} />,
+            });
             clearFields();
             onAdded?.();
           } else {
@@ -105,7 +122,7 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
         }
       });
     },
-    [isbn, dict, clearFields, onAdded],
+    [isbn, dict, clearFields, onAdded, submitToOpenLibrary],
   );
 
   const handleAdd = useCallback(() => {
@@ -123,7 +140,9 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
         author: author.trim() || undefined,
         coverUrl,
         numberOfPages: numberOfPages || undefined,
+        submitToOpenLibrary,
       };
+      let submission: "NOT_NEEDED" | "QUEUED" | "SUBMITTED" = "NOT_NEEDED";
       try {
         const result = await addBook(bookInput);
         if (!result.ok) {
@@ -132,6 +151,7 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
           toast.error(msg);
           return;
         }
+        submission = result.openLibrarySubmission;
       } catch (error) {
         // Network/server unreachable — queue for background sync when offline
         if (!navigator.onLine) {
@@ -152,7 +172,16 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
         }
         throw error;
       }
-      toast.success(dict.addSuccess ?? "Book added", { icon: <Check size={16} /> });
+      toast.success(dict.addSuccess ?? "Book added", {
+        description: submitToOpenLibrary
+          ? submission === "SUBMITTED"
+            ? dict.openLibrarySubmitted
+            : submission === "QUEUED"
+              ? dict.openLibraryQueued
+              : undefined
+          : undefined,
+        icon: <Check size={16} />,
+      });
       clearFields();
       onAdded?.();
     });
@@ -162,9 +191,12 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
     author,
     coverUrl,
     numberOfPages,
+    submitToOpenLibrary,
     dict.addFailed,
     dict.addSuccess,
     dict.required,
+    dict.openLibrarySubmitted,
+    dict.openLibraryQueued,
     clearFields,
     onAdded,
   ]);
@@ -193,6 +225,8 @@ export function useAddBookForm(dict: AddBookFormDict, options?: { onAdded?: () =
     setAuthor,
     coverUrl,
     numberOfPages,
+    submitToOpenLibrary,
+    setSubmitToOpenLibrary,
     lookupError,
     addError,
     lookupPending,

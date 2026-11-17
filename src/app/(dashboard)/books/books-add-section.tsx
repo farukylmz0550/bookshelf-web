@@ -23,6 +23,10 @@ type Dict = {
   detailedAdd?: string;
   addDetailed?: string;
   orWithAllFields?: string;
+  openLibraryConsent?: string;
+  openLibraryConsentHint?: string;
+  openLibrarySubmitted?: string;
+  openLibraryQueued?: string;
   batchTitle: string;
   batchHint: string;
   batchLookup: string;

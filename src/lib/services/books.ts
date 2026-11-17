@@ -11,7 +11,11 @@ import { getAppConfig } from "@/lib/app-config";
 import { getPagesPerReadEventFor } from "@/lib/reading-settings";
 import { defaultFilters, arrange, type Filters } from "@/lib/books/filters";
 import { recordActivityFor, finishBookWithXpFor } from "./streak";
-import { queueOpenLibrarySubmission, toOpenLibraryImportPayload } from "./openlibrary-submissions";
+import {
+  queueOpenLibrarySubmission,
+  submitOpenLibrarySubmission,
+  toOpenLibraryImportPayload,
+} from "./openlibrary-submissions";
 import { pageXpMultiplierFor, parchmentTenthsForPages } from "./market";
 
 export const bookStatusSchema = z.enum(["TO_READ", "READING", "FINISHED"]);
@@ -103,6 +107,7 @@ export const addBookSchema = z.object({
     .max(200)
     .optional()
     .or(z.literal("").transform(() => undefined)),
+  submitToOpenLibrary: z.boolean().optional().default(false),
 });
 
 export type AddBookInput = z.input<typeof addBookSchema>;
@@ -206,9 +211,20 @@ export async function setOpenLibrarySubmissionPermission(userId: string, bookId:
   if (!book) return { ok: false as const, error: "NOT_FOUND" };
   const updated = await db.book.update({ where: { id: bookId }, data: { openLibrarySubmissionEnabled: enabled } });
   if (!enabled) {
-    await db.openLibrarySubmission.updateMany({ where: { bookId, status: "PENDING" }, data: { lastError: "Consent revoked" } });
+    await db.openLibrarySubmission.updateMany({
+      where: { bookId, status: "PENDING" },
+      data: { lastError: "Consent revoked" },
+    });
+    return { ok: true as const, enabled: updated.openLibrarySubmissionEnabled, submission: "DISABLED" as const };
   }
-  return { ok: true as const, enabled: updated.openLibrarySubmissionEnabled };
+  const queued = await db.openLibrarySubmission.findUnique({ where: { bookId } });
+  if (!queued) return { ok: true as const, enabled: true, submission: "NOT_QUEUED" as const };
+  const submitted = await submitOpenLibrarySubmission(bookId, JSON.parse(queued.payload) as Record<string, unknown>);
+  return {
+    ok: true as const,
+    enabled: true,
+    submission: submitted.submitted ? ("SUBMITTED" as const) : ("QUEUED" as const),
+  };
 }
 
 export async function getOpenLibrarySubmissionStatus(userId: string, bookId: string) {
@@ -226,16 +242,28 @@ export async function createBook(userId: string, input: AddBookInput) {
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
   try {
-    const book = await db.book.create({ data: { userId, ...parsed.data } });
+    const { submitToOpenLibrary, ...bookData } = parsed.data;
+    const book = await db.book.create({
+      data: { userId, ...bookData, openLibrarySubmissionEnabled: submitToOpenLibrary },
+    });
     // Manual entries that cannot be matched are retained locally and queued
     // for a future authenticated Open Library submission worker.
     const isbn = parsed.data.isbn?.replace(/[^0-9Xx]/g, "");
+    // Submission eligibility is based on Open Library itself, not on the
+    // university/Internet Archive fallback sources used by normal lookup.
+    const { fetchBook, searchBook } = await import("@/lib/books/openlibrary");
     const found = isbn
-      ? await lookupIsbn(isbn).catch(() => null)
-      : await lookupBookByTitle(parsed.data.title, parsed.data.author).catch(() => null);
+      ? await fetchBook(isbn).catch(() => null)
+      : await searchBook(parsed.data.title, parsed.data.author).catch(() => null);
+    let openLibrarySubmission: "NOT_NEEDED" | "QUEUED" | "SUBMITTED" = "NOT_NEEDED";
     if (!found) {
-      const payload = toOpenLibraryImportPayload({ ...book, ...parsed.data });
+      const payload = toOpenLibraryImportPayload({ ...book, ...bookData });
       await queueOpenLibrarySubmission(book.id, payload).catch(() => {});
+      openLibrarySubmission = "QUEUED";
+      if (submitToOpenLibrary) {
+        const submitted = await submitOpenLibrarySubmission(book.id, payload);
+        if (submitted.submitted) openLibrarySubmission = "SUBMITTED";
+      }
     }
     try {
       const { syncBookCopies } = await import("./locations");
@@ -252,7 +280,7 @@ export async function createBook(userId: string, input: AddBookInput) {
       const { syncChallenges } = await import("@/lib/gamification");
       await syncChallenges(userId);
     } catch {}
-    return { ok: true as const, book };
+    return { ok: true as const, book, openLibrarySubmission };
   } catch (e) {
     return { ok: false as const, error: e instanceof Error ? e.message : "Failed to create book" };
   }

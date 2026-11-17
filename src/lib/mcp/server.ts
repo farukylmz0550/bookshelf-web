@@ -41,7 +41,7 @@ function guard(context: AuthContext, scope: ApiScope): string | null {
 
 export function createMcpServer(context: AuthContext): McpServer {
   const server = new McpServer(
-    { name: "bookshelf", version: "4.1.0" },
+    { name: "bookshelf", version: "4.2.0" },
     {
       instructions:
         "BookShelf personal library. Use list_books/search_books before mutating; dates are ISO 8601; statuses are TO_READ, READING, FINISHED.",

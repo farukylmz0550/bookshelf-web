@@ -14,6 +14,10 @@ type Dict = {
   addFailed?: string;
   required?: string;
   addDetailed?: string;
+  openLibraryConsent?: string;
+  openLibraryConsentHint?: string;
+  openLibrarySubmitted?: string;
+  openLibraryQueued?: string;
 };
 
 const EMPTY_FORM = {
@@ -38,6 +42,7 @@ export function DetailedAddForm({ dict, onDone }: { dict: Dict; onDone?: () => v
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [submitToOpenLibrary, setSubmitToOpenLibrary] = useState(false);
 
   function update(key: keyof typeof form, val: string) {
     setForm((p) => ({ ...p, [key]: val }));
@@ -68,6 +73,7 @@ export function DetailedAddForm({ dict, onDone }: { dict: Dict; onDone?: () => v
         isbn10: form.isbn10.trim() || undefined,
         isbn13: form.isbn13.trim() || undefined,
         subjects: form.subjects.trim() || undefined,
+        submitToOpenLibrary,
       });
       if (!result.ok) {
         const msg = result.error || (dict.addFailed ?? "Could not add the book");
@@ -75,8 +81,18 @@ export function DetailedAddForm({ dict, onDone }: { dict: Dict; onDone?: () => v
         toast.error(msg);
         return;
       }
-      toast.success(dict.addSuccess ?? "Book added", { icon: <Check size={16} /> });
+      toast.success(dict.addSuccess ?? "Book added", {
+        description: submitToOpenLibrary
+          ? result.openLibrarySubmission === "SUBMITTED"
+            ? dict.openLibrarySubmitted
+            : result.openLibrarySubmission === "QUEUED"
+              ? dict.openLibraryQueued
+              : undefined
+          : undefined,
+        icon: <Check size={16} />,
+      });
       setForm(EMPTY_FORM);
+      setSubmitToOpenLibrary(false);
       onDone?.();
     });
   }
@@ -228,6 +244,22 @@ export function DetailedAddForm({ dict, onDone }: { dict: Dict; onDone?: () => v
           />
         </div>
       </div>
+      <label className="flex items-start gap-2 rounded-[8px] border border-[var(--border)] bg-background p-3 text-sm">
+        <input
+          type="checkbox"
+          checked={submitToOpenLibrary}
+          onChange={(event) => setSubmitToOpenLibrary(event.target.checked)}
+          className="mt-0.5"
+        />
+        <span>
+          <span className="block font-medium text-foreground">
+            {dict.openLibraryConsent ?? "Contribute this book's metadata to Open Library"}
+          </span>
+          <span className="block text-xs text-muted-foreground">
+            {dict.openLibraryConsentHint ?? "Optional. Only bibliographic metadata is sent; no ebook file is uploaded."}
+          </span>
+        </span>
+      </label>
       {error && (
         <div className="flex items-center gap-2 rounded-[8px] border border-[var(--border-strong)] bg-[var(--error-soft)] px-3 py-2 text-sm text-[var(--error-text)]">
           <AlertCircle size={14} />

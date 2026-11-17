@@ -8,16 +8,19 @@ import { DangerZoneCard } from "./danger-zone-card";
 import { MinPagesCard } from "./min-pages-card";
 import { getMinPagesPerReadEvent } from "@/lib/reading-settings";
 import { db } from "@/lib/db";
+import { getAppConfig } from "@/lib/app-config";
+import { ConfigOverviewCard } from "./config-overview-card";
 
 export default async function AdminPage() {
   const currentUserId = await requireAdminPage();
   const dict = await getDictionary();
-  const [users, coverStats, me] = await Promise.all([
+  const [users, coverStats, me, appConfig] = await Promise.all([
     getUsers(),
     getCoverStats(),
     // v3.5.2 — self password reset shows a TOTP prompt only when the caller
     // has TOTP enabled.
     db.user.findUnique({ where: { id: currentUserId }, select: { totpEnabled: true } }),
+    getAppConfig(),
   ]);
   const selfTotpEnabled = me?.totpEnabled ?? false;
 
@@ -67,6 +70,32 @@ export default async function AdminPage() {
           />
         </div>
       </section>
+      <ConfigOverviewCard
+        config={{
+          publishers: appConfig.smartShelfPublishers,
+          authors: appConfig.smartShelfAuthors,
+          series: appConfig.smartShelfSeries,
+          developmentMode: appConfig.developmentMode,
+        }}
+        openLibrarySubmissionConfigured={!!process.env.OPENLIBRARY_USERNAME && !!process.env.OPENLIBRARY_PASSWORD}
+        totpEnabled={selfTotpEnabled}
+        dict={{
+          title: dict.admin.configurationTitle,
+          desc: dict.admin.configurationDesc,
+          metadataSources: dict.admin.metadataSources,
+          smartShelves: dict.admin.smartShelvesLabel,
+          developmentMode: dict.admin.developmentMode,
+          enabled: dict.admin.enabled,
+          disabled: dict.admin.disabled,
+          disableTotp: dict.admin.disableAdminTotp,
+          disableTotpConfirm: dict.admin.disableAdminTotpConfirm,
+          totpDisabled: dict.admin.adminTotpDisabled,
+          developmentWarning: dict.admin.developmentWarning,
+          publishers: dict.nav.publishers,
+          authors: dict.nav.authors,
+          series: dict.nav.series,
+        }}
+      />
 
       {/* §2 — Cover Cache */}
       <section className="space-y-3">

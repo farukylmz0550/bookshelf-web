@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { X, Camera } from "lucide-react";
+import { selectCloseFocusCamera } from "@/lib/camera-selection";
 
 interface BarcodeScannerProps {
   onDetected: (isbn: string) => void;
@@ -19,6 +20,7 @@ export function BarcodeScanner({ onDetected, title = "Scan" }: BarcodeScannerPro
     if (!isOpen || !containerRef.current) return;
 
     let cancelled = false;
+    let cameraListObserver: MutationObserver | null = null;
 
     import("html5-qrcode")
       .then(({ Html5QrcodeScanner }) => {
@@ -30,12 +32,23 @@ export function BarcodeScanner({ onDetected, title = "Scan" }: BarcodeScannerPro
             fps: 10,
             qrbox: { width: 250, height: 150 },
             aspectRatio: 1.5,
-            // v3.5.2 — default to the rear camera; the scanner UI still lets
-            // the user switch to any other camera.
-            videoConstraints: { facingMode: "environment" },
           },
           false,
         );
+
+        // html5-qrcode renders the camera list after permission is granted.
+        // Select the macro/close-focus lens as soon as that list is available,
+        // while leaving the selector enabled so the user can still switch.
+        cameraListObserver = new MutationObserver(() => {
+          const select = containerRef.current?.querySelector<HTMLSelectElement>("#html5-qrcode-select-camera");
+          if (!select || select.options.length === 0) return;
+
+          const preferred = selectCloseFocusCamera(
+            Array.from(select.options, (option) => ({ id: option.value, label: option.text })),
+          );
+          if (preferred) select.value = preferred.id;
+        });
+        cameraListObserver.observe(containerRef.current, { childList: true, subtree: true });
 
         scanner.render(
           (decodedText: string) => {
@@ -58,6 +71,7 @@ export function BarcodeScanner({ onDetected, title = "Scan" }: BarcodeScannerPro
 
     return () => {
       cancelled = true;
+      cameraListObserver?.disconnect();
       if (scannerRef.current) {
         try {
           (scannerRef.current as { clear: () => void }).clear();

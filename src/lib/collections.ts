@@ -27,6 +27,34 @@ export type GenreGroup = {
   books: Book[];
 };
 
+export type PublisherGroup = {
+  name: string;
+  total: number;
+  books: Book[];
+};
+
+export function publishersForBook(book: Pick<Book, "publishers">): string[] {
+  return (book.publishers ?? "")
+    .split(/[;\n]/)
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+export function groupPublishers(books: Book[]): PublisherGroup[] {
+  const map = new Map<string, { name: string; books: Book[] }>();
+  for (const book of books) {
+    for (const name of publishersForBook(book)) {
+      const key = name.toLocaleLowerCase();
+      const group = map.get(key) ?? { name, books: [] };
+      group.books.push(book);
+      map.set(key, group);
+    }
+  }
+  return [...map.values()]
+    .map((group) => ({ name: group.name, total: group.books.length, books: sortBooks(group.books) }))
+    .sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
+}
+
 /** Rust-owned normalization mirrored from reading_core::normalized_genres. */
 export function genresForBook(book: Pick<Book, "subjects" | "tags">): string[] {
   const subjects = (book.subjects ?? "").trim();

@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/session";
 import { checkRateLimit, throttlingEnabled } from "@/lib/rate-limit";
 import { verifyTotpCode } from "@/lib/totp";
+import { getAppConfig } from "@/lib/app-config";
 
 export async function getUsers() {
   await requireAdmin();
@@ -49,6 +50,16 @@ export async function updateMinPagesPerReadEvent(value: number): Promise<{ ok: b
   revalidatePath("/settings");
   revalidatePath("/books");
   return { ok: true };
+}
+
+export async function disableOwnAdminTotpInDevelopment() {
+  const adminId = await requireAdmin();
+  const config = await getAppConfig();
+  if (!config.developmentMode) return { ok: false as const, error: "DEVELOPMENT_MODE_DISABLED" };
+  await db.user.update({ where: { id: adminId }, data: { totpEnabled: false, totpSecret: null } });
+  revalidatePath("/admin");
+  revalidatePath("/settings");
+  return { ok: true as const };
 }
 
 export async function approveUser(userId: string) {

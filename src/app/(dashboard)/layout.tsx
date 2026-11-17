@@ -10,11 +10,13 @@ import { BottomNav } from "@/components/bottom-nav";
 import { InstallPrompt } from "@/components/install-prompt";
 import { AccountGates, type GateDict } from "@/components/account-gates";
 import { NotificationPerm } from "./notification-perm";
+import { getAppConfig } from "@/lib/app-config";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   if (await needsSetup()) redirect("/setup");
   const session = await auth();
   const dict = await getDictionary();
+  const appConfig = await getAppConfig();
 
   let isAdmin = false;
   let totpEnabled = false;
@@ -52,6 +54,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     challenges: dict.nav.challenges,
     series: dict.nav.series,
     authors: dict.nav.authors,
+    publishers: dict.nav.publishers,
     achievements: dict.nav.achievements,
     leaderboard: dict.nav.leaderboard,
     people: dict.nav.people,
@@ -77,6 +80,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
         isAdmin={isAdmin}
         userName={session?.user?.name ?? null}
         initialCollapsed={sidebarCollapsed}
+        smartShelves={{
+          publishers: appConfig.smartShelfPublishers,
+          authors: appConfig.smartShelfAuthors,
+          series: appConfig.smartShelfSeries,
+        }}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -114,7 +122,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         mustChangePassword={mustChangePassword}
         // Dev/e2e skip the admin gate — mandatory TOTP applies to real
         // (production) self-hosted deployments only.
-        requireTotp={process.env.NODE_ENV === "production" && isAdmin && !totpEnabled}
+        requireTotp={process.env.NODE_ENV === "production" && !appConfig.developmentMode && isAdmin && !totpEnabled}
         dict={dict.security as unknown as GateDict}
       />
     </div>

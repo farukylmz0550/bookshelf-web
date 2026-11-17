@@ -44,6 +44,11 @@ export type AppConfigValues = {
   marketPageXpBoost: number;
   marketFinishXpBoost: number;
   marketChallengeExtension: number;
+  smartShelfPublishers: boolean;
+  smartShelfAuthors: boolean;
+  smartShelfSeries: boolean;
+  /** File-only escape hatch for local development; never enabled by default. */
+  developmentMode: boolean;
 };
 
 const xpSchema = z.object({
@@ -91,6 +96,12 @@ const marketSchema = z.object({
   finishXpBoost: intInRange(0, 1_000_000).default(150),
   challengeExtension: intInRange(0, 1_000_000).default(200),
 });
+const smartShelvesSchema = z.object({
+  publishers: z.boolean().default(true),
+  authors: z.boolean().default(true),
+  series: z.boolean().default(true),
+});
+const developmentSchema = z.object({ enabled: z.boolean().default(false) });
 
 const configSchema = z.object({
   xp: xpSchema.optional(),
@@ -102,6 +113,8 @@ const configSchema = z.object({
   index: indexSchema.optional(),
   cron: cronSchema.optional(),
   market: marketSchema.optional(),
+  smartShelves: smartShelvesSchema.optional(),
+  development: developmentSchema.optional(),
 });
 
 function intInRange(min: number, max: number) {
@@ -135,6 +148,10 @@ export function defaultAppConfig(): AppConfigValues {
     marketPageXpBoost: 75,
     marketFinishXpBoost: 150,
     marketChallengeExtension: 200,
+    smartShelfPublishers: true,
+    smartShelfAuthors: true,
+    smartShelfSeries: true,
+    developmentMode: false,
   };
 }
 
@@ -174,6 +191,10 @@ export function validateAppConfig(doc: unknown): AppConfigValues {
     marketPageXpBoost: data.market?.pageXpBoost ?? defaults.marketPageXpBoost,
     marketFinishXpBoost: data.market?.finishXpBoost ?? defaults.marketFinishXpBoost,
     marketChallengeExtension: data.market?.challengeExtension ?? defaults.marketChallengeExtension,
+    smartShelfPublishers: data.smartShelves?.publishers ?? defaults.smartShelfPublishers,
+    smartShelfAuthors: data.smartShelves?.authors ?? defaults.smartShelfAuthors,
+    smartShelfSeries: data.smartShelves?.series ?? defaults.smartShelfSeries,
+    developmentMode: data.development?.enabled ?? defaults.developmentMode,
   };
 }
 

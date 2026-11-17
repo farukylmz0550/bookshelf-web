@@ -8,8 +8,11 @@ import { requireUserId } from "@/lib/session";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { groupSeries } from "@/lib/collections";
 import { Layers } from "lucide-react";
+import { getAppConfig } from "@/lib/app-config";
+import { notFound } from "next/navigation";
 
 export default async function SeriesPage() {
+  if (!(await getAppConfig()).smartShelfSeries) notFound();
   const userId = await requireUserId();
   const dict = await getDictionary();
 
